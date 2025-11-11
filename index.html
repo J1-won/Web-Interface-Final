@@ -4,20 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internet Brain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #000000; }
+        .arimo {
+        font-family: "Arimo", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;font-size: 4rem;
+        }
+        .arimo-i {
+        font-family: "Arimo", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: italic;
+        }
+        .ballet {
+        font-family: "Ballet", cursive;
+        font-optical-sizing: auto;font-size: 5.4rem;
+        font-weight: 400;
+        font-style: normal;
+        }
+        html{font-size:2rem;scroll-behavior:smooth;font-family: "Arimo", sans-serif;}
+        body,h1,h2,h3,p,ol,ul{margin:0;padding:0;}
+        body {overflow: hidden; background-color: #000000; }
         canvas { display: block; }
-        
+        h1 {font-size:2rem;font-family: "Arimo", sans-serif; padding-left:50px;position: fixed; 
+    top: 50px; /* 상단에서 50px 아래에 위치 */
+    left: 0;
+    width: 100%;
+    z-index: 150; /* ★ z-index를 캔버스(0)보다 높게 설정 */
+    color: white;}
         #info {
             position: absolute;
             top: 10px;
             left: 10px;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: "Arimo", sans-serif;font-weight: 400;font-style: normal;
             z-index: 100;
         }
         #loading-status {
-            color: #4ecdc4;
+            color: #4cf3ff;
             margin-top: 8px;
             font-size: 14px;
         }
@@ -38,7 +66,12 @@
             color: white;
             border: 1px solid #4cf3ff;
             padding: 5px 10px;
+            transition: 0.25s;
             cursor: pointer;
+            font-family: "Arimo", sans-serif;
+        }
+        button:hover {
+            background-color: rgba(76,243,255,0.08);
         }
         #controls-container {
             position: absolute;
@@ -48,31 +81,49 @@
             z-index: 100;
         }
         #back-to-earth-btn {
-            background-color: #222;
-            color: #4cf3ff;
+            background-color: #333;
+            color: white;
             border: 1px solid #4cf3ff;
-            padding: 6px 12px;
-            font-size: 13px;
-            letter-spacing: 0.5px;
+            padding: 10px 30px;
             cursor: pointer;
-            border-radius: 6px;
             transition: 0.25s;
             display: none;
             box-shadow: 0 0 6px rgba(76,243,255,0.12);
+            margin-bottom: 100px;
         }
         #back-to-earth-btn:hover {
             background-color: rgba(76,243,255,0.08);
-            transform: translateY(-2px);
+        }
+        .top-gradient-overlay {
+            position: fixed;
+            top: 0;left: 0;width: 100%;
+            height: 100px;
+            z-index: 50;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.5) 0%, /* 시작: 순수한 흰색 */
+                rgba(0, 0, 0, 0.3) 50%,     /* 중간: 검은색 (50% 지점에서 흰색이 투명해지기 시작) */
+                rgba(0, 0, 0, 0) 100%      /* 끝: 완전 투명 */
+            );
+        }
+        .world-text {
+            /* 1/2 크기로 줄이기 */
+            font-size: 80%; 
+            display:inline-block;
+            margin-left:-64px; 
+            color: #4cf3ff;z-index: 0;transform: translateY(15px);
         }
     </style>
 </head>
 <body>
+    <div class="top-gradient-overlay"></div>
+    <h1><span class="ballet">Explore</span> 
+        <span class="world-text" style="color:#4cf3ff;">
+            the <span class="ballet" style="font-size:200%;">w</span><span class="arimo-i">o</span><span class="ballet" style="font-size:200%;"">r</span>ld
+        </span></h1>
     <div id="info">
         <p id="loading-status">Initialising...</p>
-        <button onclick="flyToCity('SÃO PAULO')" style="margin-top: 10px;">Fly to SÃO PAULO</button>
-        <button onclick="flyToCity('LONDON')">Fly to LONDON</button>
     </div>
-    
     <div id="canvas-container"></div>
     
     <div id="controls-container">
@@ -178,7 +229,7 @@
             
             const textureLoader = new THREE.TextureLoader();
             const earthTexture = textureLoader.load(
-                'earth_texture.jpg', 
+                'earth_clouds.jpg', 
                 () => {
                     updateLoadingStatus('Earth texture loaded!');
                     setTimeout(() => updateLoadingStatus(''), 800);
@@ -186,7 +237,7 @@
                 undefined,
                 (error) => {
                     console.error('Error loading texture:', error);
-                    updateLoadingStatus('Error loading texture (Check file name: earth_texture.jpg)');
+                    updateLoadingStatus('Error loading texture (Check file name: earth_clouds.jpg)');
                 }
             );
 
@@ -205,6 +256,31 @@
             { lat: 51.5, lon: -0.1, name: 'LONDON' },
             { lat: -23.5, lon: -46.6, name: 'SÃO PAULO' },
             { lat: 40.7, lon: -74.0, name: 'NEW YORK' },
+            { lat: 37.5, lon: 126.9, name: 'SEOUL' },
+            { lat: 35.6, lon: 139.6, name: 'TOKYO' },
+            { lat: 39.9, lon: 116.3, name: 'BEIJING' },
+            { lat: 28.6, lon: 77.2, name: 'DELHI' },
+            { lat: 30.0, lon: 31.2, name: 'CAIRO' },
+            { lat: 48.8, lon: 2.3, name: 'PARIS' },
+            { lat: 52.5, lon: 13.4, name: 'BERLIN' },
+            { lat: 55.7, lon: 37.6, name: 'MOSCOW' },
+            { lat: 25.2, lon: 55.2, name: 'DUBAI' },
+            { lat: -33.8, lon: 151.2, name: 'SYDNEY' },
+            { lat: 19.4, lon: -99.1, name: 'MEXICO CITY' },
+            { lat: 49.2, lon: -123.1, name: 'VANCOUVER' },
+            { lat: -33.9, lon: 18.4, name: 'CAPE TOWN' },
+            { lat: 41.0, lon: 28.9, name: 'ISTANBUL' },
+            { lat: 3.1, lon: 101.6, name: 'KUALA LUMPUR' },
+            { lat: 13.7, lon: 100.5, name: 'BANGKOK' },
+            { lat: -33.9, lon: 18.4, name: 'CAPE TOWN' },
+            { lat: -26.2, lon: 28.0, name: 'JOHANNESBURG' },
+            { lat: -1.2, lon: 36.8, name: 'NAIROBI' },
+            { lat: 34.0, lon: -118.2, name: 'LOS ANGELES' },
+            { lat: 43.6, lon: -79.3, name: 'TORONTO' },
+            { lat: -34.6, lon: -58.3, name: 'BUENOS AIRES' },
+            { lat: 21.3, lon: -157.8, name: 'HONOLULU' },
+            { lat: -36.85, lon: 174.76, name: 'AUCKLAND' },
+            { lat: 33.58, lon: -7.61, name: 'CASABLANCA' },
         ];
 
         function createDataPoints(earthRadius) {
