@@ -4,27 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brief Introduction</title>
+    <!-- Google Fonts Import: Ballet, Arimo, Noto Sans KR -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        .arimo { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: normal;font-size: 4rem; }
-        .arimo-i { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: italic;}
-        .ballet { font-family: "Ballet", cursive; font-size: 5.4rem; font-weight: 400; font-style: normal; }
-        .noto-sans {font-family: "Noto Sans KR", sans-serif;font-optical-sizing: auto;font-weight: 400;font-style: normal;}
-        html{font-size:2rem;scroll-behavior:smooth;font-family: "Arimo", sans-serif;}
-        body,h1,h2,h3,p,ol,ul{margin:0;padding:0;}
+        /* 폰트 정의 및 기본 스타일 */
+        .arimo { font-family: "Arimo", sans-serif; font-weight: 400; font-style: normal; }
+        .arimo-i { font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic;}
+        .ballet { font-family: "Ballet", cursive; font-weight: 400; font-style: normal; }
+        .noto-sans { font-family: "Noto Sans KR", sans-serif; font-weight: 400; font-style: normal;}
         
-        /* ★ 1. body에서 격자 배경 제거, 순수한 검은색만 유지 */
+        html { font-size: 2rem; scroll-behavior: smooth; font-family: "Arimo", sans-serif; }
+        body, h1, h2, h3, p, ol, ul { margin: 0; padding: 0; }
+        
         body {
             overflow: hidden; 
             background-color: #000000; 
         }
         canvas { display: block; }
-        h1 {font-size:2rem;font-family: "ballet"; padding-left:50px;position: fixed; bottom:-1%;
+
+        #about-title-container {
+            position: fixed; 
+            font-size:5.5rem;
+            bottom: -2%; 
+            left: 0; 
             width: 100%;
             z-index: 150;
-            color: white;}
+            color: white;
+            padding-left: 50px;
+            box-sizing: border-box;
+            transition: opacity 0.5s;
+        }
+
+        /* 좌하단 콘텐츠/설명 컨테이너 스타일 */
+        #content-display {
+            position: fixed; 
+            bottom: 50px; /* About 제목이 있던 위치 근처 */
+            left: 50px; 
+            width: 750px;
+            max-width: 90%;
+            z-index: 150;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #content-display.visible {
+            opacity: 1;
+        }
+
+        .english-text {
+            font-family: arimo;font-weight: 400;
+            font-size: 0.55rem;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .korean-text {
+            font-size: 0.5rem; /* 국문 텍스트 크기 */
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .city-country {
+            text-align: right;padding-right:50px;
+            font-size: 0.6rem;
+            color: #4cf3ff; /* 도시-국가 괄호 색상 */
+        }
+        
+        /* 기존 스타일 유지 */
         #info {
             position: absolute;
             top: 10px;
@@ -33,28 +80,6 @@
             font-family: "Arimo", sans-serif;font-weight: 400;font-style: normal;
             z-index: 100;
         }
-        .city-label {
-            position: absolute;
-            color: #4cf3ff; 
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: auto;
-            cursor: pointer; 
-            transform: translate(-50%, -150%); 
-            opacity: 0;
-            transition: opacity 0.3s;
-            user-select: none;
-        }
-        button {
-            background-color: #333;
-            color: white;
-            border: 1px solid #4cf3ff;
-            padding: 5px 10px;
-            transition: 0.25s;
-            cursor: pointer;
-            font-family: "Arimo", sans-serif;
-        }
-        button:hover { background-color: rgba(76,243,255,0.08); }
         .top-gradient-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100px; z-index: 50;
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
@@ -65,6 +90,7 @@
             text-align: center; max-width: 600px;
         }
 
+        /* 배경 및 격자 */
         .bg {
             position: fixed;
             top: 50px; 
@@ -72,11 +98,11 @@
             width: 100%;
             height: calc(120% - 80px);
             z-index: -1; 
+            /* 그라디언트 + 격자 + 이미지 */
             background-image: 
                 linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                 linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
-
                 url('earth_basic.jpg');
 
             background-size: 
@@ -89,38 +115,41 @@
             background-position: center, -1px -1px, -1px -1px, center; 
         }
 
+        /* 지도 포인트 컨테이너를 배경 지도 위에 배치하기 위해 수정 */
         .map-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 예를 들어, 16:9 비율 유지를 위해 (지도 이미지 비율에 맞춰야 함) */
-            height: 0;
-            overflow: hidden;
-        }
-
-        .map-image {
-            position: absolute;
-            top: 0;
+            position: fixed; /* 배경 지도의 .bg와 동일하게 fixed로 설정 */
+            top: 50px; 
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none; /* 지도는 클릭하지 않도록 설정 */
         }
-
+        
         .map-point {
             position: absolute;
             display: flex;
+            cursor: pointer;
             flex-direction: column;
             align-items: center;
             transform: translate(-50%, -50%); 
+            pointer-events: auto; /* map-container의 pointer-events: none을 무시하고 클릭 가능하게 함 */
+            transition: transform 0.2s;
         }
-
+        @keyframes spinY {
+            0% { transform: rotateY(360deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        .map-point:hover {
+            animation: spinY 3s infinite linear;
+            transform-origin: center center;
+        }
         .dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             background-color: #4cf3ff; 
             border-radius: 50%;
             z-index: 10;
         }
-
         .number-label {
             position: absolute;
             top: -40px;
@@ -129,80 +158,160 @@
             line-height: 1;
             white-space: nowrap;
             z-index: 11;
+            user-select: none;
         }
-        /* 1. 서울, 한국 (Seoul, Korea)*/
-        #point-1 {
-            top: 43.5%; 
-            left: 82%; 
-        }
-
-        /* 2. 런던, 영국 (London, UK)*/
-        #point-2 {
-            top: 34.6%; 
-            left: 46.6%; 
-        }
-
-        /* 3. 뉴욕, 미국 (New York, USA)*/
-        #point-3 {
-            top: 41.5%; 
-            left: 26.3%; 
-        }
-
-        /* 4. 카이로, 이집트 (Cairo, Egypt)*/
-        #point-4 {
-            top: 47.3%; 
-            left: 55.4%; 
-        }
-
-        /* 5. 시드니, 호주 (Sydney, Australia)*/
-        #point-5 {
-            top: 80.8%; 
-            left: 88.8%; 
-        }
-
-        /* 6. 상파울루, 브라질 (São Paulo, Brazil)]*/
-        #point-6 {
-            top: 74%; 
-            left: 34.5%; 
-        }
+        /* 좌표 설정 */
+        #point-1 { top: 39%; left: 82%; }
+        #point-2 { top: 31.1%; left: 46.6%; }
+        #point-3 { top: 37%; left: 26.3%; }
+        #point-4 { top: 42.8%; left: 55.4%; }
+        #point-5 { top: 72.3%; left: 88.3%; }
+        #point-6 { top: 66.2%; left: 34.5%; }
     </style>
 </head>
 <body>
     <div class="top-gradient-overlay"></div>
     <div class="bg">
-        <h1><span class="ballet">About</span></h1>
+        <h1 id="about-title-container"><span class="ballet">About</span></h1>
+        
+        <!-- 상단 안내 텍스트 -->
         <p class="info-text-container">Click the dots in the order of the numbers.</p>
+        
+        <!-- 좌하단에 표시될 설명 컨테이너 -->
+        <div id="content-display">
+            <!-- JavaScript가 여기에 내용을 채울 것입니다 -->
+        </div>
+
         <div class="map-container">        
-            <div class="map-point" id="point-1">
+            <!-- data-index 속성에 순서를 지정하여 JavaScript에서 사용합니다 -->
+            <div class="map-point" id="point-1" data-index="1">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">1</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <!-- HTML 문법 오류 수정 완료: style="..%;) -> style="..;"> -->
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">1</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         
-            <div class="map-point" id="point-2">
+            <div class="map-point" id="point-2" data-index="2">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">2</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">2</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         
-            <div class="map-point" id="point-3">
+            <div class="map-point" id="point-3" data-index="3">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">3</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">3</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         
-            <div class="map-point" id="point-4">
+            <div class="map-point" id="point-4" data-index="4">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">4</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">4</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         
-            <div class="map-point" id="point-5">
+            <div class="map-point" id="point-5" data-index="5">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">5</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">5</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         
-            <div class="map-point" id="point-6">
+            <div class="map-point" id="point-6" data-index="6">
                 <div class="dot"></div>
-                <div class="number-label"><span class="ballet" style="font-size: 200%";>(</span><span class="arimo-i">6</span><span class="ballet" style="font-size: 200%";>)</span></div>
+                <div class="number-label"><span class="ballet" style="font-size: 200%;">(</span><span class="arimo-i">6</span><span class="ballet" style="font-size: 200%;">)</span></div>
             </div>
         </div>
     </div>
+
+    <script>
+        // 1. 데이터 정의 (각 도시에 대한 설명)
+        const contentData = [
+            {
+                english: "We’re living in 21st century, where internet is connecting everything.",
+                korean: "우리는 인터넷으로 모든 것이 연결된 21세기에 살고 있습니다.",
+                city: "Seoul, Korea"
+            },
+            {
+                english: "It weaves invisible threads between cities, people, and information across the globe.",
+                korean: "인터넷은 전 세계의 도시, 사람, 정보 사이에 보이지 않는 실을 엮어냅니다.",
+                city: "London, UK"
+            },
+            {
+                english: "This webpage visualizes those connections as a living, breathing network.",
+                korean: "이 웹페이지는 이러한 연결을 살아 숨 쉬는 네트워크로 시각화합니다.",
+                city: "New York, USA"
+            },
+            {
+                english: "You can explore how data flows through our world by interacting with the rotating Earth.",
+                korean: "사용자는 회전하는 지구와 상호작용하며 데이터가 우리 세계를 어떻게 흐르는지 탐구할 수 있습니다.",
+                city: "Cairo, Egypt"
+            },
+            {
+                english: "Each city is intertwined with a keyword linking this vast digital landscape.",
+                korean: "각 도시는 이 방대한 디지털 풍경을 연결하는 키워드로 엮여 있습니다.",
+                city: "Sydney, Australia"
+            },
+            {
+                english: "Dive in, follow the links, and experience the planet as an interconnected web.",
+                korean: "웹사이트를 탐험하고, 링크를 따라다니며 지구를 하나의 연결된 웹으로 경험해 보세요.",
+                city: "São Paulo, Brazil"
+            }
+        ];
+
+        // ★★ 핵심 수정: lastClickedIndex를 -1로 초기화하여 (1)번 점(index 0)이 클릭될 수 있도록 합니다.
+        let lastClickedIndex = -1; 
+        const contentDisplay = document.getElementById('content-display');
+        const aboutTitle = document.getElementById('about-title-container');
+        const mapPoints = document.querySelectorAll('.map-point');
+
+        // 2. 설명 내용 생성 함수
+        function createContentHTML(data) {
+            return `
+                <p class="english-text">${data.english}</p>
+                <p class="korean-text noto-sans">${data.korean}</p>
+                <div class="city-country">
+                    <span class="ballet" style="font-size: 180%;">(</span>
+                    <span class="arimo-i">${data.city}</span>
+                    <span class="ballet" style="font-size:180%">)</span>
+                </div>
+            `;
+        }
+
+        // 3. 점 클릭 이벤트 핸들러
+        function handlePointClick(event) {
+            const pointElement = event.currentTarget;
+            const index = parseInt(pointElement.getAttribute('data-index')) - 1; // data-index는 1부터 시작 (index는 0부터 시작)
+
+            // 순서대로 클릭했는지 확인: 현재 클릭된 인덱스가 직전 인덱스 + 1이 아닌 경우 (순서 틀림)
+            if (index !== lastClickedIndex + 1) {
+                // 이미 클릭된 항목을 다시 클릭했거나 순서를 건너뛴 경우
+                console.log(`Please click point ${lastClickedIndex + 2} first.`);
+                // alert() 대신 콘솔에 출력 (alert 사용 금지 규칙 준수)
+                return;
+            }
+
+            // 'About' 제목 숨기기 (최초 클릭 시)
+            if (lastClickedIndex === -1) {
+                aboutTitle.style.opacity = '0';
+                setTimeout(() => { aboutTitle.style.display = 'none'; }, 500); // 트랜지션 후 제거
+            }
+
+            lastClickedIndex = index; // 인덱스 업데이트
+            const data = contentData[index];
+
+            // 4. 내용 교체 및 애니메이션
+            // 내용이 자연스럽게 교체되도록 opacity 트랜지션을 사용합니다.
+            contentDisplay.style.opacity = '0'; // 내용 숨기기
+            
+            setTimeout(() => {
+                // 내용 업데이트
+                contentDisplay.innerHTML = createContentHTML(data);
+                
+                // 새로운 내용 표시
+                contentDisplay.classList.add('visible'); 
+                contentDisplay.style.opacity = '1';
+            }, 300); // 0.3초 후 내용 변경 및 표시 (CSS 트랜지션 시간과 일치)
+        }
+
+        // 5. 모든 점에 이벤트 리스너 추가
+        mapPoints.forEach(point => {
+            point.addEventListener('click', handlePointClick);
+        });
+    </script>
+    
 </body>
 </html>
