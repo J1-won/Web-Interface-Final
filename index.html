@@ -20,6 +20,12 @@
         font-weight: 400;
         font-style: italic;
         }
+        .arimo-bi {
+        font-family: "Arimo", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 700;
+        font-style: italic;
+        }
         .ballet {
         font-family: "Ballet", cursive;
         font-optical-sizing: auto;font-size: 5.4rem;
@@ -30,7 +36,8 @@
         body,h1,h2,h3,p,ol,ul{margin:0;padding:0;}
         body {overflow: hidden; background-color: #000000; }
         canvas { display: block; }
-        h1 {font-size:2rem;font-family: "Arimo", sans-serif; padding-left:50px;position: fixed; }
+        h1 {font-size:2.3rem;font-family: "ballet";text-align: center; margin:auto;padding-left:50px; color:white;}
+        h2 {font-size:2.7rem;font-weight: 400;font-family: "ballet"; text-align: center; margin-bottom:-100px;margin-left:-450px;padding-top:120px; color:#4cf3ff}
         body {
             background-color: #000000; 
             overflow: hidden;
@@ -40,21 +47,377 @@
             background-size: 60px 45px;
             background-position: -1px -1px;
         }
+        .container {
+            align-items: center;
+            position: relative;
+            z-index: 200;
+        }
         .top-gradient-overlay {
             position: fixed;
             top: 0;left: 0;width: 100%;
-            height: 100px;
-            z-index: 50;
-            background: linear-gradient(
+            height: 70px;
+            z-index: 150;
+            background-color: black;
+            background-image: linear-gradient(
                 to bottom,
-                rgba(255, 255, 255, 0.5) 0%, /* 시작: 순수한 흰색 */
-                rgba(0, 0, 0, 0.3) 90%,     /* 중간: 검은색 (50% 지점에서 흰색이 투명해지기 시작) */
-                rgba(0, 0, 0, 0) 100%      /* 끝: 완전 투명 */
+                rgba(255, 255, 255, 0.5) 0%,
+                rgba(0, 0, 0, 0.3) 90%,
+                rgba(0, 0, 0, 0) 100%
             );
+        }
+        .brain-text {
+            font-size: 50%;
+            display:inline-block;
+            margin-left:-30px; 
+            color: #4cf3ff;z-index: 0;transform: translateY(-80px);
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #canvas-container canvas {
+            background: transparent !important;
+        }
+        .globe-label {
+            position: absolute;
+            color: #4cf3ff;
+            font-size: 0.75rem;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+            text-decoration-color: rgba(76, 243, 255, var(--underline-opacity, 1));
+            pointer-events: auto;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            user-select: none;
+        }
+        .globe-label .ballet {
+            font-family: "Ballet", cursive;font-size:200%;
+        }
+        .globe-label .arimo-i {
+            font-family: "Arimo", sans-serif;
+            font-style: italic;
+        }
+        .globe-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .back-image {
+            position: fixed;
+            bottom:2%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('back.png');
+            background-size: contain;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .info-text-container {
+            position: fixed;
+            bottom: 150px;
+            left: 50%;
+            font-family: "Arimo", sans-serif; font-weight: 400;
+            font-size: 0.4rem;
+            line-height: 1.3;
+            transform: translateX(-50%);
+            z-index: 200;
+            color: white;
+            text-align: center;
+            max-width: 600px;
         }
         </style>
     </head>
     <body>
         <div class="top-gradient-overlay"></div>
+        <div class="container">
+            <h2>welcome to</h2>
+            <h1><span class="ballet">Internet</span> 
+                <span class="brain-text">
+                   <span class="ballet" style="font-size:200%;">(</span><span class="arimo-bi">B</span><span class="arimo-i">rain</span> <span class="ballet" style="font-size:200%;">)</span>
+                </span></h1>
+        </div>
+        <div class="back-image"></div>
+        <div class="info-text-container">
+            Once you click the globes, you can visit related web pages.<br>
+            Explore a living digital globe where cities, data, and connections come alive.
+        </div>
+        <div id="canvas-container"></div>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+        
+        <script>
+            let scene, camera, renderer;
+            const globes = [];
+            const globeLabels = [];
+            const EARTH_RADIUS = 3.3;
+            
+            // 텍스트 렌더링 함수 (b, p, h는 ballet, 나머지는 arimo-i)
+            function createStyledText(word) {
+                let html = '';
+                for (let char of word) {
+                    if (char.toLowerCase() === 'b' || char.toLowerCase() === 'p' || char.toLowerCase() === 'h') {
+                        html += `<span class="ballet">${char}</span>`;
+                    } else {
+                        html += `<span class="arimo-i">${char}</span>`;
+                    }
+                }
+                return html;
+            }
+            
+            function init() {
+                scene = new THREE.Scene();
+                scene.background = null; // 투명하게 설정하여 배경 격자가 보이도록
+                
+                // OrthographicCamera를 사용하여 원근 왜곡 제거
+                const aspect = window.innerWidth / window.innerHeight;
+                const viewSize = 12;
+                camera = new THREE.OrthographicCamera(
+                    -viewSize * aspect,
+                    viewSize * aspect,
+                    viewSize,
+                    -viewSize,
+                    0.1,
+                    1000
+                );
+                camera.position.set(0, 0, 5);
+                camera.lookAt(0, 0, 0);
+                
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setClearColor(0x000000, 0); // 투명 배경
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                document.getElementById('canvas-container').appendChild(renderer.domElement);
+                
+                // 조명
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+                directionalLight.position.set(5, 5, 5);
+                scene.add(directionalLight);
+                
+                // 세 개의 지구본 생성 (지구본 반지름이 3.5이므로 충분한 간격 필요)
+                const globeData = [
+                    { texture: 'earth_basic.jpg', label: 'about', x: -8, url: 'about.html' },
+                    { texture: 'earth_clouds.jpg', label: 'explore', x: 0, url: 'explore.html' },
+                    { texture: 'earth_night.jpg', label: 'archive', x: 8, url: 'archive.html' }
+                ];
+                
+                const textureLoader = new THREE.TextureLoader();
+                
+                globeData.forEach((data, index) => {
+                    const texture = textureLoader.load(
+                        data.texture,
+                        undefined,
+                        undefined,
+                        (error) => {
+                            console.error(`Error loading ${data.texture}:`, error);
+                        }
+                    );
+                    
+                    const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+                    const material = new THREE.MeshBasicMaterial({ map: texture });
+                    const globe = new THREE.Mesh(geometry, material);
+                    
+                    globe.position.set(data.x, -2.5, 0);
+                    // 각 지구본을 정면으로 보이도록 초기 회전 설정
+                    // 카메라가 (0, 0, 5)에 있으므로, 각 지구본의 위치에 따라 적절한 회전 적용
+                    const angleToCamera = Math.atan2(data.x, 5);
+                    globe.rotation.y = -angleToCamera;
+                    globe.userData = { 
+                        originalMaterial: material.clone(),
+                        label: data.label,
+                        index: index,
+                        texture: texture,
+                        url: data.url,
+                        initialRotationY: globe.rotation.y,
+                        targetColor: new THREE.Color(0xffffff), // 원래 색상
+                        currentColor: new THREE.Color(0xffffff),
+                        targetUnderlineOpacity: 1.0, // underline opacity
+                        currentUnderlineOpacity: 1.0,
+                        isHovered: false
+                    };
+                    
+                    scene.add(globe);
+                    globes.push(globe);
+                    
+                    // HTML 라벨 생성
+                    const label = document.createElement('div');
+                    label.className = 'globe-label';
+                    label.id = `label-${index}`;
+                    label.innerHTML = createStyledText(data.label);
+                    document.body.appendChild(label);
+                    globeLabels.push(label);
+                    
+                    // 호버 이벤트
+                    label.addEventListener('mouseenter', () => {
+                        // 지구본 어둡게 (부드러운 transition)
+                        globe.userData.isHovered = true;
+                        globe.userData.targetColor = new THREE.Color(0x333333);
+                        globe.userData.targetUnderlineOpacity = 0.0; // underline 사라지게
+                    });
+                    
+                    label.addEventListener('mouseleave', () => {
+                        // 원래 밝기로 (부드러운 transition)
+                        globe.userData.isHovered = false;
+                        globe.userData.targetColor = new THREE.Color(0xffffff);
+                        globe.userData.targetUnderlineOpacity = 1.0; // underline 다시 나타나게
+                    });
+                    
+                    // 라벨 클릭 이벤트
+                    label.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        window.location.href = data.url;
+                    });
+                    
+                    // 지구본 자체에도 호버 이벤트 (raycasting 사용)
+                    globe.userData.labelElement = label;
+                });
+                
+                // 마우스 이벤트
+                const raycaster = new THREE.Raycaster();
+                const mouse = new THREE.Vector2();
+                let hoveredGlobeIndex = -1;
+                let pointerDown = false;
+                let pointerDownPos = { x: 0, y: 0 };
+                const CLICK_THRESHOLD = 5; // 픽셀 단위
+                
+                // 포인터 다운 이벤트
+                renderer.domElement.addEventListener('pointerdown', (event) => {
+                    pointerDown = true;
+                    pointerDownPos.x = event.clientX;
+                    pointerDownPos.y = event.clientY;
+                });
+                
+                // 포인터 업 이벤트 (클릭 처리)
+                renderer.domElement.addEventListener('pointerup', (event) => {
+                    if (!pointerDown) return;
+                    pointerDown = false;
+                    
+                    const dx = Math.abs(event.clientX - pointerDownPos.x);
+                    const dy = Math.abs(event.clientY - pointerDownPos.y);
+                    
+                    // 드래그가 아닌 클릭인 경우
+                    if (dx <= CLICK_THRESHOLD && dy <= CLICK_THRESHOLD) {
+                        const rect = renderer.domElement.getBoundingClientRect();
+                        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                        
+                        raycaster.setFromCamera(mouse, camera);
+                        const intersects = raycaster.intersectObjects(globes);
+                        
+                        if (intersects.length > 0) {
+                            const clickedGlobe = intersects[0].object;
+                            if (clickedGlobe.userData.url) {
+                                window.location.href = clickedGlobe.userData.url;
+                            }
+                        }
+                    }
+                });
+                
+                renderer.domElement.addEventListener('mousemove', (event) => {
+                    const rect = renderer.domElement.getBoundingClientRect();
+                    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                    
+                    raycaster.setFromCamera(mouse, camera);
+                    const intersects = raycaster.intersectObjects(globes);
+                    
+                    // 모든 지구본을 원래 상태로
+                    globes.forEach((globe, idx) => {
+                        globe.userData.isHovered = false;
+                        globe.userData.targetColor = new THREE.Color(0xffffff);
+                        globe.userData.targetUnderlineOpacity = 1.0;
+                    });
+                    
+                    // 호버된 지구본 처리
+                    if (intersects.length > 0) {
+                        const hoveredGlobe = intersects[0].object;
+                        hoveredGlobe.userData.isHovered = true;
+                        hoveredGlobe.userData.targetColor = new THREE.Color(0x333333);
+                        hoveredGlobe.userData.targetUnderlineOpacity = 0.0;
+                        hoveredGlobeIndex = globes.indexOf(hoveredGlobe);
+                        // 포인터 커서로 변경
+                        renderer.domElement.style.cursor = 'pointer';
+                    } else {
+                        hoveredGlobeIndex = -1;
+                        // 기본 커서로 변경
+                        renderer.domElement.style.cursor = 'default';
+                    }
+                });
+                
+                window.addEventListener('resize', onWindowResize);
+                animate();
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // 지구본 회전 (오른쪽에서 왼쪽으로, 반대 방향) - 속도 증가
+                globes.forEach(globe => {
+                    // 초기 회전값을 유지하면서 y축만 회전 (속도 3배 증가)
+                    globe.rotation.y = globe.userData.initialRotationY - (Date.now() * 0.0003);
+                    
+                    // 부드러운 color transition
+                    const lerpFactor = 0.1; // 값이 작을수록 더 부드러움
+                    globe.userData.currentColor.lerp(globe.userData.targetColor, lerpFactor);
+                    globe.material.color.copy(globe.userData.currentColor);
+                    
+                    // underline opacity도 같은 속도로 transition
+                    globe.userData.currentUnderlineOpacity += (globe.userData.targetUnderlineOpacity - globe.userData.currentUnderlineOpacity) * lerpFactor;
+                    if (globe.userData.labelElement) {
+                        // CSS 변수를 사용하여 ::after의 opacity 제어
+                        globe.userData.labelElement.style.setProperty('--underline-opacity', globe.userData.currentUnderlineOpacity);
+                    }
+                });
+                
+                // 라벨 위치 업데이트
+                updateLabels();
+                
+                renderer.render(scene, camera);
+            }
+            
+            function updateLabels() {
+                globes.forEach((globe, index) => {
+                    const label = globeLabels[index];
+                    if (!label) return;
+                    
+                    // 지구본의 정중앙 위치 계산
+                    const worldPosition = new THREE.Vector3();
+                    globe.getWorldPosition(worldPosition);
+                    
+                    // 지구본의 중심을 화면 좌표로 변환
+                    const vector = worldPosition.project(camera);
+                    
+                    label.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
+                    label.style.top = `${(-vector.y * 0.5 + 0.5) * window.innerHeight}px`;
+                });
+            }
+            
+            function onWindowResize() {
+                const aspect = window.innerWidth / window.innerHeight;
+                const viewSize = 12;
+                camera.left = -viewSize * aspect;
+                camera.right = viewSize * aspect;
+                camera.top = viewSize;
+                camera.bottom = -viewSize;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                init();
+            });
+        </script>
     </body>
 </html>
