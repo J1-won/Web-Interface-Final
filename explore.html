@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Brain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
+    <style>
+        .arimo {
+        font-family: "Arimo", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;font-size: 4rem;
+        }
+        .arimo-i {
+        font-family: "Arimo", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: italic;
+        }
+        .ballet {
+        font-family: "Ballet", cursive;
+        font-optical-sizing: auto;font-size: 5.4rem;
+        font-weight: 400;
+        font-style: normal;
+        }
+        html{font-size:2rem;scroll-behavior:smooth;font-family: "Arimo", sans-serif;}
+        body,h1,h2,h3,p,ol,ul{margin:0;padding:0;}
+        body {overflow: hidden; background-color: #000000; }
+        canvas { display: block; }
+        h1 {font-size:2rem;font-family: "Arimo", sans-serif; padding-left:50px;position: fixed; 
+    top: 50px; /* 상단에서 50px 아래에 위치 */
+    left: 0;
+    width: 100%;
+    z-index: 150; /* ★ z-index를 캔버스(0)보다 높게 설정 */
+    color: white;}
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: "Arimo", sans-serif;font-weight: 400;font-style: normal;
+            z-index: 100;
+        }
+        #loading-status {
+            color: #4cf3ff;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        .city-label {
+            position: absolute;
+            color: #4cf3ff; 
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: auto;
+            cursor: pointer; 
+            transform: translate(-50%, -150%); 
+            opacity: 0;
+            transition: opacity 0.3s;
+            user-select: none;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            border: 1px solid #4cf3ff;
+            padding: 5px 10px;
+            transition: 0.25s;
+            cursor: pointer;
+            font-family: "Arimo", sans-serif;
+        }
+        button:hover {
+            background-color: rgba(76,243,255,0.08);
+        }
+        #controls-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        #back-to-earth-btn {
+            background-color: #333;
+            color: white;
+            border: 1px solid #4cf3ff;
+            padding: 10px 30px;
+            cursor: pointer;
+            transition: 0.25s;
+            display: none;
+            box-shadow: 0 0 6px rgba(76,243,255,0.12);
+            margin-bottom: 100px;
+        }
+        #back-to-earth-btn:hover {
+            background-color: rgba(76,243,255,0.08);
+        }
+        .top-gradient-overlay {
+            position: fixed;
+            top: 0;left: 0;width: 100%;
+            height: 100px;
+            z-index: 50;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.5) 0%, /* 시작: 순수한 흰색 */
+                rgba(0, 0, 0, 0.3) 50%,     /* 중간: 검은색 (50% 지점에서 흰색이 투명해지기 시작) */
+                rgba(0, 0, 0, 0) 100%      /* 끝: 완전 투명 */
+            );
+        }
+        .world-text {
+            /* 1/2 크기로 줄이기 */
+            font-size: 80%; 
+            display:inline-block;
+            margin-left:-64px; 
+            color: #4cf3ff;z-index: 0;transform: translateY(15px);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-gradient-overlay"></div>
+    <h1><span class="ballet">Explore</span> 
+        <span class="world-text" style="color:#4cf3ff;">
+            the <span class="ballet" style="font-size:200%;">w</span><span class="arimo-i">o</span><span class="ballet" style="font-size:200%;"">r</span>ld
+        </span></h1>
+    <div id="info">
+        <p id="loading-status">Initialising...</p>
+    </div>
+    <div id="canvas-container"></div>
+    
+    <div id="controls-container">
+        <button id="back-to-earth-btn" onclick="flyToHomeAndUnzoom()"> &lt; Back to The Earth </button>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script>
+        // 전역 변수
+        let scene, camera, renderer, controls;
+        let earthModel = null;
+        let isFlying = false; 
+        const flySpeed = 0.06; 
+        const cityPoints = [];
+        const EARTH_RADIUS = 1.2; 
+        const INITIAL_CAMERA_Z = 3.0;
+        const ZOOMED_CAMERA_Z = 2.0;
+        
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        
+        let currentlyZoomedCityName = null; // 현재 확대된 도시 이름을 저장
+        // --- pointer click 판단용 ---
+        let pointerDown = false;
+        let pointerDownPos = { x: 0, y: 0 };
+        const CLICK_THRESHOLD = 6; // 픽셀 단위
+        
+        // --- 1. Lat/Lon 좌표 변환 ---
+        function latLonToVector3(lat, lon, radius = EARTH_RADIUS) {
+            const phi = (90 - lat) * (Math.PI / 180); 
+            const theta = (lon + 180) * (Math.PI / 180); 
+
+            const x = -((radius) * Math.sin(phi) * Math.cos(theta));
+            const z = ((radius) * Math.sin(phi) * Math.sin(theta));
+            const y = ((radius) * Math.cos(phi));
+
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // --- 2. 초기화 ---
+        function init() {
+            const canvasContainer = document.body;
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000); 
+
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 0, INITIAL_CAMERA_Z);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            canvasContainer.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 1.5;
+            controls.maxDistance = 10;
+            controls.autoRotate = true; 
+            controls.autoRotateSpeed = -1.0; 
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.12); 
+            scene.add(ambientLight);
+
+            createEarthSphere(); 
+            createDataPoints(EARTH_RADIUS); 
+
+            window.addEventListener('resize', onWindowResize);
+
+            // Pointer 이벤트로 클릭 판단 (드래그와 구분)
+            renderer.domElement.addEventListener('pointerdown', (e) => {
+                pointerDown = true;
+                pointerDownPos.x = e.clientX;
+                pointerDownPos.y = e.clientY;
+            });
+            renderer.domElement.addEventListener('pointerup', (e) => {
+                if (!pointerDown) return;
+                pointerDown = false;
+                const dx = Math.abs(e.clientX - pointerDownPos.x);
+                const dy = Math.abs(e.clientY - pointerDownPos.y);
+                if (dx <= CLICK_THRESHOLD && dy <= CLICK_THRESHOLD) {
+                    // 실제 '클릭'으로 처리
+                    handleCanvasClick(e);
+                }
+            });
+
+            // expose functions to global
+            window.flyToCity = flyToCity;
+            window.flyToHomeAndUnzoom = flyToHomeAndUnzoom;
+        }
+        
+        // --- 3. 지구본 생성 ---
+        function createEarthSphere() {
+            updateLoadingStatus('Loading earth texture...');
+            
+            const textureLoader = new THREE.TextureLoader();
+            const earthTexture = textureLoader.load(
+                'earth_clouds.jpg', 
+                () => {
+                    updateLoadingStatus('Earth texture loaded!');
+                    setTimeout(() => updateLoadingStatus(''), 800);
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading texture:', error);
+                    updateLoadingStatus('Error loading texture (Check file name: earth_clouds.jpg)');
+                }
+            );
+
+            const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+            
+            const material = new THREE.MeshBasicMaterial({ 
+                map: earthTexture,
+            });
+            
+            earthModel = new THREE.Mesh(geometry, material);
+            scene.add(earthModel);
+        }
+
+        // --- 4. 도시 포인트 및 라벨 ---
+        const citiesData = [
+            { lat: 51.5, lon: -0.1, name: 'LONDON' },
+            { lat: -23.5, lon: -46.6, name: 'SÃO PAULO' },
+            { lat: 40.7, lon: -74.0, name: 'NEW YORK' },
+            { lat: 37.5, lon: 126.9, name: 'SEOUL' },
+            { lat: 35.6, lon: 139.6, name: 'TOKYO' },
+            { lat: 39.9, lon: 116.3, name: 'BEIJING' },
+            { lat: 28.6, lon: 77.2, name: 'DELHI' },
+            { lat: 30.0, lon: 31.2, name: 'CAIRO' },
+            { lat: 48.8, lon: 2.3, name: 'PARIS' },
+            { lat: 52.5, lon: 13.4, name: 'BERLIN' },
+            { lat: 55.7, lon: 37.6, name: 'MOSCOW' },
+            { lat: 25.2, lon: 55.2, name: 'DUBAI' },
+            { lat: -33.8, lon: 151.2, name: 'SYDNEY' },
+            { lat: 19.4, lon: -99.1, name: 'MEXICO CITY' },
+            { lat: 49.2, lon: -123.1, name: 'VANCOUVER' },
+            { lat: -33.9, lon: 18.4, name: 'CAPE TOWN' },
+            { lat: 41.0, lon: 28.9, name: 'ISTANBUL' },
+            { lat: 3.1, lon: 101.6, name: 'KUALA LUMPUR' },
+            { lat: 13.7, lon: 100.5, name: 'BANGKOK' },
+            { lat: -33.9, lon: 18.4, name: 'CAPE TOWN' },
+            { lat: -26.2, lon: 28.0, name: 'JOHANNESBURG' },
+            { lat: -1.2, lon: 36.8, name: 'NAIROBI' },
+            { lat: 34.0, lon: -118.2, name: 'LOS ANGELES' },
+            { lat: 43.6, lon: -79.3, name: 'TORONTO' },
+            { lat: -34.6, lon: -58.3, name: 'BUENOS AIRES' },
+            { lat: 21.3, lon: -157.8, name: 'HONOLULU' },
+            { lat: -36.85, lon: 174.76, name: 'AUCKLAND' },
+            { lat: 33.58, lon: -7.61, name: 'CASABLANCA' },
+        ];
+
+        function createDataPoints(earthRadius) {
+            citiesData.forEach(city => {
+                const pos = latLonToVector3(city.lat, city.lon, earthRadius * 1.002); 
+                
+                const pointGeometry = new THREE.SphereGeometry(0.008, 16, 16); 
+                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x4cf3ff });
+                const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
+                
+                pointMesh.position.copy(pos);
+                pointMesh.userData = { isCityPoint: true, name: city.name, lat: city.lat, lon: city.lon };
+                scene.add(pointMesh);
+                cityPoints.push(pointMesh);
+
+                addHTMLLabel(city.name, pointMesh.id);
+            });
+        }
+
+        function addHTMLLabel(name, meshId) {
+            const label = document.createElement('div');
+            label.className = 'city-label';
+            label.id = `label-${meshId}`;
+            label.textContent = name;
+            document.body.appendChild(label);
+            
+            // label 클릭은 DOM 상에서의 클릭이므로 화면 좌표 클릭과 분리
+            label.addEventListener('click', (e) => {
+                e.stopPropagation();
+                flyToCity(name);
+            });
+        }
+
+        // --- 5. Fly home (Back to Earth) ---
+        function flyToHomeAndUnzoom() {
+            if (currentlyZoomedCityName === null) return; 
+
+            // 비행 시작: disable controls to avoid user interaction during flight
+            controls.enabled = false;
+            controls.autoRotate = false; // disable while flying back to avoid interference
+
+            const origin = new THREE.Vector3(0, 0, 0);
+            const zoomOutCameraPos = new THREE.Vector3(0, 0, INITIAL_CAMERA_Z);
+            
+            isFlying = true;
+            camera.userData.targetPos = zoomOutCameraPos;
+            camera.userData.targetLookAt = origin;
+
+            // 상태 초기화 — 자동회전은 애니메이션 종결 시 복구
+            currentlyZoomedCityName = null;
+            // 버튼 visibility handled in animate()
+        }
+
+        // --- 6. Fly to city (zoom in) ---
+        function flyToCity(cityName) {
+            // toggle: same city clicked -> zoom out
+            if (currentlyZoomedCityName === cityName) {
+                flyToHomeAndUnzoom();
+                return;
+            }
+
+            const targetCity = citiesData.find(c => c.name === cityName);
+            if (!targetCity) return;
+
+            // 비행 시작: disable controls while flying
+            controls.enabled = false;
+            controls.autoRotate = false;
+
+            const targetLookAt = latLonToVector3(targetCity.lat, targetCity.lon, 0);
+            // camera target pos: slightly away from surface along same vector (ZOOMED_CAMERA_Z)
+            const targetVector = latLonToVector3(targetCity.lat, targetCity.lon, ZOOMED_CAMERA_Z);
+
+            isFlying = true;
+            camera.userData.targetPos = targetVector;
+            camera.userData.targetLookAt = targetLookAt;
+
+            currentlyZoomedCityName = cityName;
+            // 버튼 visibility handled in animate()
+        }
+        
+        // --- 7. Canvas 클릭 처리 (pointerup에서 호출) ---
+        function handleCanvasClick(event) {
+            // renderer.domElement is full-window; get client coords from event
+            const rect = renderer.domElement.getBoundingClientRect();
+            const clientX = event.clientX - rect.left;
+            const clientY = event.clientY - rect.top;
+
+            mouse.x = (clientX / rect.width) * 2 - 1;
+            mouse.y = -(clientY / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // only test cityPoints
+            const intersects = raycaster.intersectObjects(cityPoints, true);
+
+            if (intersects.length > 0) {
+                const clickedPoint = intersects[0].object;
+                if (clickedPoint.userData && clickedPoint.userData.isCityPoint) {
+                    flyToCity(clickedPoint.userData.name);
+                }
+            } else {
+                // 빈 공간 클릭 시: 줌아웃 대신 버튼 사용 권장 (여기선 아무 동작 안함)
+            }
+        }
+
+        // --- 8. 애니메이션 루프 ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isFlying && camera.userData && camera.userData.targetPos && camera.userData.targetLookAt) {
+                // 부드러운 이동
+                camera.position.lerp(camera.userData.targetPos, flySpeed);
+                controls.target.lerp(camera.userData.targetLookAt, flySpeed);
+
+                const distance = camera.position.distanceTo(camera.userData.targetPos);
+                // 카메라 이동이 거의 끝나면 비행 종료
+                if (distance < 0.03) {
+                    isFlying = false;
+
+                    // 컨트롤 복구
+                    controls.enabled = true;
+
+                    // 만약 현재 확대 상태가 없으면(=홈 복귀 상태) 자동회전 복구
+                    if (currentlyZoomedCityName === null) {
+                        controls.autoRotate = true;
+                    } else {
+                        // 확대된 상태면 자동회전은 끈 채로 유지
+                        controls.autoRotate = false;
+                        // 컨트롤의 target을 중심으로 살짝 offset하여 마우스가 즉시 드래그되는 것을 방지
+                        controls.target.copy(camera.userData.targetLookAt);
+                    }
+                }
+            }
+
+            // OrbitControls 자동 회전 수행 (controls.update 내부에서 처리)
+            controls.update();
+
+            // 라벨 위치 업데이트
+            updateHTMLLabels();
+
+            // Back 버튼 보이기/숨기기
+            const backBtn = document.getElementById('back-to-earth-btn');
+            if (backBtn) {
+                backBtn.style.display = currentlyZoomedCityName ? 'block' : 'none';
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- 9. HTML 라벨 위치 업데이트 ---
+        function updateHTMLLabels() {
+            cityPoints.forEach(mesh => {
+                const label = document.getElementById(`label-${mesh.id}`);
+                if (!label) return;
+
+                const meshPosition = new THREE.Vector3().setFromMatrixPosition(mesh.matrixWorld);
+
+                const normalVector = meshPosition.clone().normalize(); 
+                const meshToCamera = new THREE.Vector3().subVectors(camera.position, meshPosition).normalize();
+                
+                const dotProduct = normalVector.dot(meshToCamera); 
+                
+                const isFacingCamera = dotProduct > 0.0; 
+
+                const vector = meshPosition.clone().project(camera);
+
+                if (isFacingCamera) { 
+                    label.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
+                    label.style.top = `${(-vector.y * 0.5 + 0.5) * window.innerHeight}px`;
+                    
+                    label.style.opacity = Math.min(1, Math.max(0, dotProduct * 5)); 
+                } else {
+                    label.style.opacity = 0;
+                }
+            });
+        }
+
+
+        // --- 10. 기타 유틸리티 ---
+        function updateLoadingStatus(message) {
+            const info = document.getElementById('loading-status');
+            if (info) {
+                info.style.color = message.includes('Error') ? '#ff6b6b' : '#4ecdc4';
+                info.textContent = message;
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            animate();
+        });
+    </script>
+</body>
+</html>
