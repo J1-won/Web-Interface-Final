@@ -132,7 +132,7 @@
             flex-direction: column;
             align-items: center;
             transform: translate(-50%, -50%); 
-            pointer-events: auto; /* map-container의 pointer-events: none을 무시하고 클릭 가능하게 함 */
+            pointer-events: auto;
             transition: transform 0.2s;
         }
         @keyframes spinY {
@@ -167,9 +167,64 @@
         #point-4 { top: 42.8%; left: 55.4%; }
         #point-5 { top: 72.3%; left: 88.3%; }
         #point-6 { top: 66.2%; left: 34.5%; }
+        .back-btn {
+            position: fixed;
+            top: 25px;
+            right: 40px;
+            color: #4cf3ff;
+            font-family: "Arimo", sans-serif; font-weight: 400;
+            font-style: italic;
+            font-size: 0.6rem;
+            text-decoration: none; /* 기본 밑줄 제거 */
+            z-index: 200;
+            /* 버튼 자체 투명도 전환 */
+            transition: opacity 0.3s; 
+        }
+
+        /* 밑줄 역할을 하는 가상 요소 */
+        .back-btn::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: #4cf3ff;
+            transition: opacity 0.2s; 
+        }
+
+        .back-btn:hover {
+            opacity: 0.9;
+        }
+        .back-btn:hover::after {
+            opacity: 0; 
+        }
+        /* 마우스 스포트라이트 효과
+        .spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px; 
+            height: 40px;
+            background-color: #4cf3ff; 
+            border-radius: 50%; 
+            pointer-events: none; 
+            z-index: 9999; 
+
+            mix-blend-mode: difference;
+
+            transform: translate(-50%, -50%);
+            left: var(--x, -100px);
+            top: var(--y, -100px);
+        } */
+        
+        
     </style>
 </head>
 <body>
+    <!-- 스포트라이트 요소 추가 -->
+<div class="spotlight"></div>
+    <a href="index.html" class="back-btn">back to main</a>
     <div class="top-gradient-overlay"></div>
     <div class="bg">
         <h1 id="about-title-container"><span class="ballet">About</span></h1>
@@ -311,6 +366,12 @@
         mapPoints.forEach(point => {
             point.addEventListener('click', handlePointClick);
         });
+        // 마우스 움직임 감지하여 스포트라이트 위치 업데이트
+const spotlight = document.querySelector('.spotlight');
+window.addEventListener('mousemove', (e) => {
+    spotlight.style.setProperty('--x', `${e.clientX}px`);
+    spotlight.style.setProperty('--y', `${e.clientY}px`);
+});
     </script>
     
 </body>
