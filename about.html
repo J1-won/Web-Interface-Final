@@ -277,7 +277,7 @@
                 city: "Seoul, Korea"
             },
             {
-                english: "It weaves invisible threads between cities, people, and information across the globe.",
+                english: "It weaves invisible threads between cities, people, and information <br>across the globe.",
                 korean: "인터넷은 전 세계의 도시, 사람, 정보 사이에 보이지 않는 실을 엮어냅니다.",
                 city: "London, UK"
             },
@@ -420,6 +420,17 @@
 
         mapPoints.forEach(point => {
             point.addEventListener('click', handlePointClick);
+        });
+
+        // 마우스 이동 시 오디오 재생
+        const audio = new Audio('1.mp3');
+        let hasPlayed = false;
+        
+        document.addEventListener('mousemove', () => {
+            if (!hasPlayed) {
+                audio.play().catch(err => console.log('Audio play failed:', err));
+                hasPlayed = true;
+            }
         });
 
     </script>

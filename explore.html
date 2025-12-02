@@ -809,6 +809,17 @@ function updateCameraOffset(isZoomed) {
             init();
             animate();
         });
+
+        // 마우스 이동 시 오디오 재생
+        const audio = new Audio('1.mp3');
+        let hasPlayed = false;
+        
+        document.addEventListener('mousemove', () => {
+            if (!hasPlayed) {
+                audio.play().catch(err => console.log('Audio play failed:', err));
+                hasPlayed = true;
+            }
+        });
     </script>
 </body>
 </html>
