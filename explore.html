@@ -47,24 +47,21 @@
             display: flex; align-items: center; justify-content: center; gap: 3px;
         }
 
-        /* 줌인 되었을 때 스타일 (회전 및 크기 증가) */
         .city-label.zoomed-label {
-            font-size: 1.2rem !important; 
-            animation: rotateLabel 10s linear infinite;
-            /* 중심축 기준 회전 */
+            font-size: 1.1rem !important; 
+            animation: rotateLabel 8s linear infinite;
             transform-origin: center center;
             z-index: 10;
         }
 
-        /* 라벨 괄호 (기본 숨김) */
         .label-bracket {
-            font-family: "Ballet", cursive; font-weight: 400; display: none;
+            font-family: "Ballet", cursive; font-weight: 400; display: none;font-size: 1.8rem;
         }
         .zoomed-label .label-bracket { display: inline-block; }
 
         @keyframes rotateLabel {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+            from { transform: translate(-50%, -90%) rotateY(360deg); }
+            to { transform: translate(-50%, -90%) rotateY(0deg); }
         }
 
         button {
@@ -73,7 +70,6 @@
         }
         button:hover { background-color: rgba(76,243,255,0.08); }
 
-        /* 기존 하단 버튼 컨테이너 (삭제됨) */
         #controls-container { display: none !important; }
 
         .top-gradient-overlay {
@@ -84,7 +80,7 @@
         }
         .world-text { font-size: 80%; display: inline-block; margin-left: -64px; color: #4cf3ff; transform: translateY(15px); }
         
-        /* --- Back Button (Top Left) --- */
+        /* --- Back Button --- */
         .back-btn {
             position: fixed; top: 25px; left: 40px; color: #4cf3ff;
             font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic; font-size: 0.6rem;
@@ -116,14 +112,14 @@
         #texture-menu li.active { color: #4CF3FF; }
         #texture-menu li.active::after { background-color: #4CF3FF; }
 
-        /* --- 우측 설명 텍스트 (기본) --- */
+        /* --- 우측 설명 텍스트 --- */
         #instruction-text {
             position: fixed; right: 100px; top: 31%; transform: translateY(-50%);
             text-align: left; color: white; font-size: 0.4rem; line-height: 1.6;
             z-index: 100; pointer-events: none; transition: opacity 0.5s;
         }
 
-        /* --- [NEW] 우측 정보 패널 (4 Sections) --- */
+        /* --- 우측 정보 패널 --- */
         #right-panel-container {
             position: fixed; top: 0; right: 0; width: 50%; height: 100%;
             z-index: 110; display: flex;
@@ -131,59 +127,65 @@
             opacity: 0; pointer-events: none; transition: opacity 0.5s;
         }
 
-        /* 섹션 컬럼 */
+        /* [수정 2] 섹션 비율 조정 (Active: 넓게, Inactive: 좁게) */
         .panel-section {
-            flex: 1; border-left: 0.7px solid rgba(255, 255, 255, 0.3);
+            /* 기본(비활성) 상태는 flex 값을 줄여 좁게 표현 */
+            flex: 0.5; 
+            border-left: 0.5px solid rgba(255, 255, 255, 1);
             position: relative; height: 100%;
             display: flex; flex-direction: column;
+            transition: flex 0.5s ease; /* 부드러운 전환 */
         }
         .panel-section.active {
-            border-left: 1px solid #4cf3ff; /* 활성 섹션 파란색 */
+            /* 활성 상태는 flex 값을 늘려 넓게 표현 (+20px 효과) */
+            flex: 1.6; 
+            border-left: 1px solid #4cf3ff; 
         }
         
-        /* 섹션명 (90도 회전) */
         .section-title-wrapper {
-            position: absolute; bottom: 80px; right: 15px;
-            transform-origin: bottom right; transform: rotate(-90deg);
-            white-space: nowrap; pointer-events: auto;
+            position: absolute;
+            bottom: 40px;
+            left: 110px; /* 기존 수정 유지: 보더 우측 배치 */        
+            transform-origin: left bottom;
+            transform: rotate(-90deg);
+            white-space: nowrap;
+            pointer-events: auto;
+            text-align: left;
+            cursor: pointer;
         }
-        .section-num { font-family: "Ballet", cursive; font-size: 1.2rem; margin-right: 10px; color:white; }
-        .section-name { font-family: "Arimo", sans-serif; font-style: italic; font-size: 1rem; color:white; }
+        .section-num { font-family: "Ballet", cursive; font-size: 1.3rem; margin-right: 10px; color: white; }
+        .section-num2 { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: white; }
+        .section-name { font-family: "Arimo", sans-serif; font-style: italic; font-size: 1rem; color: white; }
         .section-initial { font-family: "Ballet", cursive; font-size: 1.5rem; } 
         
         .panel-section.active .section-num, 
+        .panel-section.active .section-num2, 
         .panel-section.active .section-name { color: #4cf3ff; }
+        .panel-section.active .section-title-wrapper { cursor: default; }
 
-        /* 콘텐츠 영역 (City Information) */
+        /* 콘텐츠 영역 */
         .info-content {
-            padding: 100px 40px; text-align: left; opacity: 1;
+            padding: 100px 0px 60px 40px; text-align: left; opacity: 1;width:400px;
             overflow-y: auto; height: 100%; box-sizing: border-box;
         }
         
-        /* 도시 타이틀 */
-        .city-title-group {
-            margin-bottom: 60px;
-        }
-        /* 도시명 크기 수정 (기존 대비 1/2) */
-        .city-title-initial { font-family: "Ballet", cursive; font-size: 1.5rem; color: #4cf3ff; line-height: 0.8;}
-        .city-title-rest { font-family: "Arimo", sans-serif; font-style: italic; font-size: 1.2rem; color: #4cf3ff; }
+        .city-title-group { margin-bottom: 80px; padding-left:60px;}
+        .city-title-initial { font-family: "Ballet", cursive; font-size: 1rem; color: #4cf3ff; line-height: 0.8;}
+        .city-title-rest { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: #4cf3ff; }
 
-        /* 정보 리스트 */
-        .info-list { display: flex; flex-direction: column; gap: 40px; }
+        .info-list { display: flex; flex-direction: column; gap: 60px;padding-left: 140px; }
         .info-row { display: flex; flex-direction: column; gap: 5px; }
         
-        /* 카테고리명 */
         .category-name {
-            font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: #4cf3ff;
+            font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: white;
             text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 0.5px;
-            margin-bottom: 8px; display: inline-block;
+            margin-bottom: 20px; display: inline-block;
         }
         .category-name::after { content: ' •'; margin-left: 5px; text-decoration: none; display: inline-block; color: white; }
 
-        /* 데이터 값 (수정: 흰색, 0.5rem) */
         .data-value {
             font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white;
-            padding-left: 10px;
+            padding-left: 30px;
         }
 
         /* --- 하단 줌 컨트롤 바 --- */
@@ -193,8 +195,8 @@
             display: flex; align-items: center; justify-content: center; 
             transition: opacity 0.5s;
         }
-        .zoom-track-line { position: absolute; width: 100%; height: 1px; background-color: white; top: 50%; left: 0; }
-        .zoom-circle { width: 14px; height: 14px; border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); pointer-events: auto; }
+        .zoom-track-line { position: absolute; width: 100%; height: 1px; background-color: white; top: 25%; left: 0; }
+        .zoom-circle { width: 14px; height: 14px; border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -150%); pointer-events: auto; }
         .zoom-start { left: 0; border: 1px solid white; background-color: black; box-sizing: border-box; }
         .zoom-end { left: 100%; background-color: white; }
         #zoom-thumb { left: 20%; background-color: #4CF3FF; cursor: pointer; z-index: 301; }
@@ -203,6 +205,10 @@
         .zoom-label .ballet { font-size: 1rem; color: white; line-height: 1; }
         .zoom-label .arimo-i { font-size: 0.5rem; color: white; }
         #zoom-thumb .zoom-label .ballet, #zoom-thumb .zoom-label .arimo-i { color: #4CF3FF; }
+        h1.zoomed-title {
+            transform-origin: left top; left:20px;top:50px;
+            transform: scale(0.35); 
+        }
 
     </style>
 </head>
@@ -263,28 +269,28 @@
             </div>
 
             <div class="section-title-wrapper">
-                <span class="section-num">(01)</span>
+                <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">C</span>ity Information</span>
             </div>
         </div>
 
         <div class="panel-section">
             <div class="section-title-wrapper">
-                <span class="section-num">(02)</span>
+                <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
             </div>
         </div>
 
         <div class="panel-section">
             <div class="section-title-wrapper">
-                <span class="section-num">(03)</span>
+                <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">K</span>eyword Networks</span>
             </div>
         </div>
 
         <div class="panel-section">
             <div class="section-title-wrapper">
-                <span class="section-num">(04)</span>
+                <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
             </div>
         </div>
@@ -329,13 +335,9 @@
         const EARTH_RADIUS = 1.1; 
         const GLOBE_Y_OFFSET = -0.2; 
         const INITIAL_CAMERA_Z = 3.0;
+        const ZOOMED_CAMERA_Z = 2.0; 
         
-        // [수정] 줌인 시 카메라 거리 (너무 가깝지 않게 수정: 1.6 -> 2.3)
-        // 반지름이 1.1이므로 2.3이면 표면에서 약 1.2만큼 떨어짐. 도시가 적당히 보임.
-        const ZOOMED_CAMERA_Z = 2.3; 
-        
-        // [중요] 지구본을 왼쪽에 두기 위한 오프셋 (Target을 오른쪽으로 밈)
-        const SIDE_VIEW_OFFSET_X = 1.0; 
+        // [수정 1] SIDE_VIEW_OFFSET_X 제거. 대신 setViewOffset을 사용하여 투시 왜곡 방지
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -368,32 +370,32 @@
 
         // --- 1. 데이터 ---
         const citiesData = [
-            { name: 'LONDON', country: 'UK', dms: '51°30\'25"N / 0°7\'39"W', lat: 51.507, lon: -0.127, pop: '10,000,000', lang: 'English', econ: '$880 Billion USD', rel: 'Christianity', tz: 'GMT / BST' },
-            { name: 'SÃO PAULO', country: 'Brazil', dms: '23°33\'0"S / 46°37\'59"W', lat: -23.550, lon: -46.633, pop: '22,800,000', lang: 'Portuguese', econ: '$220 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
-            { name: 'NEW YORK', country: 'USA', dms: '40°43\'0"N / 74°0\'21"W', lat: 40.712, lon: -74.006, pop: '20,000,000', lang: 'English', econ: '$2.0 Trillion USD', rel: 'Christianity, Judaism', tz: 'EST / EDT' },
-            { name: 'SEOUL', country: 'South Korea', dms: '37°33\'57"N / 126°58\'41"E', lat: 37.566, lon: 126.978, pop: '9,000,000', lang: 'Korean', econ: '$450 Billion USD', rel: 'Christianity, Buddhism, Non-religious', tz: 'KST (UTC+9)' },
-            { name: 'TOKYO', country: 'Japan', dms: '35°40\'33"N / 139°44\'54"E', lat: 35.676, lon: 139.748, pop: '14,130,000', lang: 'Japanese', econ: '$1.6 Trillion USD', rel: 'Buddhism, Non-religious', tz: 'JST (UTC+9)' },
-            { name: 'BEIJING', country: 'China', dms: '39°54\'14"N / 116°24\'25"E', lat: 39.904, lon: 116.407, pop: '21,800,000', lang: 'Mandarin Chinese', econ: '$650 Billion USD', rel: 'Buddhism, Non-religious', tz: 'CST (UTC+8)' },
-            { name: 'DELHI', country: 'India', dms: '28°42\'16"N / 77°6\'7"E', lat: 28.704, lon: 77.102, pop: '33,800,000', lang: 'Hindi, English', econ: '$300 Billion USD', rel: 'Hinduism, Islam', tz: 'IST (UTC+5:30)' },
-            { name: 'CAIRO', country: 'Egypt', dms: '30°2\'0"N / 31°13\'60"E', lat: 30.044, lon: 31.235, pop: '22,600,000', lang: 'Arabic', econ: '$150 Billion USD', rel: 'Islam', tz: 'EET (UTC+2)' },
-            { name: 'PARIS', country: 'France', dms: '48°51\'24"N / 2°20\'54"E', lat: 48.856, lon: 2.352, pop: '11,000,000', lang: 'French', econ: '$800 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
-            { name: 'BERLIN', country: 'Germany', dms: '52°31\'12"N / 13°24\'18"E', lat: 52.520, lon: 13.405, pop: '3,700,000', lang: 'German', econ: '$200 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
-            { name: 'MOSCOW', country: 'Russia', dms: '55°45\'20"N / 37°37\'4"E', lat: 55.755, lon: 37.617, pop: '12,700,000', lang: 'Russian', econ: '$520 Billion USD', rel: 'Christianity', tz: 'MSK (UTC+3)' },
-            { name: 'DUBAI', country: 'UAE', dms: '25°12\'16"N / 55°16\'16"E', lat: 25.204, lon: 55.270, pop: '3,100,000', lang: 'Arabic, English', econ: '$110 Billion USD', rel: 'Islam', tz: 'GST (UTC+4)' },
-            { name: 'SYDNEY', country: 'Australia', dms: '33°52\'5"S / 151°12\'32"E', lat: -33.868, lon: 151.209, pop: '5,400,000', lang: 'English', econ: '$450 Billion USD', rel: 'Christianity', tz: 'AEST / AEDT' },
-            { name: 'MEXICO CITY', country: 'Mexico', dms: '19°25\'56"N / 99°8\'0"W', lat: 19.432, lon: -99.133, pop: '22,500,000', lang: 'Spanish', econ: '$410 Billion USD', rel: 'Christianity', tz: 'CST / CDT' },
-            { name: 'VANCOUVER', country: 'Canada', dms: '49°16\'56"N / 123°7\'16"W', lat: 49.282, lon: -123.120, pop: '2,600,000', lang: 'English', econ: '$150 Billion USD', rel: 'Christianity', tz: 'PST / PDT' },
-            { name: 'CAPE TOWN', country: 'South Africa', dms: '33°55\'28"S / 18°25\'26"E', lat: -33.924, lon: 18.424, pop: '4,700,000', lang: 'Afrikaans, English', econ: '$100 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
-            { name: 'KUALA LUMPUR', country: 'Malaysia', dms: '3°8\'24"N / 101°41\'12"E', lat: 3.139, lon: 101.686, pop: '8,400,000', lang: 'Malay, English', econ: '$200 Billion USD', rel: 'Islam', tz: 'MYT (UTC+8)' },
-            { name: 'BANGKOK', country: 'Thailand', dms: '13°45\'21"N / 100°30\'3"E', lat: 13.756, lon: 100.501, pop: '11,300,000', lang: 'Thai', econ: '$240 Billion USD', rel: 'Buddhism', tz: 'ICT (UTC+7)' },
-            { name: 'JOHANNESBURG', country: 'South Africa', dms: '26°12\'17"S / 28°2\'49"E', lat: -26.204, lon: 28.047, pop: '6,200,000', lang: 'English, Zulu', econ: '$180 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
-            { name: 'NAIROBI', country: 'Kenya', dms: '1°17\'32"S / 36°49\'19"E', lat: -1.292, lon: 36.821, pop: '5,500,000', lang: 'Swahili, English', econ: '$60 Billion USD', rel: 'Christianity', tz: 'EAT (UTC+3)' },
-            { name: 'LOS ANGELES', country: 'USA', dms: '34°3\'8"N / 118°14\'36"W', lat: 34.052, lon: -118.243, pop: '13,200,000', lang: 'English', econ: '$1.2 Trillion USD', rel: 'Christianity', tz: 'PST / PDT' },
-            { name: 'TORONTO', country: 'Canada', dms: '43°39\'11"N / 79°22\'59"W', lat: 43.653, lon: -79.383, pop: '6,500,000', lang: 'English', econ: '$500 Billion USD', rel: 'Christianity', tz: 'EST / EDT' },
-            { name: 'BUENOS AIRES', country: 'Argentina', dms: '34°36\'12"S / 58°22\'52"W', lat: -34.603, lon: -58.381, pop: '15,500,000', lang: 'Spanish', econ: '$250 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
-            { name: 'HONOLULU', country: 'USA', dms: '21°18\'33"N / 157°51\'28"W', lat: 21.306, lon: -157.858, pop: '1,000,000', lang: 'English', econ: '$80 Billion USD', rel: 'Christianity, Buddhism', tz: 'HST (UTC-10)' },
-            { name: 'AUCKLAND', country: 'New Zealand', dms: '36°50\'52"S / 174°45\'47"E', lat: -36.848, lon: 174.763, pop: '1,700,000', lang: 'English, Māori', econ: '$100 Billion USD', rel: 'Christianity, Non-religious', tz: 'NZST / NZDT' },
-            { name: 'CASABLANCA', country: 'Morocco', dms: '33°35\'18"N / 7°37\'5"W', lat: 33.573, lon: -7.589, pop: '3,400,000', lang: 'Arabic, French', econ: '$80 Billion USD', rel: 'Islam (Sunni)', tz: 'UTC+1' }
+            { name: 'London', country: 'UK', dms: '51°30\'25"N / 0°7\'39"W', lat: 51.507, lon: -0.127, pop: '10,000,000', lang: 'English', econ: '$880 Billion USD', rel: 'Christianity', tz: 'GMT / BST' },
+            { name: 'São Paulo', country: 'Brazil', dms: '23°33\'0"S / 46°37\'59"W', lat: -23.550, lon: -46.633, pop: '22,800,000', lang: 'Portuguese', econ: '$220 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
+            { name: 'New York', country: 'USA', dms: '40°43\'0"N / 74°0\'21"W', lat: 40.712, lon: -74.006, pop: '20,000,000', lang: 'English', econ: '$2.0 Trillion USD', rel: 'Christianity, Judaism', tz: 'EST / EDT' },
+            { name: 'Seoul', country: 'South Korea', dms: '37°33\'57"N / 126°58\'41"E', lat: 37.566, lon: 126.978, pop: '9,000,000', lang: 'Korean', econ: '$450 Billion USD', rel: 'Christianity, Buddhism, Non-religious', tz: 'KST (UTC+9)' },
+            { name: 'Tokyo', country: 'Japan', dms: '35°40\'33"N / 139°44\'54"E', lat: 35.676, lon: 139.748, pop: '14,130,000', lang: 'Japanese', econ: '$1.6 Trillion USD', rel: 'Buddhism, Non-religious', tz: 'JST (UTC+9)' },
+            { name: 'Beijing', country: 'China', dms: '39°54\'14"N / 116°24\'25"E', lat: 39.904, lon: 116.407, pop: '21,800,000', lang: 'Mandarin Chinese', econ: '$650 Billion USD', rel: 'Buddhism, Non-religious', tz: 'CST (UTC+8)' },
+            { name: 'Delhi', country: 'India', dms: '28°42\'16"N / 77°6\'7"E', lat: 28.704, lon: 77.102, pop: '33,800,000', lang: 'Hindi, English', econ: '$300 Billion USD', rel: 'Hinduism, Islam', tz: 'IST (UTC+5:30)' },
+            { name: 'Cairo', country: 'Egypt', dms: '30°2\'0"N / 31°13\'60"E', lat: 30.044, lon: 31.235, pop: '22,600,000', lang: 'Arabic', econ: '$150 Billion USD', rel: 'Islam', tz: 'EET (UTC+2)' },
+            { name: 'Paris', country: 'France', dms: '48°51\'24"N / 2°20\'54"E', lat: 48.856, lon: 2.352, pop: '11,000,000', lang: 'French', econ: '$800 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
+            { name: 'Berlin', country: 'Germany', dms: '52°31\'12"N / 13°24\'18"E', lat: 52.520, lon: 13.405, pop: '3,700,000', lang: 'German', econ: '$200 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
+            { name: 'Moscow', country: 'Russia', dms: '55°45\'20"N / 37°37\'4"E', lat: 55.755, lon: 37.617, pop: '12,700,000', lang: 'Russian', econ: '$520 Billion USD', rel: 'Christianity', tz: 'MSK (UTC+3)' },
+            { name: 'Dubai', country: 'UAE', dms: '25°12\'16"N / 55°16\'16"E', lat: 25.204, lon: 55.270, pop: '3,100,000', lang: 'Arabic, English', econ: '$110 Billion USD', rel: 'Islam', tz: 'GST (UTC+4)' },
+            { name: 'Sydney', country: 'Australia', dms: '33°52\'5"S / 151°12\'32"E', lat: -33.868, lon: 151.209, pop: '5,400,000', lang: 'English', econ: '$450 Billion USD', rel: 'Christianity', tz: 'AEST / AEDT' },
+            { name: 'Mexico City', country: 'Mexico', dms: '19°25\'56"N / 99°8\'0"W', lat: 19.432, lon: -99.133, pop: '22,500,000', lang: 'Spanish', econ: '$410 Billion USD', rel: 'Christianity', tz: 'CST / CDT' },
+            { name: 'Vancouver', country: 'Canada', dms: '49°16\'56"N / 123°7\'16"W', lat: 49.282, lon: -123.120, pop: '2,600,000', lang: 'English', econ: '$150 Billion USD', rel: 'Christianity', tz: 'PST / PDT' },
+            { name: 'Cape Town', country: 'South Africa', dms: '33°55\'28"S / 18°25\'26"E', lat: -33.924, lon: 18.424, pop: '4,700,000', lang: 'Afrikaans, English', econ: '$100 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
+            { name: 'Kuala Lumpur', country: 'Malaysia', dms: '3°8\'24"N / 101°41\'12"E', lat: 3.139, lon: 101.686, pop: '8,400,000', lang: 'Malay, English', econ: '$200 Billion USD', rel: 'Islam', tz: 'MYT (UTC+8)' },
+            { name: 'Bangkok', country: 'Thailand', dms: '13°45\'21"N / 100°30\'3"E', lat: 13.756, lon: 100.501, pop: '11,300,000', lang: 'Thai', econ: '$240 Billion USD', rel: 'Buddhism', tz: 'ICT (UTC+7)' },
+            { name: 'Johannesburg', country: 'South Africa', dms: '26°12\'17"S / 28°2\'49"E', lat: -26.204, lon: 28.047, pop: '6,200,000', lang: 'English, Zulu', econ: '$180 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
+            { name: 'Nairobi', country: 'Kenya', dms: '1°17\'32"S / 36°49\'19"E', lat: -1.292, lon: 36.821, pop: '5,500,000', lang: 'Swahili, English', econ: '$60 Billion USD', rel: 'Christianity', tz: 'EAT (UTC+3)' },
+            { name: 'Los Angeles', country: 'USA', dms: '34°3\'8"N / 118°14\'36"W', lat: 34.052, lon: -118.243, pop: '13,200,000', lang: 'English', econ: '$1.2 Trillion USD', rel: 'Christianity', tz: 'PST / PDT' },
+            { name: 'Toronto', country: 'Canada', dms: '43°39\'11"N / 79°22\'59"W', lat: 43.653, lon: -79.383, pop: '6,500,000', lang: 'English', econ: '$500 Billion USD', rel: 'Christianity', tz: 'EST / EDT' },
+            { name: 'Buenos Aires', country: 'Argentina', dms: '34°36\'12"S / 58°22\'52"W', lat: -34.603, lon: -58.381, pop: '15,500,000', lang: 'Spanish', econ: '$250 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
+            { name: 'Honolulu', country: 'USA', dms: '21°18\'33"N / 157°51\'28"W', lat: 21.306, lon: -157.858, pop: '1,000,000', lang: 'English', econ: '$80 Billion USD', rel: 'Christianity, Buddhism', tz: 'HST (UTC-10)' },
+            { name: 'Auckland', country: 'New Zealand', dms: '36°50\'52"S / 174°45\'47"E', lat: -36.848, lon: 174.763, pop: '1,700,000', lang: 'English, Māori', econ: '$100 Billion USD', rel: 'Christianity, Non-religious', tz: 'NZST / NZDT' },
+            { name: 'Casablanca', country: 'Morocco', dms: '33°35\'18"N / 7°37\'5"W', lat: 33.573, lon: -7.589, pop: '3,400,000', lang: 'Arabic, French', econ: '$80 Billion USD', rel: 'Islam (Sunni)', tz: 'UTC+1' }
         ];
 
         // --- 2. 초기화 ---
@@ -503,14 +505,9 @@
             if (isDraggingZoom) return; 
             const dist = camera.position.distanceTo(camera.userData.targetLookAt || controls.target);
             
-            // 줌인 상태일 때 카메라 거리 계산 보정 (카메라는 가깝지만, 논리적 타겟은 멀리 있음)
             let currentDist;
             if (currentlyZoomedCityName) {
-                 // 줌인 상태에선 단순히 카메라와 타겟 사이 거리보다는
-                 // 카메라와 '도시 위치' 사이의 거리로 줌 레벨을 추정하는 것이 자연스러움
-                 // 하지만 여기선 단순화를 위해 카메라-타겟 거리 사용
                  currentDist = camera.position.distanceTo(camera.userData.targetLookAt);
-                 // ZOOMED_CAMERA_Z가 minDistance 근처일 것임
             } else {
                  currentDist = camera.position.distanceTo(controls.target);
             }
@@ -576,7 +573,6 @@
             const label = document.createElement('div');
             label.className = 'city-label';
             label.id = `label-${meshId}`;
-            // Ballet 괄호 추가
             label.innerHTML = `<span class="label-bracket">(</span>${name}<span class="label-bracket">)</span>`;
             document.body.appendChild(label);
             label.addEventListener('click', (e) => {
@@ -587,17 +583,39 @@
 
         // --- 6. 비행 및 View 변경 로직 ---
 
+        // [수정] 뷰 오프셋 적용 (X축 왼쪽 이동 + Y축 아래로 이동)
+function updateCameraOffset(isZoomed) {
+    if (isZoomed) {
+        // 1. X축 이동: 화면 너비의 15%만큼 뷰를 오른쪽으로 이동 -> 지구본은 [왼쪽]으로 감
+        const xOffset = window.innerWidth * 0.3; 
+        
+        // 2. Y축 이동: 화면 높이의 10%만큼 뷰를 위로 이동(음수) -> 지구본은 [아래]로 감
+        // * 값을 늘리면(-0.2 등) 더 아래로 내려갑니다.
+        const yOffset = -window.innerHeight * 0.1; 
+
+        // setViewOffset(fullWidth, fullHeight, x, y, width, height)
+        camera.setViewOffset(
+            window.innerWidth, 
+            window.innerHeight, 
+            xOffset, 
+            yOffset, 
+            window.innerWidth, 
+            window.innerHeight
+        );
+    } else {
+        camera.clearViewOffset();
+    }
+}
+
         // 홈으로 복귀
         function flyToHomeAndUnzoom() {
             if (currentlyZoomedCityName === null) return; 
             
-            // 라벨 스타일 초기화
             document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
 
             controls.enabled = false;
             controls.autoRotate = false; 
 
-            // 타겟을 다시 (0,0,0) 중앙으로
             const originTarget = new THREE.Vector3(0, 0, 0);
             const zoomOutCameraPos = new THREE.Vector3(0, 0, INITIAL_CAMERA_Z);
             
@@ -606,9 +624,11 @@
             camera.userData.targetLookAt = originTarget;
 
             currentlyZoomedCityName = null;
+            // 뷰 오프셋 해제
+            updateCameraOffset(false);
 
-            // UI 복구
             backBtn.textContent = "back to main";
+            mainTitle.classList.remove('zoomed-title');
             
             rightPanel.style.opacity = '0';
             rightPanel.style.pointerEvents = 'none';
@@ -621,11 +641,10 @@
             mainTitle.style.opacity = '1';
         }
 
-        // 도시로 이동 (적당히 줌인 + 왼쪽 배치)
+        // 도시로 이동
         function flyToCity(cityName) {
             if (currentlyZoomedCityName === cityName) return;
 
-            // 라벨 스타일 초기화 및 현재 타겟 라벨만 활성화
             document.querySelectorAll('.city-label').forEach(el => {
                 el.classList.remove('zoomed-label');
                 if(el.textContent.includes(cityName)) { 
@@ -639,33 +658,31 @@
             controls.enabled = false;
             controls.autoRotate = false;
 
-            const localPoint = latLonToVector3(targetCity.lat, targetCity.lon, 0); 
+            const earthCenter = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
+            const localPoint = latLonToVector3(targetCity.lat, targetCity.lon, EARTH_RADIUS); 
             const worldCityPos = localPoint.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
 
-            // 카메라 위치: 도시 정면에서 일정 거리(ZOOMED_CAMERA_Z)만큼 떨어진 곳
-            const cityNormal = localPoint.clone().normalize();
-            const cameraPos = worldCityPos.clone().add(cityNormal.multiplyScalar(ZOOMED_CAMERA_Z));
-
-            // 뷰포트 이동 효과: 타겟을 오른쪽으로 이동시켜 물체를 왼쪽으로 보냄
-            const up = new THREE.Vector3(0, 1, 0);
-            const right = new THREE.Vector3().crossVectors(cityNormal, up).normalize();
-            const shiftedTarget = worldCityPos.clone().add(right.multiplyScalar(SIDE_VIEW_OFFSET_X));
+            const cityDir = worldCityPos.clone().sub(earthCenter).normalize();
+            // 오프셋 없이, 정면에서 바라보는 위치 계산 (투시 왜곡 방지)
+            const cameraPos = earthCenter.clone().add(cityDir.multiplyScalar(ZOOMED_CAMERA_Z));
 
             isFlying = true;
             camera.userData.targetPos = cameraPos;     
-            camera.userData.targetLookAt = shiftedTarget; 
+            camera.userData.targetLookAt = earthCenter; // 정중앙을 바라봄
 
             currentlyZoomedCityName = cityName;
 
-            // UI 변경
+            // 뷰 오프셋 적용 (좌측으로 밀기)
+            updateCameraOffset(true);
+
             backBtn.textContent = "back to the earth";
-            
+            mainTitle.classList.add('zoomed-title');
+
             instructionText.style.opacity = '0';
             zoomWrapper.style.opacity = '0';
             zoomWrapper.style.pointerEvents = 'none';
             textureMenu.style.opacity = '0';
             textureMenu.style.pointerEvents = 'none';
-            mainTitle.style.opacity = '0';
 
             fillCityData(targetCity);
             rightPanel.style.opacity = '1';
@@ -781,6 +798,10 @@
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            // 화면 크기 변경 시 오프셋 재계산 필요
+            if(currentlyZoomedCityName) {
+                updateCameraOffset(true);
+            }
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
