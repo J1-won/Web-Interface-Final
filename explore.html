@@ -274,7 +274,6 @@
 
         <div class="panel-section" id="sec-02" onclick="activateSection(2)">
             <div class="info-content">
-                <div class="city-title-group" id="city-title-area-02"></div>
                 
                 <div class="info-row" style="margin-bottom:0px; padding-left:140px;">
                      <span class="category-name">Flight Top 10</span>
@@ -423,82 +422,82 @@
         // --- 2. Flight Network Data ---
         const flightNetworkData = {
             "London": [
-                {r:1, c:'New York', co:'USA'}, {r:2, c:'Dubai', co:'UAE'}, {r:3, c:'Paris', co:'France'}, {r:4, c:'Los Angeles', co:'USA'}, {r:5, c:'AMSTERDAM', co:'Netherlands'}, {r:6, c:'FRANKFURT', co:'Germany'}, {r:7, c:'Toronto', co:'Canada'}, {r:8, c:'SINGAPORE', co:'Singapore'}, {r:9, c:'HONG KONG', co:'China'}, {r:10, c:'Sydney', co:'Australia'}
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'Dubai,', co:'UAE'}, {r:3, c:'Paris,', co:'France'}, {r:4, c:'Los Angeles,', co:'USA'}, {r:5, c:'Amsterdam,', co:'Netherlands'}, {r:6, c:'Frankfurt,', co:'Germany'}, {r:7, c:'Toronto,', co:'Canada'}, {r:8, c:'Singapore,RE', co:'Singapore,re'}, {r:9, c:'Hong Kong,', co:'China'}, {r:10, c:'Sydney,', co:'Australia'}
             ],
             "São Paulo": [
-                {r:1, c:'Buenos Aires', co:'Argentina'}, {r:2, c:'SANTIAGO', co:'Chile'}, {r:3, c:'New York', co:'USA'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'LISBON', co:'Portugal'}, {r:7, c:'London', co:'UK'}, {r:8, c:'BOGOTA', co:'Colombia'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'Dubai', co:'UAE'}
+                {r:1, c:'Buenos Aires,', co:'Argentina'}, {r:2, c:'Santiago,', co:'Chile'}, {r:3, c:'New York,', co:'USA'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Lisbon,', co:'Portugal'}, {r:7, c:'London,', co:'UK'}, {r:8, c:'Bogota,', co:'Colombia'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Dubai,', co:'UAE'}
             ],
             "New York": [
-                {r:1, c:'London', co:'UK'}, {r:2, c:'Paris', co:'France'}, {r:3, c:'Toronto', co:'Canada'}, {r:4, c:'TEL AVIV', co:'Israel'}, {r:5, c:'Los Angeles', co:'USA'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'FRANKFURT', co:'Germany'}, {r:8, c:'ROME', co:'Italy'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'Tokyo', co:'Japan'}
+                {r:1, c:'London,', co:'UK'}, {r:2, c:'Paris,', co:'France'}, {r:3, c:'Toronto,', co:'Canada'}, {r:4, c:'Tel Aviv,', co:'Israel'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Frankfurt,', co:'Germany'}, {r:8, c:'Rome,', co:'Italy'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Tokyo,', co:'Japan'}
             ],
             "Seoul": [
-                {r:1, c:'Tokyo', co:'Japan'}, {r:2, c:'OSAKA', co:'Japan'}, {r:3, c:'SHANGHAI', co:'China'}, {r:4, c:'Beijing', co:'China'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Bangkok', co:'Thailand'}, {r:7, c:'TAIPEI', co:'Taiwan'}, {r:8, c:'Los Angeles', co:'USA'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'Sydney', co:'Australia'}
+                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Osaka,', co:'Japan'}, {r:3, c:'Shanghai,', co:'China'}, {r:4, c:'Beijing,', co:'China'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Bangkok', co:'Thailand'}, {r:7, c:'Taipei,', co:'Taiwan'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Sydney,', co:'Australia'}
             ],
             "Tokyo": [
-                {r:1, c:'Seoul', co:'South Korea'}, {r:2, c:'SHANGHAI', co:'China'}, {r:3, c:'TAIPEI', co:'Taiwan'}, {r:4, c:'Honolulu', co:'USA'}, {r:5, c:'Los Angeles', co:'USA'}, {r:6, c:'SINGAPORE', co:'Singapore'}, {r:7, c:'Bangkok', co:'Thailand'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'New York', co:'USA'}, {r:10, c:'Vancouver', co:'Canada'}
+                {r:1, c:'Seoul,', co:'South Korea'}, {r:2, c:'Shanghai,', co:'China'}, {r:3, c:'Taipei,', co:'Taiwan'}, {r:4, c:'Honolulu,', co:'USA'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Singapore,RE', co:'Singapore,re'}, {r:7, c:'Bangkok,', co:'Thailand'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'New York,', co:'USA'}, {r:10, c:'Vancouver,', co:'Canada'}
             ],
             "Beijing": [
-                {r:1, c:'HONG KONG', co:'China'}, {r:2, c:'Seoul', co:'South Korea'}, {r:3, c:'Tokyo', co:'Japan'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'Moscow', co:'Russia'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'SINGAPORE', co:'Singapore'}
+                {r:1, c:'Hong Kong,', co:'China'}, {r:2, c:'Seoul,', co:'South Korea'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'Moscow,', co:'Russia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
             ],
             "Delhi": [
-                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'SINGAPORE', co:'Singapore'}, {r:3, c:'Bangkok', co:'Thailand'}, {r:4, c:'Kuala Lumpur', co:'Malaysia'}, {r:5, c:'London', co:'UK'}, {r:6, c:'Paris', co:'France'}, {r:7, c:'ABU DHABI', co:'UAE'}, {r:8, c:'Sydney', co:'Australia'}, {r:9, c:'FRANKFURT', co:'Germany'}, {r:10, c:'Toronto', co:'Canada'}
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Bangkok,', co:'Thailand'}, {r:4, c:'Kuala Lumpur,', co:'Malaysia'}, {r:5, c:'London,', co:'UK'}, {r:6, c:'Paris', co:'France'}, {r:7, c:'Abu Dhabi,', co:'UAE'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'Toronto,', co:'Canada'}
             ],
             "Cairo": [
-                {r:1, c:'JEDDAH', co:'Saudi Arabia'}, {r:2, c:'Dubai', co:'UAE'}, {r:3, c:'RIYADH', co:'Saudi Arabia'}, {r:4, c:'London', co:'UK'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'ROME', co:'Italy'}, {r:8, c:'Johannesburg', co:'South Africa'}, {r:9, c:'Nairobi', co:'Kenya'}, {r:10, c:'FRANKFURT', co:'Germany'}
+                {r:1, c:'Jeddah,', co:'Saudi Arabia'}, {r:2, c:'Dubai,', co:'UAE'}, {r:3, c:'Riyadh,', co:'Saudi Arabia'}, {r:4, c:'London,', co:'UK'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'ISTANBUL', co:'Türkiye'}, {r:7, c:'Rome,', co:'Italy'}, {r:8, c:'Johannesburg,', co:'South Africa'}, {r:9, c:'Nairobi,', co:'Kenya'}, {r:10, c:'Frankfurt,', co:'Germany'}
             ],
             "Paris": [
-                {r:1, c:'New York', co:'USA'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Dubai', co:'UAE'}, {r:4, c:'ROME', co:'Italy'}, {r:5, c:'MADRID', co:'Spain'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'MONTREAL', co:'Canada'}, {r:8, c:'Beijing', co:'China'}, {r:9, c:'Cairo', co:'Egypt'}, {r:10, c:'Buenos Aires', co:'Argentina'}
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Dubai,', co:'UAE'}, {r:4, c:'Rome,', co:'Italy'}, {r:5, c:'Madrid,', co:'Spain'}, {r:6, c:'Los Angeles,', co:'USA'}, {r:7, c:'Montreal,', co:'Canada'}, {r:8, c:'Beijing,', co:'China'}, {r:9, c:'Cairo,', co:'Egypt'}, {r:10, c:'Buenos Aires,', co:'Argentina'}
             ],
             "Berlin": [
-                {r:1, c:'ISTANBUL', co:'Turkey'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Paris', co:'France'}, {r:4, c:'AMSTERDAM', co:'Netherlands'}, {r:5, c:'ZURICH', co:'Switzerland'}, {r:6, c:'VIENNA', co:'Austria'}, {r:7, c:'New York', co:'USA'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'Moscow', co:'Russia'}, {r:10, c:'Bangkok', co:'Thailand'}
+                {r:1, c:'Istanbul,', co:'Türkiye'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Paris,', co:'France'}, {r:4, c:'Amsterdam,', co:'Netherlands'}, {r:5, c:'Zurich,', co:'Switzerland'}, {r:6, c:'Vienna,', co:'Austria'}, {r:7, c:'New York,', co:'USA'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Moscow,', co:'Russia'}, {r:10, c:'Bangkok,', co:'Thailand'}
             ],
             "Moscow": [
-                {r:1, c:'ISTANBUL', co:'Turkey'}, {r:2, c:'ANTALYA', co:'Turkey'}, {r:3, c:'Dubai', co:'UAE'}, {r:4, c:'Bangkok', co:'Thailand'}, {r:5, c:'Berlin', co:'Germany'}, {r:6, c:'MINSK', co:'Belarus'}, {r:7, c:'Beijing', co:'China'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Paris', co:'France'}, {r:10, c:'Cairo', co:'Egypt'}
+                {r:1, c:'Istanbul,', co:'Türkiye'}, {r:2, c:'Antalya,', co:'Türkiye'}, {r:3, c:'Dubai,', co:'UAE'}, {r:4, c:'Bangkok,', co:'Thailand'}, {r:5, c:'Berlin,', co:'Germany'}, {r:6, c:'Minsk,', co:'Belarus'}, {r:7, c:'Beijing,', co:'China'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Paris,', co:'France'}, {r:10, c:'Cairo,', co:'Egypt'}
             ],
             "Dubai": [
-                {r:1, c:'London', co:'UK'}, {r:2, c:'Delhi', co:'India'}, {r:3, c:'BOMBAY', co:'India'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'RIYADH', co:'Saudi Arabia'}, {r:6, c:'Moscow', co:'Russia'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'Los Angeles', co:'USA'}, {r:9, c:'Sydney', co:'Australia'}, {r:10, c:'Tokyo', co:'Japan'}
+                {r:1, c:'London,', co:'UK'}, {r:2, c:'Delhi,', co:'India'}, {r:3, c:'BOMBAY,', co:'India'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Riyadh,', co:'Saudi Arabia'}, {r:6, c:'Moscow,', co:'Russia'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Sydney,', co:'Australia'}, {r:10, c:'Tokyo,', co:'Japan'}
             ],
             "Sydney": [
-                {r:1, c:'Auckland', co:'New Zealand'}, {r:2, c:'MELBOURNE', co:'Australia'}, {r:3, c:'SINGAPORE', co:'Singapore'}, {r:4, c:'Los Angeles', co:'USA'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'London', co:'UK'}
+                {r:1, c:'Auckland,', co:'New Zealand'}, {r:2, c:'Melbourne,', co:'Australia'}, {r:3, c:'Singapore,RE', co:'Singapore,re'}, {r:4, c:'Los Angeles,', co:'USA'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Delhi,', co:'India'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'London,', co:'UK'}
             ],
             "Mexico City": [
-                {r:1, c:'Los Angeles', co:'USA'}, {r:2, c:'HOUSTON', co:'USA'}, {r:3, c:'MIAMI', co:'USA'}, {r:4, c:'BOGOTA', co:'Colombia'}, {r:5, c:'MADRID', co:'Spain'}, {r:6, c:'New York', co:'USA'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'LIMA', co:'Peru'}, {r:9, c:'São Paulo', co:'Brazil'}, {r:10, c:'London', co:'UK'}
+                {r:1, c:'Los Angeles,', co:'USA'}, {r:2, c:'Houston,', co:'USA'}, {r:3, c:'Miami,', co:'USA'}, {r:4, c:'Bogota,', co:'Colombia'}, {r:5, c:'Madrid,', co:'Spain'}, {r:6, c:'New York,', co:'USA'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Lima,', co:'Peru'}, {r:9, c:'São Paulo,', co:'Brazil'}, {r:10, c:'London,', co:'UK'}
             ],
             "Vancouver": [
-                {r:1, c:'SEATTLE', co:'USA'}, {r:2, c:'Los Angeles', co:'USA'}, {r:3, c:'Toronto', co:'Canada'}, {r:4, c:'SEATTLE', co:'USA'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'London', co:'UK'}, {r:7, c:'DUBLIN', co:'Ireland'}, {r:8, c:'Seoul', co:'South Korea'}, {r:9, c:'Tokyo', co:'Japan'}, {r:10, c:'Mexico City', co:'Mexico'}
+                {r:1, c:'Seattle,', co:'USA'}, {r:2, c:'Los Angeles,', co:'USA'}, {r:3, c:'Toronto,', co:'Canada'}, {r:4, c:'Seattle,', co:'USA'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'London,', co:'UK'}, {r:7, c:'Dublin,', co:'Ireland'}, {r:8, c:'Seoul,', co:'South Korea'}, {r:9, c:'Tokyo,', co:'Japan'}, {r:10, c:'Mexico City,', co:'Mexico'}
             ],
             "Cape Town": [
-                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Johannesburg', co:'South Africa'}, {r:3, c:'London', co:'UK'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'AMSTERDAM', co:'Netherlands'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'DOHA', co:'Qatar'}, {r:8, c:'Paris', co:'France'}, {r:9, c:'SINGAPORE', co:'Singapore'}, {r:10, c:'Nairobi', co:'Kenya'}
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Johannesburg,', co:'South Africa'}, {r:3, c:'London,', co:'UK'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Amsterdam,', co:'Netherlands'}, {r:6, c:'Istanbul,', co:'Türkiye'}, {r:7, c:'Doha,', co:'Qatar'}, {r:8, c:'Paris,', co:'France'}, {r:9, c:'Singapore,RE', co:'Singapore,re'}, {r:10, c:'Nairobi,', co:'Kenya'}
             ],
             "Kuala Lumpur": [
-                {r:1, c:'SINGAPORE', co:'Singapore'}, {r:2, c:'Bangkok', co:'Thailand'}, {r:3, c:'JAKARTA', co:'Indonesia'}, {r:4, c:'Delhi', co:'India'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Sydney', co:'Australia'}, {r:9, c:'Seoul', co:'South Korea'}, {r:10, c:'ISTANBUL', co:'Turkey'}
+                {r:1, c:'Singapore,RE', co:'Singapore,re'}, {r:2, c:'Bangkok,', co:'Thailand'}, {r:3, c:'Jakarta,', co:'Indonesia'}, {r:4, c:'Delhi,', co:'India'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Seoul,', co:'South Korea'}, {r:10, c:'Istanbul,', co:'Türkiye'}
             ],
             "Bangkok": [
-                {r:1, c:'Kuala Lumpur', co:'Malaysia'}, {r:2, c:'SINGAPORE', co:'Singapore'}, {r:3, c:'HONG KONG', co:'China'}, {r:4, c:'Seoul', co:'South Korea'}, {r:5, c:'Tokyo', co:'Japan'}, {r:6, c:'Delhi', co:'India'}, {r:7, c:'Dubai', co:'UAE'}, {r:8, c:'Moscow', co:'Russia'}, {r:9, c:'Sydney', co:'Australia'}, {r:10, c:'FRANKFURT', co:'Germany'}
+                {r:1, c:'Kuala Lumpur,', co:'Malaysia'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Hong Kong,', co:'China'}, {r:4, c:'Seoul,', co:'South Korea'}, {r:5, c:'Tokyo,', co:'Japan'}, {r:6, c:'Delhi,', co:'India'}, {r:7, c:'Dubai,', co:'UAE'}, {r:8, c:'Moscow,', co:'Russia'}, {r:9, c:'Sydney,', co:'Australia'}, {r:10, c:'Frankfurt,', co:'Germany'}
             ],
             "Johannesburg": [
-                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Cape Town', co:'South Africa'}, {r:3, c:'London', co:'UK'}, {r:4, c:'Nairobi', co:'Kenya'}, {r:5, c:'FRANKFURT', co:'Germany'}, {r:6, c:'DOHA', co:'Qatar'}, {r:7, c:'ISTANBUL', co:'Turkey'}, {r:8, c:'Paris', co:'France'}, {r:9, c:'PERTH', co:'Australia'}, {r:10, c:'New York', co:'USA'}
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Cape Town,', co:'South Africa'}, {r:3, c:'London,', co:'UK'}, {r:4, c:'Nairobi,', co:'Kenya'}, {r:5, c:'Frankfurt,', co:'Germany'}, {r:6, c:'Doha,', co:'Qatar'}, {r:7, c:'Istanbul,', co:'Türkiye'}, {r:8, c:'Paris,', co:'France'}, {r:9, c:'Perth,', co:'Australia'}, {r:10, c:'New York,', co:'USA'}
             ],
             "Nairobi": [
-                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Johannesburg', co:'South Africa'}, {r:3, c:'AMSTERDAM', co:'Netherlands'}, {r:4, c:'London', co:'UK'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'ENTEBBE', co:'Uganda'}, {r:8, c:'JEDDAH', co:'Saudi Arabia'}, {r:9, c:'Cape Town', co:'South Africa'}, {r:10, c:'Delhi', co:'India'}
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Johannesburg,', co:'South Africa'}, {r:3, c:'Amsterdam,', co:'Netherlands'}, {r:4, c:'London,', co:'UK'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Istanbul,', co:'Türkiye'}, {r:7, c:'Entebbe,', co:'Uganda'}, {r:8, c:'Jeddah,', co:'Saudi Arabia'}, {r:9, c:'Cape Town,', co:'South Africa'}, {r:10, c:'Delhi,', co:'India'}
             ],
             "Los Angeles": [
-                {r:1, c:'Mexico City', co:'Mexico'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Tokyo', co:'Japan'}, {r:4, c:'Vancouver', co:'Canada'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Sydney', co:'Australia'}, {r:7, c:'Seoul', co:'South Korea'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'FRANKFURT', co:'Germany'}, {r:10, c:'New York', co:'USA'}
+                {r:1, c:'Mexico City,', co:'Mexico'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Vancouver,', co:'Canada'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Sydney,', co:'Australia'}, {r:7, c:'Seoul,', co:'South Korea'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'New York,', co:'USA'}
             ],
             "Toronto": [
-                {r:1, c:'New York', co:'USA'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Vancouver', co:'Canada'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'FRANKFURT', co:'Germany'}, {r:8, c:'CANCUN', co:'Mexico'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'ROME', co:'Italy'}
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Vancouver,', co:'Canada'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Frankfurt,', co:'Germany'}, {r:8, c:'Cancun,', co:'Mexico'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Rome,', co:'Italy'}
             ],
             "Buenos Aires": [
-                {r:1, c:'SANTIAGO', co:'Chile'}, {r:2, c:'São Paulo', co:'Brazil'}, {r:3, c:'MADRID', co:'Spain'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'LIMA', co:'Peru'}, {r:6, c:'BOGOTA', co:'Colombia'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'ROME', co:'Italy'}, {r:9, c:'New York', co:'USA'}, {r:10, c:'Mexico City', co:'Mexico'}
+                {r:1, c:'Santiago,', co:'Chile'}, {r:2, c:'São Paulo,', co:'Brazil'}, {r:3, c:'Madrid,', co:'Spain'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Lima,', co:'Peru'}, {r:6, c:'Bogota,', co:'Colombia'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Rome,', co:'Italy'}, {r:9, c:'New York,', co:'USA'}, {r:10, c:'Mexico City,', co:'Mexico'}
             ],
             "Honolulu": [
-                {r:1, c:'Tokyo', co:'Japan'}, {r:2, c:'Sydney', co:'Australia'}, {r:3, c:'Los Angeles', co:'USA'}, {r:4, c:'Auckland', co:'New Zealand'}, {r:5, c:'Vancouver', co:'Canada'}, {r:6, c:'Seoul', co:'South Korea'}, {r:7, c:'OSAKA', co:'Japan'}, {r:8, c:'MANILA', co:'Philippines'}, {r:9, c:'Dubai', co:'UAE'}, {r:10, c:'SINGAPORE', co:'Singapore'}
+                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Sydney,', co:'Australia'}, {r:3, c:'Los Angeles,', co:'USA'}, {r:4, c:'Auckland,', co:'New Zealand'}, {r:5, c:'Vancouver,', co:'Canada'}, {r:6, c:'Seoul,', co:'South Korea'}, {r:7, c:'Osaka,', co:'Japan'}, {r:8, c:'Manila,', co:'Philippines'}, {r:9, c:'Dubai,', co:'UAE'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
             ],
             "Auckland": [
-                {r:1, c:'Sydney', co:'Australia'}, {r:2, c:'MELBOURNE', co:'Australia'}, {r:3, c:'Los Angeles', co:'USA'}, {r:4, c:'SINGAPORE', co:'Singapore'}, {r:5, c:'Dubai', co:'UAE'}, {r:6, c:'HONG KONG', co:'China'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Vancouver', co:'Canada'}, {r:9, c:'Honolulu', co:'USA'}, {r:10, c:'SANTIAGO', co:'Chile'}
+                {r:1, c:'Sydney,', co:'Australia'}, {r:2, c:'Melbourne,', co:'Australia'}, {r:3, c:'Los Angeles,', co:'USA'}, {r:4, c:'Singapore,RE', co:'Singapore,re'}, {r:5, c:'Dubai,', co:'UAE'}, {r:6, c:'Hong Kong,', co:'China'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Vancouver,', co:'Canada'}, {r:9, c:'Honolulu,', co:'USA'}, {r:10, c:'Santiago,', co:'Chile'}
             ],
             "Casablanca": [
-                {r:1, c:'Paris', co:'France'}, {r:2, c:'ISTANBUL', co:'Turkey'}, {r:3, c:'MADRID', co:'Spain'}, {r:4, c:'MILAN', co:'Italy'}, {r:5, c:'LISBON', co:'Portugal'}, {r:6, c:'ROME', co:'Italy'}, {r:7, c:'JEDDAH', co:'Saudi Arabia'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'MONTREAL', co:'Canada'}, {r:10, c:'New York', co:'USA'}
+                {r:1, c:'Paris,', co:'France'}, {r:2, c:'Istanbul,', co:'Türkiye'}, {r:3, c:'Madrid,', co:'Spain'}, {r:4, c:'Milan', co:'Italy'}, {r:5, c:'Lisbon,', co:'Portugal'}, {r:6, c:'Rome,', co:'Italy'}, {r:7, c:'Jeddah,', co:'Saudi Arabia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Montreal,', co:'Canada'}, {r:10, c:'New York,', co:'USA'}
             ]
         };
 
@@ -802,7 +801,7 @@
             
             // 모든 섹션의 타이틀 영역 채우기
             cityTitleArea01.innerHTML = titleHTML;
-            cityTitleArea02.innerHTML = titleHTML;
+            //cityTitleArea02.innerHTML = titleHTML;
             cityTitleArea03.innerHTML = titleHTML;
             cityTitleArea04.innerHTML = titleHTML;
             
