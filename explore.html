@@ -56,8 +56,13 @@
 
         .label-bracket {
             font-family: "Ballet", cursive; font-weight: 400; display: none;font-size: 1.8rem;
+            color: white; /* 기본 색상 */
+            transition: color 0.3s;
         }
-        .zoomed-label .label-bracket { display: inline-block; }
+        .zoomed-label .label-bracket { 
+            display: inline-block; 
+            color: #4cf3ff; /* [수정] 활성화 시 괄호 색상 변경 */
+        }
 
         @keyframes rotateLabel {
             from { transform: translate(-50%, -90%) rotateY(360deg); }
@@ -127,18 +132,15 @@
             opacity: 0; pointer-events: none; transition: opacity 0.5s;
         }
 
-        /* [수정 2] 섹션 비율 조정 (Active: 넓게, Inactive: 좁게) */
         .panel-section {
-            /* 기본(비활성) 상태는 flex 값을 줄여 좁게 표현 */
             flex: 0.5; 
             border-left: 0.5px solid rgba(255, 255, 255, 1);
             position: relative; height: 100%;
             display: flex; flex-direction: column;
-            transition: flex 0.5s ease; /* 부드러운 전환 */
-            cursor: pointer; /* 클릭 가능하도록 변경 */
+            transition: flex 0.5s ease;
+            cursor: pointer; 
         }
         .panel-section.active {
-            /* 활성 상태는 flex 값을 늘려 넓게 표현 (+20px 효과) */
             flex: 1.6; 
             border-left: 1px solid #4cf3ff; 
             cursor: default;
@@ -147,7 +149,7 @@
         .section-title-wrapper {
             position: absolute;
             bottom: 40px;
-            left: 110px; /* 기존 수정 유지: 보더 우측 배치 */        
+            left: 110px;      
             transform-origin: left bottom;
             transform: rotate(-90deg);
             white-space: nowrap;
@@ -169,7 +171,7 @@
         .info-content {
             padding: 100px 0px 60px 40px; text-align: left; opacity: 1;width:400px;
             overflow-y: auto; height: 100%; box-sizing: border-box;
-            display: none; /* 기본 숨김, 활성화 시 block */
+            display: none; 
         }
         .panel-section.active .info-content { display: block; }
         
@@ -192,16 +194,44 @@
             padding-left: 30px;
         }
 
-        /* --- [NEW] Flight List Styles (Section 02) --- */
+        /* --- Flight List Styles --- */
         .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 180px; }
-        .flight-item { display: flex; align-items: baseline; }
+        .flight-item { 
+            display: flex; align-items: baseline; transition: all 0.2s;
+        }
+        
+        /* 클릭 가능한 아이템 스타일 */
+        .flight-item.clickable { cursor: pointer; opacity: 1; }
+        .flight-item.clickable:hover { opacity: 1; }
+        .flight-item.clickable:hover .flight-dest-city,
+        .flight-item.clickable:hover .flight-dest-country,
+        .flight-item.clickable:hover .flight-rank-num {
+            color: #4cf3ff !important;
+        }
+
+        /* 선택된 아이템 스타일 */
+        .flight-item.selected-dest .flight-dest-city,
+        .flight-item.selected-dest .flight-dest-country,
+        .flight-item.selected-dest .flight-rank-num {
+            color: #4cf3ff !important;
+            font-weight: bold;
+        }
+
+        /* [수정] 클릭 불가능한 아이템: 밝은 그레이(#999)로 변경 */
+        .flight-item.unclickable { 
+            cursor: default; opacity: 1; pointer-events: none; color: #999;
+        }
+        .flight-item.unclickable .flight-dest-city,
+        .flight-item.unclickable .flight-rank-num { color: #999; }
+        .flight-item.unclickable .flight-dest-country { color: #777; }
+        
         .flight-rank-wrapper { width: 60px; text-align: left; }
         .flight-rank-bracket { font-family: "Ballet", cursive; font-size: 1rem; color: white; }
         .flight-rank-num { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: white; }
         
         .flight-dest-group { display: flex; flex-direction: column; }
-        .flight-dest-city { font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white; }
-        .flight-dest-country { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.45rem; color: white; margin-top: 5px; }
+        .flight-dest-city { font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white; transition: color 0.3s;}
+        .flight-dest-country { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.45rem; color: white; margin-top: 5px; transition: color 0.3s;}
 
 
         /* --- 하단 줌 컨트롤 바 --- */
@@ -224,6 +254,15 @@
         h1.zoomed-title {
             transform-origin: left top; left:20px;top:50px;
             transform: scale(0.35); 
+        }
+        .flight-item.clickable:hover .flight-rank-bracket {
+            color: #4cf3ff !important;
+        }
+        .flight-item.selected-dest .flight-rank-bracket {
+            color: #4cf3ff !important;
+        }
+        .flight-item.unclickable .flight-rank-bracket {
+            color: #999 !important;
         }
 
     </style>
@@ -251,11 +290,9 @@
     </div>
 
     <div id="right-panel-container">
-        
         <div class="panel-section active" id="sec-01" onclick="activateSection(1)">
             <div class="info-content">
                 <div class="city-title-group" id="city-title-area-01"></div>
-                
                 <div class="info-list">
                     <div class="info-row"><span class="category-name">DMS</span><span class="data-value" id="val-dms"></span></div>
                     <div class="info-row"><span class="category-name">Population</span><span class="data-value" id="val-pop"></span></div>
@@ -265,7 +302,6 @@
                     <div class="info-row"><span class="category-name">Time Zone</span><span class="data-value" id="val-tz"></span></div>
                 </div>
             </div>
-
             <div class="section-title-wrapper">
                 <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">C</span>ity Information</span>
@@ -274,14 +310,11 @@
 
         <div class="panel-section" id="sec-02" onclick="activateSection(2)">
             <div class="info-content">
-                
                 <div class="info-row" style="margin-bottom:0px; padding-left:140px;">
                      <span class="category-name">Flight Top 10</span>
                 </div>
-                <div class="flight-list" id="flight-list-container">
-                    </div>
+                <div class="flight-list" id="flight-list-container"></div>
             </div>
-
             <div class="section-title-wrapper">
                 <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
@@ -345,6 +378,10 @@
         let isFlying = false; 
         const flySpeed = 0.05; 
         const cityPoints = [];
+        let activeFlightLine = null;
+        let flightLineGeometry = null;
+        let flightLineDrawLimit = 0; 
+        let flightLineCurrentDraw = 0;
         
         // --- 설정 ---
         const EARTH_RADIUS = 1.1; 
@@ -357,6 +394,7 @@
         const textureLoader = new THREE.TextureLoader();
 
         let currentlyZoomedCityName = null;
+        let currentlySelectedDestName = null; 
         let pointerDown = false;
         let pointerDownPos = { x: 0, y: 0 };
         const CLICK_THRESHOLD = 6; 
@@ -370,7 +408,6 @@
         const backBtn = document.getElementById('main-back-btn');
         const mainTitle = document.getElementById('main-title');
 
-        // Data Fields (Sec 01)
         const cityTitleArea01 = document.getElementById('city-title-area-01');
         const valDms = document.getElementById('val-dms');
         const valPop = document.getElementById('val-pop');
@@ -379,11 +416,9 @@
         const valRel = document.getElementById('val-rel');
         const valTz = document.getElementById('val-tz');
         
-        // Data Fields (Sec 02)
         const cityTitleArea02 = document.getElementById('city-title-area-02');
         const flightListContainer = document.getElementById('flight-list-container');
         
-        // Common Titles for 03, 04
         const cityTitleArea03 = document.getElementById('city-title-area-03');
         const cityTitleArea04 = document.getElementById('city-title-area-04');
 
@@ -431,16 +466,16 @@
                 {r:1, c:'London,', co:'UK'}, {r:2, c:'Paris,', co:'France'}, {r:3, c:'Toronto,', co:'Canada'}, {r:4, c:'Tel Aviv,', co:'Israel'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Frankfurt,', co:'Germany'}, {r:8, c:'Rome,', co:'Italy'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Tokyo,', co:'Japan'}
             ],
             "Seoul": [
-                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Osaka,', co:'Japan'}, {r:3, c:'Shanghai,', co:'China'}, {r:4, c:'Beijing,', co:'China'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Bangkok', co:'Thailand'}, {r:7, c:'Taipei,', co:'Taiwan'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Sydney,', co:'Australia'}
+                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Osaka,', co:'Japan'}, {r:3, c:'Shanghai,', co:'China'}, {r:4, c:'Beijing,', co:'China'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Bangkok,', co:'Thailand'}, {r:7, c:'Taipei,', co:'Taiwan'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Sydney,', co:'Australia'}
             ],
             "Tokyo": [
                 {r:1, c:'Seoul,', co:'South Korea'}, {r:2, c:'Shanghai,', co:'China'}, {r:3, c:'Taipei,', co:'Taiwan'}, {r:4, c:'Honolulu,', co:'USA'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Singapore,RE', co:'Singapore,re'}, {r:7, c:'Bangkok,', co:'Thailand'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'New York,', co:'USA'}, {r:10, c:'Vancouver,', co:'Canada'}
             ],
             "Beijing": [
-                {r:1, c:'Hong Kong,', co:'China'}, {r:2, c:'Seoul,', co:'South Korea'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'Moscow,', co:'Russia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
+                {r:1, c:'Hong Kong,', co:'China'}, {r:2, c:'Seoul,', co:'South Korea'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Los Angeles,', co:'USA'}, {r:7, c:'Moscow,', co:'Russia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
             ],
             "Delhi": [
-                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Bangkok,', co:'Thailand'}, {r:4, c:'Kuala Lumpur,', co:'Malaysia'}, {r:5, c:'London,', co:'UK'}, {r:6, c:'Paris', co:'France'}, {r:7, c:'Abu Dhabi,', co:'UAE'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'Toronto,', co:'Canada'}
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Bangkok,', co:'Thailand'}, {r:4, c:'Kuala Lumpur,', co:'Malaysia'}, {r:5, c:'London,', co:'UK'}, {r:6, c:'Paris,', co:'France'}, {r:7, c:'Abu Dhabi,', co:'UAE'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'Toronto,', co:'Canada'}
             ],
             "Cairo": [
                 {r:1, c:'Jeddah,', co:'Saudi Arabia'}, {r:2, c:'Dubai,', co:'UAE'}, {r:3, c:'Riyadh,', co:'Saudi Arabia'}, {r:4, c:'London,', co:'UK'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'ISTANBUL', co:'Türkiye'}, {r:7, c:'Rome,', co:'Italy'}, {r:8, c:'Johannesburg,', co:'South Africa'}, {r:9, c:'Nairobi,', co:'Kenya'}, {r:10, c:'Frankfurt,', co:'Germany'}
@@ -709,6 +744,117 @@
                 camera.clearViewOffset();
             }
         }
+        
+        // [New Function] 두 도시를 잇는 곡선 생성 및 카메라 이동
+        function connectCity(targetCityName) {
+            // 출발지는 현재 줌인된 도시
+            const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
+            // 목적지는 클릭한 리스트의 도시
+            // flightNetworkData에는 "Paris," 처럼 쉼표가 있을 수 있으므로 제거 후 비교
+            const cleanTargetName = targetCityName.replace(',', '').trim();
+            const endCity = citiesData.find(c => c.name.toLowerCase() === cleanTargetName.toLowerCase());
+
+            if (!startCity || !endCity) {
+                console.log("City not found in database:", cleanTargetName);
+                return;
+            }
+
+            // 목적지 선택 업데이트 (UI용)
+            currentlySelectedDestName = endCity.name;
+            updateFlightListUI();
+
+            // [추가] 라벨 회전 동기화를 위한 클래스 리셋
+            // 출발지와 도착지의 라벨 애니메이션을 재시작하여 싱크를 맞춤
+            const startLabel = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(startCity.name));
+            const endLabel = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(endCity.name));
+            
+            if(startLabel) {
+                startLabel.classList.remove('zoomed-label');
+                void startLabel.offsetWidth; // Force Reflow
+                startLabel.classList.add('zoomed-label');
+            }
+            if(endLabel) {
+                endLabel.classList.remove('zoomed-label'); // 기존에 있었어도 리셋
+                void endLabel.offsetWidth; 
+                // 아래 updateHTMLLabels에서 추가되겠지만 여기서 미리 처리해도 무방
+            }
+
+            // 기존 라인 제거
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+
+            // 곡선 그리기
+            drawFlightLine(startCity, endCity);
+
+            // 카메라 이동: 선택된 목적지를 지구본 중심(화면상 좌측 뷰포트의 중심)에 놓음
+            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS);
+            const endPosWorld = endPos.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
+            const earthCenter = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
+            
+            // 목적지를 바라보는 방향 벡터
+            const viewDir = endPosWorld.clone().sub(earthCenter).normalize();
+            const newCameraPos = earthCenter.clone().add(viewDir.multiplyScalar(ZOOMED_CAMERA_Z));
+
+            isFlying = true;
+            camera.userData.targetPos = newCameraPos;
+            camera.userData.targetLookAt = earthCenter;
+        }
+
+        function drawFlightLine(startCity, endCity) {
+            // [수정] 시작점과 끝점을 지구 표면보다 살짝 띄움 (1.002 -> 1.005)
+            // 이렇게 하면 선이 지구 안으로 파묻히는 현상(Z-fighting)을 방지할 수 있습니다.
+            const startPos = latLonToVector3(startCity.lat, startCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
+            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
+
+            const distance = startPos.distanceTo(endPos);
+            // [수정] 휘어짐 1/3로 축소 (* 0.5 -> * 0.15)
+            const midPoint = startPos.clone().add(endPos).normalize().multiplyScalar(EARTH_RADIUS + distance * 0.15); 
+
+            // [수정] 곡선 제어점 추가: 시작 직후와 끝 직전에 고도를 살짝 높여줌
+            // 3점 커브 대신 5점 커브 등을 사용하여 시작 부분 매몰 방지
+            // 간단하게는 시작점 바로 다음 포인트를 공중으로 띄웁니다.
+            
+            const curve = new THREE.CatmullRomCurve3([
+                startPos,
+                midPoint,
+                endPos
+            ]);
+
+            const points = curve.getPoints(100); 
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            // [수정] 컬러 #4cf3ff, 두께 2 (WebGL 렌더러에 따라 1px 고정일 수 있음)
+            const material = new THREE.LineBasicMaterial({ color: 0x4cf3ff, linewidth: 3 }); 
+
+            const line = new THREE.Line(geometry, material);
+            line.position.y = GLOBE_Y_OFFSET;
+            
+            // [수정] 선 그리기 애니메이션 준비
+            flightLineGeometry = geometry;
+            flightLineDrawLimit = 100;
+            flightLineCurrentDraw = 0;
+            flightLineGeometry.setDrawRange(0, 0); // 처음엔 안 보임
+
+            scene.add(line);
+            activeFlightLine = line;
+        }
+
+        // [New Helper] Flight List UI 업데이트 (선택된 항목 스타일링)
+        function updateFlightListUI() {
+            const items = document.querySelectorAll('.flight-item');
+            items.forEach(item => {
+                const cityNameElem = item.querySelector('.flight-dest-city');
+                if (cityNameElem) {
+                    const itemName = cityNameElem.textContent.replace(',', '').trim();
+                    if (currentlySelectedDestName && itemName.toLowerCase() === currentlySelectedDestName.toLowerCase()) {
+                        item.classList.add('selected-dest');
+                    } else {
+                        item.classList.remove('selected-dest');
+                    }
+                }
+            });
+        }
 
         // 홈으로 복귀
         function flyToHomeAndUnzoom() {
@@ -718,6 +864,12 @@
 
             controls.enabled = false;
             controls.autoRotate = false; 
+
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+            currentlySelectedDestName = null; // 선택 초기화
 
             const originTarget = new THREE.Vector3(0, 0, 0);
             const zoomOutCameraPos = new THREE.Vector3(0, 0, INITIAL_CAMERA_Z);
@@ -749,15 +901,21 @@
         function flyToCity(cityName) {
             if (currentlyZoomedCityName === cityName) return;
 
-            document.querySelectorAll('.city-label').forEach(el => {
-                el.classList.remove('zoomed-label');
-                if(el.textContent.includes(cityName)) { 
-                    el.classList.add('zoomed-label');
-                }
-            });
+            // 라벨 초기화
+            document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
+            // 현재 도시 라벨 활성화
+            const label = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(cityName));
+            if(label) label.classList.add('zoomed-label');
 
             const targetCity = citiesData.find(c => c.name === cityName);
             if (!targetCity) return;
+
+            // 기존 라인 제거
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+            currentlySelectedDestName = null;
 
             controls.enabled = false;
             controls.autoRotate = false;
@@ -820,7 +978,18 @@
             if (flights && flights.length > 0) {
                 flights.forEach(f => {
                     const itemDiv = document.createElement('div');
-                    itemDiv.className = 'flight-item';
+                    
+                    // [수정] 실제 존재하는 도시인지 확인
+                    const cleanName = f.c.replace(',', '').trim();
+                    const exists = citiesData.find(c => c.name.toLowerCase() === cleanName.toLowerCase());
+                    
+                    if (exists) {
+                        itemDiv.className = 'flight-item clickable';
+                        itemDiv.onclick = () => connectCity(f.c);
+                    } else {
+                        itemDiv.className = 'flight-item unclickable';
+                    }
+                    
                     itemDiv.innerHTML = `
                         <div class="flight-rank-wrapper">
                             <span class="flight-rank-bracket">(</span>
@@ -878,6 +1047,15 @@
                 }
             }
 
+            // [수정] 선 그리기 애니메이션 (Draw Range 증가)
+            if (activeFlightLine && flightLineGeometry) {
+                if (flightLineCurrentDraw < flightLineDrawLimit) {
+                    flightLineCurrentDraw += 2; // 그리는 속도
+                    if (flightLineCurrentDraw > flightLineDrawLimit) flightLineCurrentDraw = flightLineDrawLimit;
+                    flightLineGeometry.setDrawRange(0, flightLineCurrentDraw);
+                }
+            }
+
             controls.update();
             updateHTMLLabels();
             if (!currentlyZoomedCityName) {
@@ -892,6 +1070,7 @@
                 const label = document.getElementById(`label-${mesh.id}`);
                 if (!label) return;
 
+                const cityName = mesh.userData.name;
                 const meshPosition = new THREE.Vector3().setFromMatrixPosition(mesh.matrixWorld);
                 const centerPos = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
                 const normalVector = meshPosition.clone().sub(centerPos).normalize(); 
@@ -912,8 +1091,20 @@
                         label.style.opacity = Math.min(1, Math.max(0, dotProduct * 5)); 
                     }
                     
-                    if(currentlyZoomedCityName && !label.classList.contains('zoomed-label')) {
+                    // [수정] 라벨 투명도 로직: 
+                    // 1. 현재 줌인된 도시이거나
+                    // 2. 현재 선택된 목적지 도시이면 불투명(1)
+                    // 3. 그 외에는 흐리게(0.2)
+                    let isHighlighted = false;
+                    if (currentlyZoomedCityName && cityName === currentlyZoomedCityName) isHighlighted = true;
+                    if (currentlySelectedDestName && cityName === currentlySelectedDestName) isHighlighted = true;
+
+                    if (currentlyZoomedCityName && !isHighlighted) {
                         label.style.opacity = 0.2; 
+                        label.classList.remove('zoomed-label'); // 강조 해제
+                    } else if (isHighlighted) {
+                        label.style.opacity = 1;
+                        label.classList.add('zoomed-label'); // 강조 추가
                     }
 
                 } else {
@@ -944,7 +1135,6 @@
             animate();
         });
 
-        // 마우스 이동 시 오디오 재생
         const audio = new Audio('1.mp3');
         let hasPlayed = false;
         

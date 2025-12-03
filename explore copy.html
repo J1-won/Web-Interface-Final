@@ -5,126 +5,368 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internet Brain</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
     <style>
-        .arimo {
-        font-family: "Arimo", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: 400;
-        font-style: normal;font-size: 4rem;
+        /* --- 폰트 설정 --- */
+        .arimo { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: normal; font-size: 4rem; }
+        .arimo-i { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: italic; }
+        .ballet { font-family: "Ballet", cursive; font-optical-sizing: auto; font-size: 5.4rem; font-weight: 400; font-style: normal; }
+        
+        /* --- 기본 레이아웃 --- */
+        html { font-size: 2rem; scroll-behavior: smooth; font-family: "Arimo", sans-serif; }
+        body, h1, h2, h3, p, ol, ul, li { margin: 0; padding: 0; list-style: none; }
+        body {
+            background-color: #000000; overflow: hidden;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 60px 45px;
+            background-position: -1px -1px;
         }
-        .arimo-i {
-        font-family: "Arimo", sans-serif;
-        font-optical-sizing: auto;
-        font-weight: 400;
-        font-style: italic;
-        }
-        .ballet {
-        font-family: "Ballet", cursive;
-        font-optical-sizing: auto;font-size: 5.4rem;
-        font-weight: 400;
-        font-style: normal;
-        }
-        html{font-size:2rem;scroll-behavior:smooth;font-family: "Arimo", sans-serif;}
-        body,h1,h2,h3,p,ol,ul{margin:0;padding:0;}
-        body {overflow: hidden; background-color: #000000; }
         canvas { display: block; }
-        h1 {font-size:2rem;font-family: "Arimo", sans-serif; padding-left:50px;position: fixed; 
-    top: 50px; /* 상단에서 50px 아래에 위치 */
-    left: 0;
-    width: 100%;
-    z-index: 150; /* ★ z-index를 캔버스(0)보다 높게 설정 */
-    color: white;}
-        #info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-family: "Arimo", sans-serif;font-weight: 400;font-style: normal;
-            z-index: 100;
+
+        /* --- UI 요소 --- */
+        h1 {
+            font-size: 2rem; font-family: "Arimo", sans-serif; padding-left: 50px;
+            position: fixed; top: 40px; left: 0; width: 100%; z-index: 150;
+            color: white; pointer-events: none;
+            transition: opacity 0.5s;
         }
-        #loading-status {
-            color: #4cf3ff;
-            margin-top: 8px;
-            font-size: 14px;
-        }
+        #info { position: absolute; top: 10px; left: 10px; color: white; z-index: 100; font-family: "Arimo", sans-serif; font-size: 14px; }
+        #loading-status { color: #4cf3ff; margin-top: 8px; font-size: 14px; }
+        
+        /* --- City Label --- */
         .city-label {
-            position: absolute;
-            color: #4cf3ff; 
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: auto;
-            cursor: pointer; 
-            transform: translate(-50%, -150%); 
-            opacity: 0;
-            transition: opacity 0.3s;
+            position: absolute; color: #4cf3ff; font-size: 14px; font-weight: bold;
+            pointer-events: auto; cursor: pointer; 
+            transform: translate(-50%, -150%);
+            opacity: 0; transition: opacity 0.3s, font-size 0.5s; 
             user-select: none;
+            white-space: nowrap;
+            display: flex; align-items: center; justify-content: center; gap: 3px;
         }
+
+        .city-label.zoomed-label {
+            font-size: 1.1rem !important; 
+            animation: rotateLabel 8s linear infinite;
+            transform-origin: center center;
+            z-index: 10;
+        }
+
+        .label-bracket {
+            font-family: "Ballet", cursive; font-weight: 400; display: none;font-size: 1.8rem;
+            color: white; /* 기본 색상 */
+            transition: color 0.3s;
+        }
+        .zoomed-label .label-bracket { 
+            display: inline-block; 
+            color: #4cf3ff; /* [수정] 활성화 시 괄호 색상 변경 */
+        }
+
+        @keyframes rotateLabel {
+            from { transform: translate(-50%, -90%) rotateY(360deg); }
+            to { transform: translate(-50%, -90%) rotateY(0deg); }
+        }
+
         button {
-            background-color: #333;
-            color: white;
-            border: 1px solid #4cf3ff;
-            padding: 5px 10px;
-            transition: 0.25s;
-            cursor: pointer;
-            font-family: "Arimo", sans-serif;
+            background-color: #333; color: white; border: 1px solid #4cf3ff;
+            padding: 5px 10px; transition: 0.25s; cursor: pointer; font-family: "Arimo", sans-serif;
         }
-        button:hover {
-            background-color: rgba(76,243,255,0.08);
-        }
-        #controls-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-        }
-        #back-to-earth-btn {
-            background-color: #333;
-            color: white;
-            border: 1px solid #4cf3ff;
-            padding: 10px 30px;
-            cursor: pointer;
-            transition: 0.25s;
-            display: none;
-            box-shadow: 0 0 6px rgba(76,243,255,0.12);
-            margin-bottom: 100px;
-        }
-        #back-to-earth-btn:hover {
-            background-color: rgba(76,243,255,0.08);
-        }
+        button:hover { background-color: rgba(76,243,255,0.08); }
+
+        #controls-container { display: none !important; }
+
         .top-gradient-overlay {
-            position: fixed;
-            top: 0;left: 0;width: 100%;
-            height: 100px;
-            z-index: 50;
-            background: linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.5) 0%, /* 시작: 순수한 흰색 */
-                rgba(0, 0, 0, 0.3) 50%,     /* 중간: 검은색 (50% 지점에서 흰색이 투명해지기 시작) */
-                rgba(0, 0, 0, 0) 100%      /* 끝: 완전 투명 */
-            );
+            position: fixed; top: 0; left: 0; width: 100%; height: 55px; z-index: 150;
+            background-color: black;
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.3) 90%, rgba(0, 0, 0, 0) 100%);
+            pointer-events: none;
         }
-        .world-text {
-            /* 1/2 크기로 줄이기 */
-            font-size: 80%; 
-            display:inline-block;
-            margin-left:-64px; 
-            color: #4cf3ff;z-index: 0;transform: translateY(15px);
+        .world-text { font-size: 80%; display: inline-block; margin-left: -64px; color: #4cf3ff; transform: translateY(15px); }
+        
+        /* --- Back Button --- */
+        .back-btn {
+            position: fixed; top: 25px; left: 40px; color: #4cf3ff;
+            font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic; font-size: 0.6rem;
+            text-decoration: none; z-index: 200; transition: opacity 0.3s; cursor: pointer;
         }
+        .back-btn::after {
+            content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+            background-color: #4cf3ff; transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 0.9; }
+        .back-btn:hover::after { opacity: 0; }
+
+        /* --- 좌측 텍스처 메뉴 --- */
+        #texture-menu {
+            position: fixed; top: 37%; left: 240px; z-index: 200;
+            display: flex; flex-direction: column; gap: 50px;
+            transition: opacity 0.5s;
+        }
+        #texture-menu li {
+            font-size: 0.6rem; color: white; cursor: pointer; transition: color 0.3s;
+            text-decoration: none; position: relative; width: fit-content;
+        }
+        #texture-menu li::after {
+            content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+            background-color: white; transition: opacity 0.2s, background-color 0.3s; opacity: 1;
+        }
+        #texture-menu li:hover::after { opacity: 0; }
+        #texture-menu li:hover { color: #ddd; }
+        #texture-menu li.active { color: #4CF3FF; }
+        #texture-menu li.active::after { background-color: #4CF3FF; }
+
+        /* --- 우측 설명 텍스트 --- */
+        #instruction-text {
+            position: fixed; right: 100px; top: 31%; transform: translateY(-50%);
+            text-align: left; color: white; font-size: 0.4rem; line-height: 1.6;
+            z-index: 100; pointer-events: none; transition: opacity 0.5s;
+        }
+
+        /* --- 우측 정보 패널 --- */
+        #right-panel-container {
+            position: fixed; top: 0; right: 0; width: 50%; height: 100%;
+            z-index: 110; display: flex;
+            background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.8) 30%, rgba(0,0,0,1) 100%);
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+
+        .panel-section {
+            flex: 0.5; 
+            border-left: 0.5px solid rgba(255, 255, 255, 1);
+            position: relative; height: 100%;
+            display: flex; flex-direction: column;
+            transition: flex 0.5s ease;
+            cursor: pointer; 
+        }
+        .panel-section.active {
+            flex: 1.6; 
+            border-left: 1px solid #4cf3ff; 
+            cursor: default;
+        }
+        
+        .section-title-wrapper {
+            position: absolute;
+            bottom: 40px;
+            left: 110px;      
+            transform-origin: left bottom;
+            transform: rotate(-90deg);
+            white-space: nowrap;
+            pointer-events: auto;
+            text-align: left;
+            cursor: pointer;
+        }
+        .section-num { font-family: "Ballet", cursive; font-size: 1.3rem; margin-right: 10px; color: white; }
+        .section-num2 { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: white; }
+        .section-name { font-family: "Arimo", sans-serif; font-style: italic; font-size: 1rem; color: white; }
+        .section-initial { font-family: "Ballet", cursive; font-size: 1.5rem; } 
+        
+        .panel-section.active .section-num, 
+        .panel-section.active .section-num2, 
+        .panel-section.active .section-name { color: #4cf3ff; }
+        .panel-section.active .section-title-wrapper { cursor: default; }
+
+        /* 콘텐츠 영역 */
+        .info-content {
+            padding: 100px 0px 60px 40px; text-align: left; opacity: 1;width:400px;
+            overflow-y: auto; height: 100%; box-sizing: border-box;
+            display: none; 
+        }
+        .panel-section.active .info-content { display: block; }
+        
+        .city-title-group { margin-bottom: 80px; padding-left:60px;}
+        .city-title-initial { font-family: "Ballet", cursive; font-size: 1rem; color: #4cf3ff; line-height: 0.8;}
+        .city-title-rest { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: #4cf3ff; }
+
+        .info-list { display: flex; flex-direction: column; gap: 60px;padding-left: 140px; }
+        .info-row { display: flex; flex-direction: column; gap: 5px; }
+        
+        .category-name {
+            font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: white;
+            text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 0.5px;
+            margin-bottom: 20px; display: inline-block;
+        }
+        .category-name::after { content: ' •'; margin-left: 5px; text-decoration: none; display: inline-block; color: white; }
+
+        .data-value {
+            font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white;
+            padding-left: 30px;
+        }
+
+        /* --- Flight List Styles --- */
+        .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 180px; }
+        .flight-item { 
+            display: flex; align-items: baseline; transition: all 0.2s;
+        }
+        
+        /* 클릭 가능한 아이템 스타일 */
+        .flight-item.clickable { cursor: pointer; opacity: 1; }
+        .flight-item.clickable:hover { opacity: 1; }
+        .flight-item.clickable:hover .flight-dest-city,
+        .flight-item.clickable:hover .flight-dest-country,
+        .flight-item.clickable:hover .flight-rank-num {
+            color: #4cf3ff !important;
+        }
+
+        /* 선택된 아이템 스타일 */
+        .flight-item.selected-dest .flight-dest-city,
+        .flight-item.selected-dest .flight-dest-country,
+        .flight-item.selected-dest .flight-rank-num {
+            color: #4cf3ff !important;
+            font-weight: bold;
+        }
+
+        /* [수정] 클릭 불가능한 아이템: 밝은 그레이(#999)로 변경 */
+        .flight-item.unclickable { 
+            cursor: default; opacity: 1; pointer-events: none; color: #999;
+        }
+        .flight-item.unclickable .flight-dest-city,
+        .flight-item.unclickable .flight-rank-num { color: #999; }
+        .flight-item.unclickable .flight-dest-country { color: #777; }
+        
+        .flight-rank-wrapper { width: 60px; text-align: left; }
+        .flight-rank-bracket { font-family: "Ballet", cursive; font-size: 1rem; color: white; }
+        .flight-rank-num { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: white; }
+        
+        .flight-dest-group { display: flex; flex-direction: column; }
+        .flight-dest-city { font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white; transition: color 0.3s;}
+        .flight-dest-country { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.45rem; color: white; margin-top: 5px; transition: color 0.3s;}
+
+
+        /* --- 하단 줌 컨트롤 바 --- */
+        #zoom-controls-wrapper {
+            position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%);
+            width: 80%; max-width: 800px; height: 60px; z-index: 300;
+            display: flex; align-items: center; justify-content: center; 
+            transition: opacity 0.5s;
+        }
+        .zoom-track-line { position: absolute; width: 100%; height: 1px; background-color: white; top: 25%; left: 0; }
+        .zoom-circle { width: 14px; height: 14px; border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -150%); pointer-events: auto; }
+        .zoom-start { left: 0; border: 1px solid white; background-color: black; box-sizing: border-box; }
+        .zoom-end { left: 100%; background-color: white; }
+        #zoom-thumb { left: 20%; background-color: #4CF3FF; cursor: pointer; z-index: 301; }
+        #zoom-thumb::after { content: ''; position: absolute; top: -15px; left: -15px; right: -15px; bottom: -15px; }
+        .zoom-label { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
+        .zoom-label .ballet { font-size: 0.8rem; color: white; line-height: 1; }
+        .zoom-label .arimo-i { font-size: 0.5rem; color: white; }
+        #zoom-thumb .zoom-label .ballet, #zoom-thumb .zoom-label .arimo-i { color: #4CF3FF; }
+        h1.zoomed-title {
+            transform-origin: left top; left:20px;top:50px;
+            transform: scale(0.35); 
+        }
+        .flight-item.clickable:hover .flight-rank-bracket {
+            color: #4cf3ff !important;
+        }
+        .flight-item.selected-dest .flight-rank-bracket {
+            color: #4cf3ff !important;
+        }
+        .flight-item.unclickable .flight-rank-bracket {
+            color: #999 !important;
+        }
+
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-btn" id="main-back-btn" onclick="handleBackClick(event)">back to main</a>
     
+    <div class="top-gradient-overlay"></div>
+    <h1 id="main-title"><span class="ballet">Explore</span> 
+        <span class="world-text" style="color:#4cf3ff;">
+            the <span class="ballet" style="font-size:200%;">w</span><span class="arimo-i">o</span><span class="ballet" style="font-size:200%;">r</span>ld
+        </span></h1>
+
+    <ul id="texture-menu">
+        <li class="arimo-i active" onclick="changeTexture('Clouds', 'earth_clouds.jpg', this)">Clouds</li>
+        <li class="arimo-i" onclick="changeTexture('Night', 'earth_night.jpg', this)">Night</li>
+        <li class="arimo-i" onclick="changeTexture('Flat', 'earth_texture.jpg', this)">Flat</li>
+        <li class="arimo-i" onclick="changeTexture('Reverse', 'earthdd.jpg', this)">Reverse</li>
+        <li class="arimo-i" onclick="changeTexture('Light', 'earth_bright.jpg', this)">Light</li>
+    </ul>
+
+    <div id="instruction-text" class="arimo">
+        You can zoom-in the globe by scrolling up or roll it by dragging it.
+        <br>If you’d like to see the explanation, click the city's name.
+    </div>
+
+    <div id="right-panel-container">
+        <div class="panel-section active" id="sec-01" onclick="activateSection(1)">
+            <div class="info-content">
+                <div class="city-title-group" id="city-title-area-01"></div>
+                <div class="info-list">
+                    <div class="info-row"><span class="category-name">DMS</span><span class="data-value" id="val-dms"></span></div>
+                    <div class="info-row"><span class="category-name">Population</span><span class="data-value" id="val-pop"></span></div>
+                    <div class="info-row"><span class="category-name">Language</span><span class="data-value" id="val-lang"></span></div>
+                    <div class="info-row"><span class="category-name">Economic Scale</span><span class="data-value" id="val-econ"></span></div>
+                    <div class="info-row"><span class="category-name">Primary Religion</span><span class="data-value" id="val-rel"></span></div>
+                    <div class="info-row"><span class="category-name">Time Zone</span><span class="data-value" id="val-tz"></span></div>
+                </div>
+            </div>
+            <div class="section-title-wrapper">
+                <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
+                <span class="section-name"><span class="section-initial">C</span>ity Information</span>
+            </div>
+        </div>
+
+        <div class="panel-section" id="sec-02" onclick="activateSection(2)">
+            <div class="info-content">
+                <div class="info-row" style="margin-bottom:0px; padding-left:140px;">
+                     <span class="category-name">Flight Top 10</span>
+                </div>
+                <div class="flight-list" id="flight-list-container"></div>
+            </div>
+            <div class="section-title-wrapper">
+                <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
+                <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
+            </div>
+        </div>
+
+        <div class="panel-section" id="sec-03" onclick="activateSection(3)">
+             <div class="info-content">
+                <div class="city-title-group" id="city-title-area-03"></div>
+                <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
+            </div>
+            <div class="section-title-wrapper">
+                <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
+                <span class="section-name"><span class="section-initial">K</span>eyword Networks</span>
+            </div>
+        </div>
+
+        <div class="panel-section" id="sec-04" onclick="activateSection(4)">
+             <div class="info-content">
+                <div class="city-title-group" id="city-title-area-04"></div>
+                <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
+            </div>
+            <div class="section-title-wrapper">
+                <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
+                <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="zoom-controls-wrapper">
+        <div class="zoom-track-line"></div>
+        <div class="zoom-circle zoom-start">
+            <div class="zoom-label">
+                <span class="ballet">(</span><span class="arimo-i">–</span><span class="ballet">)</span>
+            </div>
+        </div>
+        <div class="zoom-circle zoom-end">
+            <div class="zoom-label">
+                <span class="ballet">(</span><span class="arimo-i">+</span><span class="ballet">)</span>
+            </div>
+        </div>
+        <div id="zoom-thumb" class="zoom-circle">
+            <div class="zoom-label">
+                <span class="ballet">(</span><span class="arimo-i">zoom</span><span class="ballet">)</span>
+            </div>
+        </div>
+    </div>
+
     <div id="info">
         <p id="loading-status">Initialising...</p>
     </div>
     <div id="canvas-container"></div>
-    
-    <div id="controls-container">
-        <button id="back-to-earth-btn" onclick="flyToHomeAndUnzoom()"> &lt; Back to The Earth </button>
-    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -134,49 +376,175 @@
         let scene, camera, renderer, controls;
         let earthModel = null;
         let isFlying = false; 
-        const flySpeed = 0.06; 
+        const flySpeed = 0.05; 
         const cityPoints = [];
-        const EARTH_RADIUS = 1.2; 
+        let activeFlightLine = null;
+        let flightLineGeometry = null;
+        let flightLineDrawLimit = 0; 
+        let flightLineCurrentDraw = 0;
+        
+        // --- 설정 ---
+        const EARTH_RADIUS = 1.1; 
+        const GLOBE_Y_OFFSET = -0.2; 
         const INITIAL_CAMERA_Z = 3.0;
-        const ZOOMED_CAMERA_Z = 2.0;
+        const ZOOMED_CAMERA_Z = 2.0; 
         
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-        
-        let currentlyZoomedCityName = null; // 현재 확대된 도시 이름을 저장
-        // --- pointer click 판단용 ---
+        const textureLoader = new THREE.TextureLoader();
+
+        let currentlyZoomedCityName = null;
+        let currentlySelectedDestName = null; 
         let pointerDown = false;
         let pointerDownPos = { x: 0, y: 0 };
-        const CLICK_THRESHOLD = 6; // 픽셀 단위
+        const CLICK_THRESHOLD = 6; 
+
+        // UI Elements
+        const zoomWrapper = document.getElementById('zoom-controls-wrapper');
+        const zoomThumb = document.getElementById('zoom-thumb');
+        const instructionText = document.getElementById('instruction-text');
+        const textureMenu = document.getElementById('texture-menu');
+        const rightPanel = document.getElementById('right-panel-container');
+        const backBtn = document.getElementById('main-back-btn');
+        const mainTitle = document.getElementById('main-title');
+
+        const cityTitleArea01 = document.getElementById('city-title-area-01');
+        const valDms = document.getElementById('val-dms');
+        const valPop = document.getElementById('val-pop');
+        const valLang = document.getElementById('val-lang');
+        const valEcon = document.getElementById('val-econ');
+        const valRel = document.getElementById('val-rel');
+        const valTz = document.getElementById('val-tz');
         
-        // --- 1. Lat/Lon 좌표 변환 ---
-        function latLonToVector3(lat, lon, radius = EARTH_RADIUS) {
-            const phi = (90 - lat) * (Math.PI / 180); 
-            const theta = (lon + 180) * (Math.PI / 180); 
+        const cityTitleArea02 = document.getElementById('city-title-area-02');
+        const flightListContainer = document.getElementById('flight-list-container');
+        
+        const cityTitleArea03 = document.getElementById('city-title-area-03');
+        const cityTitleArea04 = document.getElementById('city-title-area-04');
 
-            const x = -((radius) * Math.sin(phi) * Math.cos(theta));
-            const z = ((radius) * Math.sin(phi) * Math.sin(theta));
-            const y = ((radius) * Math.cos(phi));
+        let isDraggingZoom = false;
 
-            return new THREE.Vector3(x, y, z);
-        }
+        // --- 1. 기본 도시 데이터 ---
+        const citiesData = [
+            { name: 'London', country: 'UK', dms: '51°30\'25"N / 0°7\'39"W', lat: 51.507, lon: -0.127, pop: '10,000,000', lang: 'English', econ: '$880 Billion USD', rel: 'Christianity', tz: 'GMT / BST' },
+            { name: 'São Paulo', country: 'Brazil', dms: '23°33\'0"S / 46°37\'59"W', lat: -23.550, lon: -46.633, pop: '22,800,000', lang: 'Portuguese', econ: '$220 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
+            { name: 'New York', country: 'USA', dms: '40°43\'0"N / 74°0\'21"W', lat: 40.712, lon: -74.006, pop: '20,000,000', lang: 'English', econ: '$2.0 Trillion USD', rel: 'Christianity, Judaism', tz: 'EST / EDT' },
+            { name: 'Seoul', country: 'South Korea', dms: '37°33\'57"N / 126°58\'41"E', lat: 37.566, lon: 126.978, pop: '9,000,000', lang: 'Korean', econ: '$450 Billion USD', rel: 'Christianity, Buddhism, Non-religious', tz: 'KST (UTC+9)' },
+            { name: 'Tokyo', country: 'Japan', dms: '35°40\'33"N / 139°44\'54"E', lat: 35.676, lon: 139.748, pop: '14,130,000', lang: 'Japanese', econ: '$1.6 Trillion USD', rel: 'Buddhism, Non-religious', tz: 'JST (UTC+9)' },
+            { name: 'Beijing', country: 'China', dms: '39°54\'14"N / 116°24\'25"E', lat: 39.904, lon: 116.407, pop: '21,800,000', lang: 'Mandarin Chinese', econ: '$650 Billion USD', rel: 'Buddhism, Non-religious', tz: 'CST (UTC+8)' },
+            { name: 'Delhi', country: 'India', dms: '28°42\'16"N / 77°6\'7"E', lat: 28.704, lon: 77.102, pop: '33,800,000', lang: 'Hindi, English', econ: '$300 Billion USD', rel: 'Hinduism, Islam', tz: 'IST (UTC+5:30)' },
+            { name: 'Cairo', country: 'Egypt', dms: '30°2\'0"N / 31°13\'60"E', lat: 30.044, lon: 31.235, pop: '22,600,000', lang: 'Arabic', econ: '$150 Billion USD', rel: 'Islam', tz: 'EET (UTC+2)' },
+            { name: 'Paris', country: 'France', dms: '48°51\'24"N / 2°20\'54"E', lat: 48.856, lon: 2.352, pop: '11,000,000', lang: 'French', econ: '$800 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
+            { name: 'Berlin', country: 'Germany', dms: '52°31\'12"N / 13°24\'18"E', lat: 52.520, lon: 13.405, pop: '3,700,000', lang: 'German', econ: '$200 Billion USD', rel: 'Christianity', tz: 'CET / CEST' },
+            { name: 'Moscow', country: 'Russia', dms: '55°45\'20"N / 37°37\'4"E', lat: 55.755, lon: 37.617, pop: '12,700,000', lang: 'Russian', econ: '$520 Billion USD', rel: 'Christianity', tz: 'MSK (UTC+3)' },
+            { name: 'Dubai', country: 'UAE', dms: '25°12\'16"N / 55°16\'16"E', lat: 25.204, lon: 55.270, pop: '3,100,000', lang: 'Arabic, English', econ: '$110 Billion USD', rel: 'Islam', tz: 'GST (UTC+4)' },
+            { name: 'Sydney', country: 'Australia', dms: '33°52\'5"S / 151°12\'32"E', lat: -33.868, lon: 151.209, pop: '5,400,000', lang: 'English', econ: '$450 Billion USD', rel: 'Christianity', tz: 'AEST / AEDT' },
+            { name: 'Mexico City', country: 'Mexico', dms: '19°25\'56"N / 99°8\'0"W', lat: 19.432, lon: -99.133, pop: '22,500,000', lang: 'Spanish', econ: '$410 Billion USD', rel: 'Christianity', tz: 'CST / CDT' },
+            { name: 'Vancouver', country: 'Canada', dms: '49°16\'56"N / 123°7\'16"W', lat: 49.282, lon: -123.120, pop: '2,600,000', lang: 'English', econ: '$150 Billion USD', rel: 'Christianity', tz: 'PST / PDT' },
+            { name: 'Cape Town', country: 'South Africa', dms: '33°55\'28"S / 18°25\'26"E', lat: -33.924, lon: 18.424, pop: '4,700,000', lang: 'Afrikaans, English', econ: '$100 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
+            { name: 'Kuala Lumpur', country: 'Malaysia', dms: '3°8\'24"N / 101°41\'12"E', lat: 3.139, lon: 101.686, pop: '8,400,000', lang: 'Malay, English', econ: '$200 Billion USD', rel: 'Islam', tz: 'MYT (UTC+8)' },
+            { name: 'Bangkok', country: 'Thailand', dms: '13°45\'21"N / 100°30\'3"E', lat: 13.756, lon: 100.501, pop: '11,300,000', lang: 'Thai', econ: '$240 Billion USD', rel: 'Buddhism', tz: 'ICT (UTC+7)' },
+            { name: 'Johannesburg', country: 'South Africa', dms: '26°12\'17"S / 28°2\'49"E', lat: -26.204, lon: 28.047, pop: '6,200,000', lang: 'English, Zulu', econ: '$180 Billion USD', rel: 'Christianity', tz: 'SAST (UTC+2)' },
+            { name: 'Nairobi', country: 'Kenya', dms: '1°17\'32"S / 36°49\'19"E', lat: -1.292, lon: 36.821, pop: '5,500,000', lang: 'Swahili, English', econ: '$60 Billion USD', rel: 'Christianity', tz: 'EAT (UTC+3)' },
+            { name: 'Los Angeles', country: 'USA', dms: '34°3\'8"N / 118°14\'36"W', lat: 34.052, lon: -118.243, pop: '13,200,000', lang: 'English', econ: '$1.2 Trillion USD', rel: 'Christianity', tz: 'PST / PDT' },
+            { name: 'Toronto', country: 'Canada', dms: '43°39\'11"N / 79°22\'59"W', lat: 43.653, lon: -79.383, pop: '6,500,000', lang: 'English', econ: '$500 Billion USD', rel: 'Christianity', tz: 'EST / EDT' },
+            { name: 'Buenos Aires', country: 'Argentina', dms: '34°36\'12"S / 58°22\'52"W', lat: -34.603, lon: -58.381, pop: '15,500,000', lang: 'Spanish', econ: '$250 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
+            { name: 'Honolulu', country: 'USA', dms: '21°18\'33"N / 157°51\'28"W', lat: 21.306, lon: -157.858, pop: '1,000,000', lang: 'English', econ: '$80 Billion USD', rel: 'Christianity, Buddhism', tz: 'HST (UTC-10)' },
+            { name: 'Auckland', country: 'New Zealand', dms: '36°50\'52"S / 174°45\'47"E', lat: -36.848, lon: 174.763, pop: '1,700,000', lang: 'English, Māori', econ: '$100 Billion USD', rel: 'Christianity, Non-religious', tz: 'NZST / NZDT' },
+            { name: 'Casablanca', country: 'Morocco', dms: '33°35\'18"N / 7°37\'5"W', lat: 33.573, lon: -7.589, pop: '3,400,000', lang: 'Arabic, French', econ: '$80 Billion USD', rel: 'Islam (Sunni)', tz: 'UTC+1' }
+        ];
 
-        // --- 2. 초기화 ---
+        // --- 2. Flight Network Data ---
+        const flightNetworkData = {
+            "London": [
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'Dubai,', co:'UAE'}, {r:3, c:'Paris,', co:'France'}, {r:4, c:'Los Angeles,', co:'USA'}, {r:5, c:'Amsterdam,', co:'Netherlands'}, {r:6, c:'Frankfurt,', co:'Germany'}, {r:7, c:'Toronto,', co:'Canada'}, {r:8, c:'Singapore,RE', co:'Singapore,re'}, {r:9, c:'Hong Kong,', co:'China'}, {r:10, c:'Sydney,', co:'Australia'}
+            ],
+            "São Paulo": [
+                {r:1, c:'Buenos Aires,', co:'Argentina'}, {r:2, c:'Santiago,', co:'Chile'}, {r:3, c:'New York,', co:'USA'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Lisbon,', co:'Portugal'}, {r:7, c:'London,', co:'UK'}, {r:8, c:'Bogota,', co:'Colombia'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Dubai,', co:'UAE'}
+            ],
+            "New York": [
+                {r:1, c:'London,', co:'UK'}, {r:2, c:'Paris,', co:'France'}, {r:3, c:'Toronto,', co:'Canada'}, {r:4, c:'Tel Aviv,', co:'Israel'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Frankfurt,', co:'Germany'}, {r:8, c:'Rome,', co:'Italy'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Tokyo,', co:'Japan'}
+            ],
+            "Seoul": [
+                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Osaka,', co:'Japan'}, {r:3, c:'Shanghai,', co:'China'}, {r:4, c:'Beijing,', co:'China'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Bangkok,', co:'Thailand'}, {r:7, c:'Taipei,', co:'Taiwan'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Sydney,', co:'Australia'}
+            ],
+            "Tokyo": [
+                {r:1, c:'Seoul,', co:'South Korea'}, {r:2, c:'Shanghai,', co:'China'}, {r:3, c:'Taipei,', co:'Taiwan'}, {r:4, c:'Honolulu,', co:'USA'}, {r:5, c:'Los Angeles,', co:'USA'}, {r:6, c:'Singapore,RE', co:'Singapore,re'}, {r:7, c:'Bangkok,', co:'Thailand'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'New York,', co:'USA'}, {r:10, c:'Vancouver,', co:'Canada'}
+            ],
+            "Beijing": [
+                {r:1, c:'Hong Kong,', co:'China'}, {r:2, c:'Seoul,', co:'South Korea'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Los Angeles,', co:'USA'}, {r:7, c:'Moscow,', co:'Russia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
+            ],
+            "Delhi": [
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Bangkok,', co:'Thailand'}, {r:4, c:'Kuala Lumpur,', co:'Malaysia'}, {r:5, c:'London,', co:'UK'}, {r:6, c:'Paris,', co:'France'}, {r:7, c:'Abu Dhabi,', co:'UAE'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'Toronto,', co:'Canada'}
+            ],
+            "Cairo": [
+                {r:1, c:'Jeddah,', co:'Saudi Arabia'}, {r:2, c:'Dubai,', co:'UAE'}, {r:3, c:'Riyadh,', co:'Saudi Arabia'}, {r:4, c:'London,', co:'UK'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'ISTANBUL', co:'Türkiye'}, {r:7, c:'Rome,', co:'Italy'}, {r:8, c:'Johannesburg,', co:'South Africa'}, {r:9, c:'Nairobi,', co:'Kenya'}, {r:10, c:'Frankfurt,', co:'Germany'}
+            ],
+            "Paris": [
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Dubai,', co:'UAE'}, {r:4, c:'Rome,', co:'Italy'}, {r:5, c:'Madrid,', co:'Spain'}, {r:6, c:'Los Angeles,', co:'USA'}, {r:7, c:'Montreal,', co:'Canada'}, {r:8, c:'Beijing,', co:'China'}, {r:9, c:'Cairo,', co:'Egypt'}, {r:10, c:'Buenos Aires,', co:'Argentina'}
+            ],
+            "Berlin": [
+                {r:1, c:'Istanbul,', co:'Türkiye'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Paris,', co:'France'}, {r:4, c:'Amsterdam,', co:'Netherlands'}, {r:5, c:'Zurich,', co:'Switzerland'}, {r:6, c:'Vienna,', co:'Austria'}, {r:7, c:'New York,', co:'USA'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Moscow,', co:'Russia'}, {r:10, c:'Bangkok,', co:'Thailand'}
+            ],
+            "Moscow": [
+                {r:1, c:'Istanbul,', co:'Türkiye'}, {r:2, c:'Antalya,', co:'Türkiye'}, {r:3, c:'Dubai,', co:'UAE'}, {r:4, c:'Bangkok,', co:'Thailand'}, {r:5, c:'Berlin,', co:'Germany'}, {r:6, c:'Minsk,', co:'Belarus'}, {r:7, c:'Beijing,', co:'China'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Paris,', co:'France'}, {r:10, c:'Cairo,', co:'Egypt'}
+            ],
+            "Dubai": [
+                {r:1, c:'London,', co:'UK'}, {r:2, c:'Delhi,', co:'India'}, {r:3, c:'BOMBAY,', co:'India'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Riyadh,', co:'Saudi Arabia'}, {r:6, c:'Moscow,', co:'Russia'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Los Angeles,', co:'USA'}, {r:9, c:'Sydney,', co:'Australia'}, {r:10, c:'Tokyo,', co:'Japan'}
+            ],
+            "Sydney": [
+                {r:1, c:'Auckland,', co:'New Zealand'}, {r:2, c:'Melbourne,', co:'Australia'}, {r:3, c:'Singapore,RE', co:'Singapore,re'}, {r:4, c:'Los Angeles,', co:'USA'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Delhi,', co:'India'}, {r:9, c:'Vancouver,', co:'Canada'}, {r:10, c:'London,', co:'UK'}
+            ],
+            "Mexico City": [
+                {r:1, c:'Los Angeles,', co:'USA'}, {r:2, c:'Houston,', co:'USA'}, {r:3, c:'Miami,', co:'USA'}, {r:4, c:'Bogota,', co:'Colombia'}, {r:5, c:'Madrid,', co:'Spain'}, {r:6, c:'New York,', co:'USA'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Lima,', co:'Peru'}, {r:9, c:'São Paulo,', co:'Brazil'}, {r:10, c:'London,', co:'UK'}
+            ],
+            "Vancouver": [
+                {r:1, c:'Seattle,', co:'USA'}, {r:2, c:'Los Angeles,', co:'USA'}, {r:3, c:'Toronto,', co:'Canada'}, {r:4, c:'Seattle,', co:'USA'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'London,', co:'UK'}, {r:7, c:'Dublin,', co:'Ireland'}, {r:8, c:'Seoul,', co:'South Korea'}, {r:9, c:'Tokyo,', co:'Japan'}, {r:10, c:'Mexico City,', co:'Mexico'}
+            ],
+            "Cape Town": [
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Johannesburg,', co:'South Africa'}, {r:3, c:'London,', co:'UK'}, {r:4, c:'Frankfurt,', co:'Germany'}, {r:5, c:'Amsterdam,', co:'Netherlands'}, {r:6, c:'Istanbul,', co:'Türkiye'}, {r:7, c:'Doha,', co:'Qatar'}, {r:8, c:'Paris,', co:'France'}, {r:9, c:'Singapore,RE', co:'Singapore,re'}, {r:10, c:'Nairobi,', co:'Kenya'}
+            ],
+            "Kuala Lumpur": [
+                {r:1, c:'Singapore,RE', co:'Singapore,re'}, {r:2, c:'Bangkok,', co:'Thailand'}, {r:3, c:'Jakarta,', co:'Indonesia'}, {r:4, c:'Delhi,', co:'India'}, {r:5, c:'Hong Kong,', co:'China'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Sydney,', co:'Australia'}, {r:9, c:'Seoul,', co:'South Korea'}, {r:10, c:'Istanbul,', co:'Türkiye'}
+            ],
+            "Bangkok": [
+                {r:1, c:'Kuala Lumpur,', co:'Malaysia'}, {r:2, c:'Singapore,RE', co:'Singapore,re'}, {r:3, c:'Hong Kong,', co:'China'}, {r:4, c:'Seoul,', co:'South Korea'}, {r:5, c:'Tokyo,', co:'Japan'}, {r:6, c:'Delhi,', co:'India'}, {r:7, c:'Dubai,', co:'UAE'}, {r:8, c:'Moscow,', co:'Russia'}, {r:9, c:'Sydney,', co:'Australia'}, {r:10, c:'Frankfurt,', co:'Germany'}
+            ],
+            "Johannesburg": [
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Cape Town,', co:'South Africa'}, {r:3, c:'London,', co:'UK'}, {r:4, c:'Nairobi,', co:'Kenya'}, {r:5, c:'Frankfurt,', co:'Germany'}, {r:6, c:'Doha,', co:'Qatar'}, {r:7, c:'Istanbul,', co:'Türkiye'}, {r:8, c:'Paris,', co:'France'}, {r:9, c:'Perth,', co:'Australia'}, {r:10, c:'New York,', co:'USA'}
+            ],
+            "Nairobi": [
+                {r:1, c:'Dubai,', co:'UAE'}, {r:2, c:'Johannesburg,', co:'South Africa'}, {r:3, c:'Amsterdam,', co:'Netherlands'}, {r:4, c:'London,', co:'UK'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Istanbul,', co:'Türkiye'}, {r:7, c:'Entebbe,', co:'Uganda'}, {r:8, c:'Jeddah,', co:'Saudi Arabia'}, {r:9, c:'Cape Town,', co:'South Africa'}, {r:10, c:'Delhi,', co:'India'}
+            ],
+            "Los Angeles": [
+                {r:1, c:'Mexico City,', co:'Mexico'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Tokyo,', co:'Japan'}, {r:4, c:'Vancouver,', co:'Canada'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Sydney,', co:'Australia'}, {r:7, c:'Seoul,', co:'South Korea'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Frankfurt,', co:'Germany'}, {r:10, c:'New York,', co:'USA'}
+            ],
+            "Toronto": [
+                {r:1, c:'New York,', co:'USA'}, {r:2, c:'London,', co:'UK'}, {r:3, c:'Vancouver,', co:'Canada'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Paris,', co:'France'}, {r:6, c:'Dubai,', co:'UAE'}, {r:7, c:'Frankfurt,', co:'Germany'}, {r:8, c:'Cancun,', co:'Mexico'}, {r:9, c:'Mexico City,', co:'Mexico'}, {r:10, c:'Rome,', co:'Italy'}
+            ],
+            "Buenos Aires": [
+                {r:1, c:'Santiago,', co:'Chile'}, {r:2, c:'São Paulo,', co:'Brazil'}, {r:3, c:'Madrid,', co:'Spain'}, {r:4, c:'Miami,', co:'USA'}, {r:5, c:'Lima,', co:'Peru'}, {r:6, c:'Bogota,', co:'Colombia'}, {r:7, c:'Paris,', co:'France'}, {r:8, c:'Rome,', co:'Italy'}, {r:9, c:'New York,', co:'USA'}, {r:10, c:'Mexico City,', co:'Mexico'}
+            ],
+            "Honolulu": [
+                {r:1, c:'Tokyo,', co:'Japan'}, {r:2, c:'Sydney,', co:'Australia'}, {r:3, c:'Los Angeles,', co:'USA'}, {r:4, c:'Auckland,', co:'New Zealand'}, {r:5, c:'Vancouver,', co:'Canada'}, {r:6, c:'Seoul,', co:'South Korea'}, {r:7, c:'Osaka,', co:'Japan'}, {r:8, c:'Manila,', co:'Philippines'}, {r:9, c:'Dubai,', co:'UAE'}, {r:10, c:'Singapore,RE', co:'Singapore,re'}
+            ],
+            "Auckland": [
+                {r:1, c:'Sydney,', co:'Australia'}, {r:2, c:'Melbourne,', co:'Australia'}, {r:3, c:'Los Angeles,', co:'USA'}, {r:4, c:'Singapore,RE', co:'Singapore,re'}, {r:5, c:'Dubai,', co:'UAE'}, {r:6, c:'Hong Kong,', co:'China'}, {r:7, c:'Tokyo,', co:'Japan'}, {r:8, c:'Vancouver,', co:'Canada'}, {r:9, c:'Honolulu,', co:'USA'}, {r:10, c:'Santiago,', co:'Chile'}
+            ],
+            "Casablanca": [
+                {r:1, c:'Paris,', co:'France'}, {r:2, c:'Istanbul,', co:'Türkiye'}, {r:3, c:'Madrid,', co:'Spain'}, {r:4, c:'Milan,', co:'Italy'}, {r:5, c:'Lisbon,', co:'Portugal'}, {r:6, c:'Rome,', co:'Italy'}, {r:7, c:'Jeddah,', co:'Saudi Arabia'}, {r:8, c:'Dubai,', co:'UAE'}, {r:9, c:'Montreal,', co:'Canada'}, {r:10, c:'New York,', co:'USA'}
+            ]
+        };
+
+        // --- 3. 초기화 ---
         function init() {
             const canvasContainer = document.body;
-            
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x000000); 
 
-            camera = new THREE.PerspectiveCamera(
-                60,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                1000
-            );
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, INITIAL_CAMERA_Z);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             canvasContainer.appendChild(renderer.domElement);
@@ -184,20 +552,21 @@
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.minDistance = 1.5;
+            controls.minDistance = 1.2;
             controls.maxDistance = 10;
             controls.autoRotate = true; 
             controls.autoRotateSpeed = -1.0; 
+            controls.target.set(0, 0, 0);
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.12); 
             scene.add(ambientLight);
 
             createEarthSphere(); 
             createDataPoints(EARTH_RADIUS); 
+            initZoomSliderEvents();
 
             window.addEventListener('resize', onWindowResize);
 
-            // Pointer 이벤트로 클릭 판단 (드래그와 구분)
             renderer.domElement.addEventListener('pointerdown', (e) => {
                 pointerDown = true;
                 pointerDownPos.x = e.clientX;
@@ -209,59 +578,143 @@
                 const dx = Math.abs(e.clientX - pointerDownPos.x);
                 const dy = Math.abs(e.clientY - pointerDownPos.y);
                 if (dx <= CLICK_THRESHOLD && dy <= CLICK_THRESHOLD) {
-                    // 실제 '클릭'으로 처리
                     handleCanvasClick(e);
                 }
             });
 
-            // expose functions to global
-            window.flyToCity = flyToCity;
-            window.flyToHomeAndUnzoom = flyToHomeAndUnzoom;
+            window.changeTexture = changeTexture;
+            
+            // 섹션 활성화 함수 전역 등록
+            window.activateSection = activateSection;
+        }
+
+        function latLonToVector3(lat, lon, radius = EARTH_RADIUS) {
+            const phi = (90 - lat) * (Math.PI / 180); 
+            const theta = (lon + 180) * (Math.PI / 180); 
+            const x = -((radius) * Math.sin(phi) * Math.cos(theta));
+            const z = ((radius) * Math.sin(phi) * Math.sin(theta));
+            const y = ((radius) * Math.cos(phi));
+            return new THREE.Vector3(x, y, z);
+        }
+
+        // --- 4. 섹션 활성화 로직 (탭 전환) ---
+        function activateSection(secNum) {
+            if (!currentlyZoomedCityName) return; // 줌 상태가 아니면 무시 가능
+
+            // 모든 섹션 비활성화
+            document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
+            
+            // 선택된 섹션 활성화
+            const activeSec = document.getElementById(`sec-0${secNum}`);
+            if(activeSec) activeSec.classList.add('active');
+        }
+
+        // --- 5. Back Button Handling ---
+        window.handleBackClick = function(event) {
+            if (currentlyZoomedCityName) {
+                event.preventDefault(); 
+                flyToHomeAndUnzoom();   
+            }
+        };
+
+        // --- 6. 줌 슬라이더 로직 ---
+        function initZoomSliderEvents() {
+            zoomThumb.addEventListener('pointerdown', (e) => {
+                isDraggingZoom = true;
+                controls.enabled = false; 
+                e.stopPropagation(); 
+            });
+            window.addEventListener('pointermove', (e) => {
+                if (!isDraggingZoom) return;
+                const rect = zoomWrapper.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                if (x < 0) x = 0;
+                if (x > rect.width) x = rect.width;
+                const percent = x / rect.width; 
+                updateZoomThumbPosition(percent);
+                updateCameraZoomFromSlider(percent);
+            });
+            window.addEventListener('pointerup', () => {
+                if (isDraggingZoom) {
+                    isDraggingZoom = false;
+                    controls.enabled = true; 
+                }
+            });
+        }
+
+        function updateZoomThumbPosition(percent) {
+            zoomThumb.style.left = (percent * 100) + '%';
+        }
+
+        function updateCameraZoomFromSlider(percent) {
+            const minD = controls.minDistance;
+            const maxD = controls.maxDistance;
+            const newDistance = maxD - (percent * (maxD - minD));
+            const direction = new THREE.Vector3().subVectors(camera.position, controls.target).normalize();
+            camera.position.copy(controls.target).add(direction.multiplyScalar(newDistance));
+        }
+
+        function syncSliderWithCamera() {
+            if (isDraggingZoom) return; 
+            const dist = camera.position.distanceTo(camera.userData.targetLookAt || controls.target);
+            
+            let currentDist;
+            if (currentlyZoomedCityName) {
+                 currentDist = camera.position.distanceTo(camera.userData.targetLookAt);
+            } else {
+                 currentDist = camera.position.distanceTo(controls.target);
+            }
+
+            const minD = controls.minDistance;
+            const maxD = controls.maxDistance;
+            let percent = (maxD - currentDist) / (maxD - minD);
+            if (percent < 0) percent = 0;
+            if (percent > 1) percent = 1;
+            updateZoomThumbPosition(percent);
         }
         
-        // --- 3. 지구본 생성 ---
+        // --- 7. 지구본 및 데이터 포인트 ---
         function createEarthSphere() {
             updateLoadingStatus('Loading earth texture...');
-            
-            const textureLoader = new THREE.TextureLoader();
-            const earthTexture = textureLoader.load(
-                'earth_bw.jpg', 
-                () => {
-                    updateLoadingStatus('Earth texture loaded!');
-                    setTimeout(() => updateLoadingStatus(''), 800);
-                },
+            const earthTexture = textureLoader.load('earth_clouds.jpg', 
+                () => { updateLoadingStatus('Earth texture loaded!'); setTimeout(() => updateLoadingStatus(''), 800); },
                 undefined,
-                (error) => {
-                    console.error('Error loading texture:', error);
-                    updateLoadingStatus('Error loading texture (Check file name: earth_bw.jpg)');
-                }
+                () => { updateLoadingStatus('Error loading texture'); }
             );
-
             const geometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-            
-            const material = new THREE.MeshBasicMaterial({ 
-                map: earthTexture,
-            });
-            
+            const material = new THREE.MeshBasicMaterial({ map: earthTexture });
             earthModel = new THREE.Mesh(geometry, material);
+            earthModel.position.y = GLOBE_Y_OFFSET;
             scene.add(earthModel);
         }
 
-        // --- 4. 도시 포인트 및 라벨 ---
-        const citiesData = [
-           
-        ];
+        function changeTexture(name, fileName, element) {
+            if (!earthModel) return;
+            const menuItems = document.querySelectorAll('#texture-menu li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            if (element) element.classList.add('active');
+            updateLoadingStatus(`Switching to ${name}...`);
+            textureLoader.load(fileName, (tex) => {
+                earthModel.material.map = tex;
+                earthModel.material.needsUpdate = true;
+                updateLoadingStatus('');
+            });
+        }
 
         function createDataPoints(earthRadius) {
             citiesData.forEach(city => {
-                const pos = latLonToVector3(city.lat, city.lon, earthRadius * 1.002); 
-                
+                const localPos = latLonToVector3(city.lat, city.lon, earthRadius * 1.002); 
                 const pointGeometry = new THREE.SphereGeometry(0.008, 16, 16); 
                 const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x4cf3ff });
                 const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
                 
-                pointMesh.position.copy(pos);
-                pointMesh.userData = { isCityPoint: true, name: city.name, lat: city.lat, lon: city.lon };
+                pointMesh.position.copy(localPos);
+                pointMesh.position.y += GLOBE_Y_OFFSET;
+
+                pointMesh.userData = { 
+                    isCityPoint: true, 
+                    ...city 
+                };
                 scene.add(pointMesh);
                 cityPoints.push(pointMesh);
 
@@ -273,66 +726,289 @@
             const label = document.createElement('div');
             label.className = 'city-label';
             label.id = `label-${meshId}`;
-            label.textContent = name;
+            label.innerHTML = `<span class="label-bracket">(</span>${name}<span class="label-bracket">)</span>`;
             document.body.appendChild(label);
-            
-            // label 클릭은 DOM 상에서의 클릭이므로 화면 좌표 클릭과 분리
             label.addEventListener('click', (e) => {
                 e.stopPropagation();
                 flyToCity(name);
             });
         }
 
-        // --- 5. Fly home (Back to Earth) ---
+        // --- 8. 비행 및 View 변경 로직 ---
+        function updateCameraOffset(isZoomed) {
+            if (isZoomed) {
+                const xOffset = window.innerWidth * 0.3; // CSS 스타일 반영
+                const yOffset = -window.innerHeight * 0.1; 
+                camera.setViewOffset(window.innerWidth, window.innerHeight, xOffset, yOffset, window.innerWidth, window.innerHeight);
+            } else {
+                camera.clearViewOffset();
+            }
+        }
+        
+        // [New Function] 두 도시를 잇는 곡선 생성 및 카메라 이동
+        function connectCity(targetCityName) {
+            // 출발지는 현재 줌인된 도시
+            const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
+            // 목적지는 클릭한 리스트의 도시
+            // flightNetworkData에는 "Paris," 처럼 쉼표가 있을 수 있으므로 제거 후 비교
+            const cleanTargetName = targetCityName.replace(',', '').trim();
+            const endCity = citiesData.find(c => c.name.toLowerCase() === cleanTargetName.toLowerCase());
+
+            if (!startCity || !endCity) {
+                console.log("City not found in database:", cleanTargetName);
+                return;
+            }
+
+            // 목적지 선택 업데이트 (UI용)
+            currentlySelectedDestName = endCity.name;
+            updateFlightListUI();
+
+            // [추가] 라벨 회전 동기화를 위한 클래스 리셋
+            // 출발지와 도착지의 라벨 애니메이션을 재시작하여 싱크를 맞춤
+            const startLabel = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(startCity.name));
+            const endLabel = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(endCity.name));
+            
+            if(startLabel) {
+                startLabel.classList.remove('zoomed-label');
+                void startLabel.offsetWidth; // Force Reflow
+                startLabel.classList.add('zoomed-label');
+            }
+            if(endLabel) {
+                endLabel.classList.remove('zoomed-label'); // 기존에 있었어도 리셋
+                void endLabel.offsetWidth; 
+                // 아래 updateHTMLLabels에서 추가되겠지만 여기서 미리 처리해도 무방
+            }
+
+            // 기존 라인 제거
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+
+            // 곡선 그리기
+            drawFlightLine(startCity, endCity);
+
+            // 카메라 이동: 선택된 목적지를 지구본 중심(화면상 좌측 뷰포트의 중심)에 놓음
+            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS);
+            const endPosWorld = endPos.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
+            const earthCenter = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
+            
+            // 목적지를 바라보는 방향 벡터
+            const viewDir = endPosWorld.clone().sub(earthCenter).normalize();
+            const newCameraPos = earthCenter.clone().add(viewDir.multiplyScalar(ZOOMED_CAMERA_Z));
+
+            isFlying = true;
+            camera.userData.targetPos = newCameraPos;
+            camera.userData.targetLookAt = earthCenter;
+        }
+
+        function drawFlightLine(startCity, endCity) {
+            // [수정] 시작점과 끝점을 지구 표면보다 살짝 띄움 (1.002 -> 1.005)
+            // 이렇게 하면 선이 지구 안으로 파묻히는 현상(Z-fighting)을 방지할 수 있습니다.
+            const startPos = latLonToVector3(startCity.lat, startCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
+            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
+
+            const distance = startPos.distanceTo(endPos);
+            // [수정] 휘어짐 1/3로 축소 (* 0.5 -> * 0.15)
+            const midPoint = startPos.clone().add(endPos).normalize().multiplyScalar(EARTH_RADIUS + distance * 0.15); 
+
+            // [수정] 곡선 제어점 추가: 시작 직후와 끝 직전에 고도를 살짝 높여줌
+            // 3점 커브 대신 5점 커브 등을 사용하여 시작 부분 매몰 방지
+            // 간단하게는 시작점 바로 다음 포인트를 공중으로 띄웁니다.
+            
+            const curve = new THREE.CatmullRomCurve3([
+                startPos,
+                midPoint,
+                endPos
+            ]);
+
+            const points = curve.getPoints(100); 
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            // [수정] 컬러 #4cf3ff, 두께 2 (WebGL 렌더러에 따라 1px 고정일 수 있음)
+            const material = new THREE.LineBasicMaterial({ color: 0x4cf3ff, linewidth: 3 }); 
+
+            const line = new THREE.Line(geometry, material);
+            line.position.y = GLOBE_Y_OFFSET;
+            
+            // [수정] 선 그리기 애니메이션 준비
+            flightLineGeometry = geometry;
+            flightLineDrawLimit = 100;
+            flightLineCurrentDraw = 0;
+            flightLineGeometry.setDrawRange(0, 0); // 처음엔 안 보임
+
+            scene.add(line);
+            activeFlightLine = line;
+        }
+
+        // [New Helper] Flight List UI 업데이트 (선택된 항목 스타일링)
+        function updateFlightListUI() {
+            const items = document.querySelectorAll('.flight-item');
+            items.forEach(item => {
+                const cityNameElem = item.querySelector('.flight-dest-city');
+                if (cityNameElem) {
+                    const itemName = cityNameElem.textContent.replace(',', '').trim();
+                    if (currentlySelectedDestName && itemName.toLowerCase() === currentlySelectedDestName.toLowerCase()) {
+                        item.classList.add('selected-dest');
+                    } else {
+                        item.classList.remove('selected-dest');
+                    }
+                }
+            });
+        }
+
+        // 홈으로 복귀
         function flyToHomeAndUnzoom() {
             if (currentlyZoomedCityName === null) return; 
+            
+            document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
 
-            // 비행 시작: disable controls to avoid user interaction during flight
             controls.enabled = false;
-            controls.autoRotate = false; // disable while flying back to avoid interference
+            controls.autoRotate = false; 
 
-            const origin = new THREE.Vector3(0, 0, 0);
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+            currentlySelectedDestName = null; // 선택 초기화
+
+            const originTarget = new THREE.Vector3(0, 0, 0);
             const zoomOutCameraPos = new THREE.Vector3(0, 0, INITIAL_CAMERA_Z);
             
             isFlying = true;
             camera.userData.targetPos = zoomOutCameraPos;
-            camera.userData.targetLookAt = origin;
+            camera.userData.targetLookAt = originTarget;
 
-            // 상태 초기화 — 자동회전은 애니메이션 종결 시 복구
             currentlyZoomedCityName = null;
-            // 버튼 visibility handled in animate()
+            updateCameraOffset(false);
+
+            backBtn.textContent = "back to main";
+            mainTitle.classList.remove('zoomed-title');
+            
+            rightPanel.style.opacity = '0';
+            rightPanel.style.pointerEvents = 'none';
+            // 패널 초기화 (다시 열릴 때 01이 먼저 보이도록)
+            activateSection(1);
+
+            instructionText.style.opacity = '1';
+            zoomWrapper.style.opacity = '1';
+            zoomWrapper.style.pointerEvents = 'auto';
+            textureMenu.style.opacity = '1';
+            textureMenu.style.pointerEvents = 'auto';
+            mainTitle.style.opacity = '1';
         }
 
-        // --- 6. Fly to city (zoom in) ---
+        // 도시로 이동
         function flyToCity(cityName) {
-            // toggle: same city clicked -> zoom out
-            if (currentlyZoomedCityName === cityName) {
-                flyToHomeAndUnzoom();
-                return;
-            }
+            if (currentlyZoomedCityName === cityName) return;
+
+            // 라벨 초기화
+            document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
+            // 현재 도시 라벨 활성화
+            const label = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(cityName));
+            if(label) label.classList.add('zoomed-label');
 
             const targetCity = citiesData.find(c => c.name === cityName);
             if (!targetCity) return;
 
-            // 비행 시작: disable controls while flying
+            // 기존 라인 제거
+            if (activeFlightLine) {
+                scene.remove(activeFlightLine);
+                activeFlightLine = null;
+            }
+            currentlySelectedDestName = null;
+
             controls.enabled = false;
             controls.autoRotate = false;
 
-            const targetLookAt = latLonToVector3(targetCity.lat, targetCity.lon, 0);
-            // camera target pos: slightly away from surface along same vector (ZOOMED_CAMERA_Z)
-            const targetVector = latLonToVector3(targetCity.lat, targetCity.lon, ZOOMED_CAMERA_Z);
+            const earthCenter = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
+            const localPoint = latLonToVector3(targetCity.lat, targetCity.lon, EARTH_RADIUS); 
+            const worldCityPos = localPoint.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
+
+            const cityDir = worldCityPos.clone().sub(earthCenter).normalize();
+            const cameraPos = earthCenter.clone().add(cityDir.multiplyScalar(ZOOMED_CAMERA_Z));
 
             isFlying = true;
-            camera.userData.targetPos = targetVector;
-            camera.userData.targetLookAt = targetLookAt;
+            camera.userData.targetPos = cameraPos;     
+            camera.userData.targetLookAt = earthCenter; 
 
             currentlyZoomedCityName = cityName;
-            // 버튼 visibility handled in animate()
+
+            updateCameraOffset(true);
+
+            backBtn.textContent = "back to the earth";
+            mainTitle.classList.add('zoomed-title');
+
+            instructionText.style.opacity = '0';
+            zoomWrapper.style.opacity = '0';
+            zoomWrapper.style.pointerEvents = 'none';
+            textureMenu.style.opacity = '0';
+            textureMenu.style.pointerEvents = 'none';
+
+            fillCityData(targetCity);
+            rightPanel.style.opacity = '1';
+            rightPanel.style.pointerEvents = 'auto';
         }
         
-        // --- 7. Canvas 클릭 처리 (pointerup에서 호출) ---
+        function fillCityData(city) {
+            // [Section 01, 02, 03, 04] 공통 헤더 생성
+            const nameInitial = city.name.charAt(0);
+            const nameRest = city.name.slice(1);
+            const titleHTML = 
+                `<span class="city-title-initial">${nameInitial}</span>` +
+                `<span class="city-title-rest">${nameRest}, ${city.country}</span>`;
+            
+            // 모든 섹션의 타이틀 영역 채우기
+            cityTitleArea01.innerHTML = titleHTML;
+            //cityTitleArea02.innerHTML = titleHTML;
+            cityTitleArea03.innerHTML = titleHTML;
+            cityTitleArea04.innerHTML = titleHTML;
+            
+            // [Section 01] 데이터 채우기
+            valDms.textContent = city.dms;
+            valPop.textContent = city.pop;
+            valLang.textContent = city.lang;
+            valEcon.textContent = city.econ;
+            valRel.textContent = city.rel;
+            valTz.textContent = city.tz;
+
+            // [Section 02] Flight List 생성
+            const flights = flightNetworkData[city.name];
+            flightListContainer.innerHTML = ""; // 초기화
+
+            if (flights && flights.length > 0) {
+                flights.forEach(f => {
+                    const itemDiv = document.createElement('div');
+                    
+                    // [수정] 실제 존재하는 도시인지 확인
+                    const cleanName = f.c.replace(',', '').trim();
+                    const exists = citiesData.find(c => c.name.toLowerCase() === cleanName.toLowerCase());
+                    
+                    if (exists) {
+                        itemDiv.className = 'flight-item clickable';
+                        itemDiv.onclick = () => connectCity(f.c);
+                    } else {
+                        itemDiv.className = 'flight-item unclickable';
+                    }
+                    
+                    itemDiv.innerHTML = `
+                        <div class="flight-rank-wrapper">
+                            <span class="flight-rank-bracket">(</span>
+                            <span class="flight-rank-num">${f.r}</span>
+                            <span class="flight-rank-bracket">)</span>
+                        </div>
+                        <div class="flight-dest-group">
+                            <span class="flight-dest-city">${f.c}</span>
+                            <span class="flight-dest-country">${f.co}</span>
+                        </div>
+                    `;
+                    flightListContainer.appendChild(itemDiv);
+                });
+            } else {
+                flightListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No flight data available.</div>`;
+            }
+        }
+
         function handleCanvasClick(event) {
-            // renderer.domElement is full-window; get client coords from event
             const rect = renderer.domElement.getBoundingClientRect();
             const clientX = event.clientX - rect.left;
             const clientY = event.clientY - rect.top;
@@ -341,8 +1017,6 @@
             mouse.y = -(clientY / rect.height) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-
-            // only test cityPoints
             const intersects = raycaster.intersectObjects(cityPoints, true);
 
             if (intersects.length > 0) {
@@ -350,68 +1024,59 @@
                 if (clickedPoint.userData && clickedPoint.userData.isCityPoint) {
                     flyToCity(clickedPoint.userData.name);
                 }
-            } else {
-                // 빈 공간 클릭 시: 줌아웃 대신 버튼 사용 권장 (여기선 아무 동작 안함)
             }
         }
 
-        // --- 8. 애니메이션 루프 ---
         function animate() {
             requestAnimationFrame(animate);
 
             if (isFlying && camera.userData && camera.userData.targetPos && camera.userData.targetLookAt) {
-                // 부드러운 이동
                 camera.position.lerp(camera.userData.targetPos, flySpeed);
                 controls.target.lerp(camera.userData.targetLookAt, flySpeed);
 
                 const distance = camera.position.distanceTo(camera.userData.targetPos);
-                // 카메라 이동이 거의 끝나면 비행 종료
                 if (distance < 0.03) {
                     isFlying = false;
-
-                    // 컨트롤 복구
                     controls.enabled = true;
-
-                    // 만약 현재 확대 상태가 없으면(=홈 복귀 상태) 자동회전 복구
                     if (currentlyZoomedCityName === null) {
                         controls.autoRotate = true;
                     } else {
-                        // 확대된 상태면 자동회전은 끈 채로 유지
                         controls.autoRotate = false;
-                        // 컨트롤의 target을 중심으로 살짝 offset하여 마우스가 즉시 드래그되는 것을 방지
                         controls.target.copy(camera.userData.targetLookAt);
                     }
                 }
             }
 
-            // OrbitControls 자동 회전 수행 (controls.update 내부에서 처리)
+            // [수정] 선 그리기 애니메이션 (Draw Range 증가)
+            if (activeFlightLine && flightLineGeometry) {
+                if (flightLineCurrentDraw < flightLineDrawLimit) {
+                    flightLineCurrentDraw += 2; // 그리는 속도
+                    if (flightLineCurrentDraw > flightLineDrawLimit) flightLineCurrentDraw = flightLineDrawLimit;
+                    flightLineGeometry.setDrawRange(0, flightLineCurrentDraw);
+                }
+            }
+
             controls.update();
-
-            // 라벨 위치 업데이트
             updateHTMLLabels();
-
-            // Back 버튼 보이기/숨기기
-            const backBtn = document.getElementById('back-to-earth-btn');
-            if (backBtn) {
-                backBtn.style.display = currentlyZoomedCityName ? 'block' : 'none';
+            if (!currentlyZoomedCityName) {
+                syncSliderWithCamera();
             }
 
             renderer.render(scene, camera);
         }
 
-        // --- 9. HTML 라벨 위치 업데이트 ---
         function updateHTMLLabels() {
             cityPoints.forEach(mesh => {
                 const label = document.getElementById(`label-${mesh.id}`);
                 if (!label) return;
 
+                const cityName = mesh.userData.name;
                 const meshPosition = new THREE.Vector3().setFromMatrixPosition(mesh.matrixWorld);
-
-                const normalVector = meshPosition.clone().normalize(); 
+                const centerPos = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
+                const normalVector = meshPosition.clone().sub(centerPos).normalize(); 
+                
                 const meshToCamera = new THREE.Vector3().subVectors(camera.position, meshPosition).normalize();
-                
                 const dotProduct = normalVector.dot(meshToCamera); 
-                
                 const isFacingCamera = dotProduct > 0.0; 
 
                 const vector = meshPosition.clone().project(camera);
@@ -420,15 +1085,34 @@
                     label.style.left = `${(vector.x * 0.5 + 0.5) * window.innerWidth}px`;
                     label.style.top = `${(-vector.y * 0.5 + 0.5) * window.innerHeight}px`;
                     
-                    label.style.opacity = Math.min(1, Math.max(0, dotProduct * 5)); 
+                    if(currentlyZoomedCityName) {
+                        label.style.opacity = 1;
+                    } else {
+                        label.style.opacity = Math.min(1, Math.max(0, dotProduct * 5)); 
+                    }
+                    
+                    // [수정] 라벨 투명도 로직: 
+                    // 1. 현재 줌인된 도시이거나
+                    // 2. 현재 선택된 목적지 도시이면 불투명(1)
+                    // 3. 그 외에는 흐리게(0.2)
+                    let isHighlighted = false;
+                    if (currentlyZoomedCityName && cityName === currentlyZoomedCityName) isHighlighted = true;
+                    if (currentlySelectedDestName && cityName === currentlySelectedDestName) isHighlighted = true;
+
+                    if (currentlyZoomedCityName && !isHighlighted) {
+                        label.style.opacity = 0.2; 
+                        label.classList.remove('zoomed-label'); // 강조 해제
+                    } else if (isHighlighted) {
+                        label.style.opacity = 1;
+                        label.classList.add('zoomed-label'); // 강조 추가
+                    }
+
                 } else {
                     label.style.opacity = 0;
                 }
             });
         }
 
-
-        // --- 10. 기타 유틸리티 ---
         function updateLoadingStatus(message) {
             const info = document.getElementById('loading-status');
             if (info) {
@@ -440,12 +1124,25 @@
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            if(currentlyZoomedCityName) {
+                updateCameraOffset(true);
+            }
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             init();
             animate();
+        });
+
+        const audio = new Audio('1.mp3');
+        let hasPlayed = false;
+        
+        document.addEventListener('mousemove', () => {
+            if (!hasPlayed) {
+                audio.play().catch(err => console.log('Audio play failed:', err));
+                hasPlayed = true;
+            }
         });
     </script>
 </body>
