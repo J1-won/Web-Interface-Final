@@ -135,11 +135,13 @@
             position: relative; height: 100%;
             display: flex; flex-direction: column;
             transition: flex 0.5s ease; /* 부드러운 전환 */
+            cursor: pointer; /* 클릭 가능하도록 변경 */
         }
         .panel-section.active {
             /* 활성 상태는 flex 값을 늘려 넓게 표현 (+20px 효과) */
             flex: 1.6; 
             border-left: 1px solid #4cf3ff; 
+            cursor: default;
         }
         
         .section-title-wrapper {
@@ -167,7 +169,9 @@
         .info-content {
             padding: 100px 0px 60px 40px; text-align: left; opacity: 1;width:400px;
             overflow-y: auto; height: 100%; box-sizing: border-box;
+            display: none; /* 기본 숨김, 활성화 시 block */
         }
+        .panel-section.active .info-content { display: block; }
         
         .city-title-group { margin-bottom: 80px; padding-left:60px;}
         .city-title-initial { font-family: "Ballet", cursive; font-size: 1rem; color: #4cf3ff; line-height: 0.8;}
@@ -188,6 +192,18 @@
             padding-left: 30px;
         }
 
+        /* --- [NEW] Flight List Styles (Section 02) --- */
+        .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 140px; }
+        .flight-item { display: flex; align-items: baseline; }
+        .flight-rank-wrapper { width: 60px; text-align: left; }
+        .flight-rank-bracket { font-family: "Ballet", cursive; font-size: 1rem; color: white; }
+        .flight-rank-num { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.5rem; color: white; }
+        
+        .flight-dest-group { display: flex; flex-direction: column; }
+        .flight-dest-city { font-family: "Arimo", sans-serif; font-size: 0.5rem; color: white; }
+        .flight-dest-country { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.45rem; color: white; margin-top: 5px; }
+
+
         /* --- 하단 줌 컨트롤 바 --- */
         #zoom-controls-wrapper {
             position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%);
@@ -202,7 +218,7 @@
         #zoom-thumb { left: 20%; background-color: #4CF3FF; cursor: pointer; z-index: 301; }
         #zoom-thumb::after { content: ''; position: absolute; top: -15px; left: -15px; right: -15px; bottom: -15px; }
         .zoom-label { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; pointer-events: none; }
-        .zoom-label .ballet { font-size: 1rem; color: white; line-height: 1; }
+        .zoom-label .ballet { font-size: 0.8rem; color: white; line-height: 1; }
         .zoom-label .arimo-i { font-size: 0.5rem; color: white; }
         #zoom-thumb .zoom-label .ballet, #zoom-thumb .zoom-label .arimo-i { color: #4CF3FF; }
         h1.zoomed-title {
@@ -235,36 +251,18 @@
     </div>
 
     <div id="right-panel-container">
-        <div class="panel-section active" id="sec-city-info">
+        
+        <div class="panel-section active" id="sec-01" onclick="activateSection(1)">
             <div class="info-content">
-                <div class="city-title-group" id="city-title-area">
-                    </div>
+                <div class="city-title-group" id="city-title-area-01"></div>
                 
                 <div class="info-list">
-                    <div class="info-row">
-                        <span class="category-name">DMS</span>
-                        <span class="data-value" id="val-dms"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="category-name">Population</span>
-                        <span class="data-value" id="val-pop"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="category-name">Language</span>
-                        <span class="data-value" id="val-lang"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="category-name">Economic Scale</span>
-                        <span class="data-value" id="val-econ"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="category-name">Primary Religion</span>
-                        <span class="data-value" id="val-rel"></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="category-name">Time Zone</span>
-                        <span class="data-value" id="val-tz"></span>
-                    </div>
+                    <div class="info-row"><span class="category-name">DMS</span><span class="data-value" id="val-dms"></span></div>
+                    <div class="info-row"><span class="category-name">Population</span><span class="data-value" id="val-pop"></span></div>
+                    <div class="info-row"><span class="category-name">Language</span><span class="data-value" id="val-lang"></span></div>
+                    <div class="info-row"><span class="category-name">Economic Scale</span><span class="data-value" id="val-econ"></span></div>
+                    <div class="info-row"><span class="category-name">Primary Religion</span><span class="data-value" id="val-rel"></span></div>
+                    <div class="info-row"><span class="category-name">Time Zone</span><span class="data-value" id="val-tz"></span></div>
                 </div>
             </div>
 
@@ -274,21 +272,39 @@
             </div>
         </div>
 
-        <div class="panel-section">
+        <div class="panel-section" id="sec-02" onclick="activateSection(2)">
+            <div class="info-content">
+                <div class="city-title-group" id="city-title-area-02"></div>
+                
+                <div class="info-row" style="margin-bottom:0px; padding-left:140px;">
+                     <span class="category-name">Flight Top 10</span>
+                </div>
+                <div class="flight-list" id="flight-list-container">
+                    </div>
+            </div>
+
             <div class="section-title-wrapper">
                 <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
             </div>
         </div>
 
-        <div class="panel-section">
+        <div class="panel-section" id="sec-03" onclick="activateSection(3)">
+             <div class="info-content">
+                <div class="city-title-group" id="city-title-area-03"></div>
+                <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
+            </div>
             <div class="section-title-wrapper">
                 <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">K</span>eyword Networks</span>
             </div>
         </div>
 
-        <div class="panel-section">
+        <div class="panel-section" id="sec-04" onclick="activateSection(4)">
+             <div class="info-content">
+                <div class="city-title-group" id="city-title-area-04"></div>
+                <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
+            </div>
             <div class="section-title-wrapper">
                 <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
                 <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
@@ -337,8 +353,6 @@
         const INITIAL_CAMERA_Z = 3.0;
         const ZOOMED_CAMERA_Z = 2.0; 
         
-        // [수정 1] SIDE_VIEW_OFFSET_X 제거. 대신 setViewOffset을 사용하여 투시 왜곡 방지
-
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         const textureLoader = new THREE.TextureLoader();
@@ -357,18 +371,26 @@
         const backBtn = document.getElementById('main-back-btn');
         const mainTitle = document.getElementById('main-title');
 
-        // Data Fields
-        const cityTitleArea = document.getElementById('city-title-area');
+        // Data Fields (Sec 01)
+        const cityTitleArea01 = document.getElementById('city-title-area-01');
         const valDms = document.getElementById('val-dms');
         const valPop = document.getElementById('val-pop');
         const valLang = document.getElementById('val-lang');
         const valEcon = document.getElementById('val-econ');
         const valRel = document.getElementById('val-rel');
         const valTz = document.getElementById('val-tz');
+        
+        // Data Fields (Sec 02)
+        const cityTitleArea02 = document.getElementById('city-title-area-02');
+        const flightListContainer = document.getElementById('flight-list-container');
+        
+        // Common Titles for 03, 04
+        const cityTitleArea03 = document.getElementById('city-title-area-03');
+        const cityTitleArea04 = document.getElementById('city-title-area-04');
 
         let isDraggingZoom = false;
 
-        // --- 1. 데이터 ---
+        // --- 1. 기본 도시 데이터 ---
         const citiesData = [
             { name: 'London', country: 'UK', dms: '51°30\'25"N / 0°7\'39"W', lat: 51.507, lon: -0.127, pop: '10,000,000', lang: 'English', econ: '$880 Billion USD', rel: 'Christianity', tz: 'GMT / BST' },
             { name: 'São Paulo', country: 'Brazil', dms: '23°33\'0"S / 46°37\'59"W', lat: -23.550, lon: -46.633, pop: '22,800,000', lang: 'Portuguese', econ: '$220 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
@@ -398,7 +420,89 @@
             { name: 'Casablanca', country: 'Morocco', dms: '33°35\'18"N / 7°37\'5"W', lat: 33.573, lon: -7.589, pop: '3,400,000', lang: 'Arabic, French', econ: '$80 Billion USD', rel: 'Islam (Sunni)', tz: 'UTC+1' }
         ];
 
-        // --- 2. 초기화 ---
+        // --- 2. Flight Network Data ---
+        const flightNetworkData = {
+            "London": [
+                {r:1, c:'New York', co:'USA'}, {r:2, c:'Dubai', co:'UAE'}, {r:3, c:'Paris', co:'France'}, {r:4, c:'Los Angeles', co:'USA'}, {r:5, c:'AMSTERDAM', co:'Netherlands'}, {r:6, c:'FRANKFURT', co:'Germany'}, {r:7, c:'Toronto', co:'Canada'}, {r:8, c:'SINGAPORE', co:'Singapore'}, {r:9, c:'HONG KONG', co:'China'}, {r:10, c:'Sydney', co:'Australia'}
+            ],
+            "São Paulo": [
+                {r:1, c:'Buenos Aires', co:'Argentina'}, {r:2, c:'SANTIAGO', co:'Chile'}, {r:3, c:'New York', co:'USA'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'LISBON', co:'Portugal'}, {r:7, c:'London', co:'UK'}, {r:8, c:'BOGOTA', co:'Colombia'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'Dubai', co:'UAE'}
+            ],
+            "New York": [
+                {r:1, c:'London', co:'UK'}, {r:2, c:'Paris', co:'France'}, {r:3, c:'Toronto', co:'Canada'}, {r:4, c:'TEL AVIV', co:'Israel'}, {r:5, c:'Los Angeles', co:'USA'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'FRANKFURT', co:'Germany'}, {r:8, c:'ROME', co:'Italy'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'Tokyo', co:'Japan'}
+            ],
+            "Seoul": [
+                {r:1, c:'Tokyo', co:'Japan'}, {r:2, c:'OSAKA', co:'Japan'}, {r:3, c:'SHANGHAI', co:'China'}, {r:4, c:'Beijing', co:'China'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Bangkok', co:'Thailand'}, {r:7, c:'TAIPEI', co:'Taiwan'}, {r:8, c:'Los Angeles', co:'USA'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'Sydney', co:'Australia'}
+            ],
+            "Tokyo": [
+                {r:1, c:'Seoul', co:'South Korea'}, {r:2, c:'SHANGHAI', co:'China'}, {r:3, c:'TAIPEI', co:'Taiwan'}, {r:4, c:'Honolulu', co:'USA'}, {r:5, c:'Los Angeles', co:'USA'}, {r:6, c:'SINGAPORE', co:'Singapore'}, {r:7, c:'Bangkok', co:'Thailand'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'New York', co:'USA'}, {r:10, c:'Vancouver', co:'Canada'}
+            ],
+            "Beijing": [
+                {r:1, c:'HONG KONG', co:'China'}, {r:2, c:'Seoul', co:'South Korea'}, {r:3, c:'Tokyo', co:'Japan'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'Moscow', co:'Russia'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'SINGAPORE', co:'Singapore'}
+            ],
+            "Delhi": [
+                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'SINGAPORE', co:'Singapore'}, {r:3, c:'Bangkok', co:'Thailand'}, {r:4, c:'Kuala Lumpur', co:'Malaysia'}, {r:5, c:'London', co:'UK'}, {r:6, c:'Paris', co:'France'}, {r:7, c:'ABU DHABI', co:'UAE'}, {r:8, c:'Sydney', co:'Australia'}, {r:9, c:'FRANKFURT', co:'Germany'}, {r:10, c:'Toronto', co:'Canada'}
+            ],
+            "Cairo": [
+                {r:1, c:'JEDDAH', co:'Saudi Arabia'}, {r:2, c:'Dubai', co:'UAE'}, {r:3, c:'RIYADH', co:'Saudi Arabia'}, {r:4, c:'London', co:'UK'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'ROME', co:'Italy'}, {r:8, c:'Johannesburg', co:'South Africa'}, {r:9, c:'Nairobi', co:'Kenya'}, {r:10, c:'FRANKFURT', co:'Germany'}
+            ],
+            "Paris": [
+                {r:1, c:'New York', co:'USA'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Dubai', co:'UAE'}, {r:4, c:'ROME', co:'Italy'}, {r:5, c:'MADRID', co:'Spain'}, {r:6, c:'Los Angeles', co:'USA'}, {r:7, c:'MONTREAL', co:'Canada'}, {r:8, c:'Beijing', co:'China'}, {r:9, c:'Cairo', co:'Egypt'}, {r:10, c:'Buenos Aires', co:'Argentina'}
+            ],
+            "Berlin": [
+                {r:1, c:'ISTANBUL', co:'Turkey'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Paris', co:'France'}, {r:4, c:'AMSTERDAM', co:'Netherlands'}, {r:5, c:'ZURICH', co:'Switzerland'}, {r:6, c:'VIENNA', co:'Austria'}, {r:7, c:'New York', co:'USA'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'Moscow', co:'Russia'}, {r:10, c:'Bangkok', co:'Thailand'}
+            ],
+            "Moscow": [
+                {r:1, c:'ISTANBUL', co:'Turkey'}, {r:2, c:'ANTALYA', co:'Turkey'}, {r:3, c:'Dubai', co:'UAE'}, {r:4, c:'Bangkok', co:'Thailand'}, {r:5, c:'Berlin', co:'Germany'}, {r:6, c:'MINSK', co:'Belarus'}, {r:7, c:'Beijing', co:'China'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Paris', co:'France'}, {r:10, c:'Cairo', co:'Egypt'}
+            ],
+            "Dubai": [
+                {r:1, c:'London', co:'UK'}, {r:2, c:'Delhi', co:'India'}, {r:3, c:'BOMBAY', co:'India'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'RIYADH', co:'Saudi Arabia'}, {r:6, c:'Moscow', co:'Russia'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'Los Angeles', co:'USA'}, {r:9, c:'Sydney', co:'Australia'}, {r:10, c:'Tokyo', co:'Japan'}
+            ],
+            "Sydney": [
+                {r:1, c:'Auckland', co:'New Zealand'}, {r:2, c:'MELBOURNE', co:'Australia'}, {r:3, c:'SINGAPORE', co:'Singapore'}, {r:4, c:'Los Angeles', co:'USA'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Delhi', co:'India'}, {r:9, c:'Vancouver', co:'Canada'}, {r:10, c:'London', co:'UK'}
+            ],
+            "Mexico City": [
+                {r:1, c:'Los Angeles', co:'USA'}, {r:2, c:'HOUSTON', co:'USA'}, {r:3, c:'MIAMI', co:'USA'}, {r:4, c:'BOGOTA', co:'Colombia'}, {r:5, c:'MADRID', co:'Spain'}, {r:6, c:'New York', co:'USA'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'LIMA', co:'Peru'}, {r:9, c:'São Paulo', co:'Brazil'}, {r:10, c:'London', co:'UK'}
+            ],
+            "Vancouver": [
+                {r:1, c:'SEATTLE', co:'USA'}, {r:2, c:'Los Angeles', co:'USA'}, {r:3, c:'Toronto', co:'Canada'}, {r:4, c:'SEATTLE', co:'USA'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'London', co:'UK'}, {r:7, c:'DUBLIN', co:'Ireland'}, {r:8, c:'Seoul', co:'South Korea'}, {r:9, c:'Tokyo', co:'Japan'}, {r:10, c:'Mexico City', co:'Mexico'}
+            ],
+            "Cape Town": [
+                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Johannesburg', co:'South Africa'}, {r:3, c:'London', co:'UK'}, {r:4, c:'FRANKFURT', co:'Germany'}, {r:5, c:'AMSTERDAM', co:'Netherlands'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'DOHA', co:'Qatar'}, {r:8, c:'Paris', co:'France'}, {r:9, c:'SINGAPORE', co:'Singapore'}, {r:10, c:'Nairobi', co:'Kenya'}
+            ],
+            "Kuala Lumpur": [
+                {r:1, c:'SINGAPORE', co:'Singapore'}, {r:2, c:'Bangkok', co:'Thailand'}, {r:3, c:'JAKARTA', co:'Indonesia'}, {r:4, c:'Delhi', co:'India'}, {r:5, c:'HONG KONG', co:'China'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Sydney', co:'Australia'}, {r:9, c:'Seoul', co:'South Korea'}, {r:10, c:'ISTANBUL', co:'Turkey'}
+            ],
+            "Bangkok": [
+                {r:1, c:'Kuala Lumpur', co:'Malaysia'}, {r:2, c:'SINGAPORE', co:'Singapore'}, {r:3, c:'HONG KONG', co:'China'}, {r:4, c:'Seoul', co:'South Korea'}, {r:5, c:'Tokyo', co:'Japan'}, {r:6, c:'Delhi', co:'India'}, {r:7, c:'Dubai', co:'UAE'}, {r:8, c:'Moscow', co:'Russia'}, {r:9, c:'Sydney', co:'Australia'}, {r:10, c:'FRANKFURT', co:'Germany'}
+            ],
+            "Johannesburg": [
+                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Cape Town', co:'South Africa'}, {r:3, c:'London', co:'UK'}, {r:4, c:'Nairobi', co:'Kenya'}, {r:5, c:'FRANKFURT', co:'Germany'}, {r:6, c:'DOHA', co:'Qatar'}, {r:7, c:'ISTANBUL', co:'Turkey'}, {r:8, c:'Paris', co:'France'}, {r:9, c:'PERTH', co:'Australia'}, {r:10, c:'New York', co:'USA'}
+            ],
+            "Nairobi": [
+                {r:1, c:'Dubai', co:'UAE'}, {r:2, c:'Johannesburg', co:'South Africa'}, {r:3, c:'AMSTERDAM', co:'Netherlands'}, {r:4, c:'London', co:'UK'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'ISTANBUL', co:'Turkey'}, {r:7, c:'ENTEBBE', co:'Uganda'}, {r:8, c:'JEDDAH', co:'Saudi Arabia'}, {r:9, c:'Cape Town', co:'South Africa'}, {r:10, c:'Delhi', co:'India'}
+            ],
+            "Los Angeles": [
+                {r:1, c:'Mexico City', co:'Mexico'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Tokyo', co:'Japan'}, {r:4, c:'Vancouver', co:'Canada'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Sydney', co:'Australia'}, {r:7, c:'Seoul', co:'South Korea'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'FRANKFURT', co:'Germany'}, {r:10, c:'New York', co:'USA'}
+            ],
+            "Toronto": [
+                {r:1, c:'New York', co:'USA'}, {r:2, c:'London', co:'UK'}, {r:3, c:'Vancouver', co:'Canada'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Dubai', co:'UAE'}, {r:7, c:'FRANKFURT', co:'Germany'}, {r:8, c:'CANCUN', co:'Mexico'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'ROME', co:'Italy'}
+            ],
+            "Buenos Aires": [
+                {r:1, c:'SANTIAGO', co:'Chile'}, {r:2, c:'São Paulo', co:'Brazil'}, {r:3, c:'MADRID', co:'Spain'}, {r:4, c:'MIAMI', co:'USA'}, {r:5, c:'LIMA', co:'Peru'}, {r:6, c:'BOGOTA', co:'Colombia'}, {r:7, c:'Paris', co:'France'}, {r:8, c:'ROME', co:'Italy'}, {r:9, c:'New York', co:'USA'}, {r:10, c:'Mexico City', co:'Mexico'}
+            ],
+            "Honolulu": [
+                {r:1, c:'Tokyo', co:'Japan'}, {r:2, c:'Sydney', co:'Australia'}, {r:3, c:'Los Angeles', co:'USA'}, {r:4, c:'Auckland', co:'New Zealand'}, {r:5, c:'Vancouver', co:'Canada'}, {r:6, c:'Seoul', co:'South Korea'}, {r:7, c:'OSAKA', co:'Japan'}, {r:8, c:'MANILA', co:'Philippines'}, {r:9, c:'Dubai', co:'UAE'}, {r:10, c:'SINGAPORE', co:'Singapore'}
+            ],
+            "Auckland": [
+                {r:1, c:'Sydney', co:'Australia'}, {r:2, c:'MELBOURNE', co:'Australia'}, {r:3, c:'Los Angeles', co:'USA'}, {r:4, c:'SINGAPORE', co:'Singapore'}, {r:5, c:'Dubai', co:'UAE'}, {r:6, c:'HONG KONG', co:'China'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Vancouver', co:'Canada'}, {r:9, c:'Honolulu', co:'USA'}, {r:10, c:'SANTIAGO', co:'Chile'}
+            ],
+            "Casablanca": [
+                {r:1, c:'Paris', co:'France'}, {r:2, c:'ISTANBUL', co:'Turkey'}, {r:3, c:'MADRID', co:'Spain'}, {r:4, c:'MILAN', co:'Italy'}, {r:5, c:'LISBON', co:'Portugal'}, {r:6, c:'ROME', co:'Italy'}, {r:7, c:'JEDDAH', co:'Saudi Arabia'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'MONTREAL', co:'Canada'}, {r:10, c:'New York', co:'USA'}
+            ]
+        };
+
+        // --- 3. 초기화 ---
         function init() {
             const canvasContainer = document.body;
             scene = new THREE.Scene();
@@ -445,6 +549,9 @@
             });
 
             window.changeTexture = changeTexture;
+            
+            // 섹션 활성화 함수 전역 등록
+            window.activateSection = activateSection;
         }
 
         function latLonToVector3(lat, lon, radius = EARTH_RADIUS) {
@@ -456,7 +563,19 @@
             return new THREE.Vector3(x, y, z);
         }
 
-        // --- 3. Back Button Handling ---
+        // --- 4. 섹션 활성화 로직 (탭 전환) ---
+        function activateSection(secNum) {
+            if (!currentlyZoomedCityName) return; // 줌 상태가 아니면 무시 가능
+
+            // 모든 섹션 비활성화
+            document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
+            
+            // 선택된 섹션 활성화
+            const activeSec = document.getElementById(`sec-0${secNum}`);
+            if(activeSec) activeSec.classList.add('active');
+        }
+
+        // --- 5. Back Button Handling ---
         window.handleBackClick = function(event) {
             if (currentlyZoomedCityName) {
                 event.preventDefault(); 
@@ -464,7 +583,7 @@
             }
         };
 
-        // --- 4. 줌 슬라이더 로직 ---
+        // --- 6. 줌 슬라이더 로직 ---
         function initZoomSliderEvents() {
             zoomThumb.addEventListener('pointerdown', (e) => {
                 isDraggingZoom = true;
@@ -520,7 +639,7 @@
             updateZoomThumbPosition(percent);
         }
         
-        // --- 5. 지구본 및 데이터 포인트 ---
+        // --- 7. 지구본 및 데이터 포인트 ---
         function createEarthSphere() {
             updateLoadingStatus('Loading earth texture...');
             const earthTexture = textureLoader.load('earth_clouds.jpg', 
@@ -581,31 +700,16 @@
             });
         }
 
-        // --- 6. 비행 및 View 변경 로직 ---
-
-        // [수정] 뷰 오프셋 적용 (X축 왼쪽 이동 + Y축 아래로 이동)
-function updateCameraOffset(isZoomed) {
-    if (isZoomed) {
-        // 1. X축 이동: 화면 너비의 15%만큼 뷰를 오른쪽으로 이동 -> 지구본은 [왼쪽]으로 감
-        const xOffset = window.innerWidth * 0.3; 
-        
-        // 2. Y축 이동: 화면 높이의 10%만큼 뷰를 위로 이동(음수) -> 지구본은 [아래]로 감
-        // * 값을 늘리면(-0.2 등) 더 아래로 내려갑니다.
-        const yOffset = -window.innerHeight * 0.1; 
-
-        // setViewOffset(fullWidth, fullHeight, x, y, width, height)
-        camera.setViewOffset(
-            window.innerWidth, 
-            window.innerHeight, 
-            xOffset, 
-            yOffset, 
-            window.innerWidth, 
-            window.innerHeight
-        );
-    } else {
-        camera.clearViewOffset();
-    }
-}
+        // --- 8. 비행 및 View 변경 로직 ---
+        function updateCameraOffset(isZoomed) {
+            if (isZoomed) {
+                const xOffset = window.innerWidth * 0.3; // CSS 스타일 반영
+                const yOffset = -window.innerHeight * 0.1; 
+                camera.setViewOffset(window.innerWidth, window.innerHeight, xOffset, yOffset, window.innerWidth, window.innerHeight);
+            } else {
+                camera.clearViewOffset();
+            }
+        }
 
         // 홈으로 복귀
         function flyToHomeAndUnzoom() {
@@ -624,7 +728,6 @@ function updateCameraOffset(isZoomed) {
             camera.userData.targetLookAt = originTarget;
 
             currentlyZoomedCityName = null;
-            // 뷰 오프셋 해제
             updateCameraOffset(false);
 
             backBtn.textContent = "back to main";
@@ -632,6 +735,8 @@ function updateCameraOffset(isZoomed) {
             
             rightPanel.style.opacity = '0';
             rightPanel.style.pointerEvents = 'none';
+            // 패널 초기화 (다시 열릴 때 01이 먼저 보이도록)
+            activateSection(1);
 
             instructionText.style.opacity = '1';
             zoomWrapper.style.opacity = '1';
@@ -663,16 +768,14 @@ function updateCameraOffset(isZoomed) {
             const worldCityPos = localPoint.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
 
             const cityDir = worldCityPos.clone().sub(earthCenter).normalize();
-            // 오프셋 없이, 정면에서 바라보는 위치 계산 (투시 왜곡 방지)
             const cameraPos = earthCenter.clone().add(cityDir.multiplyScalar(ZOOMED_CAMERA_Z));
 
             isFlying = true;
             camera.userData.targetPos = cameraPos;     
-            camera.userData.targetLookAt = earthCenter; // 정중앙을 바라봄
+            camera.userData.targetLookAt = earthCenter; 
 
             currentlyZoomedCityName = cityName;
 
-            // 뷰 오프셋 적용 (좌측으로 밀기)
             updateCameraOffset(true);
 
             backBtn.textContent = "back to the earth";
@@ -690,18 +793,51 @@ function updateCameraOffset(isZoomed) {
         }
         
         function fillCityData(city) {
+            // [Section 01, 02, 03, 04] 공통 헤더 생성
             const nameInitial = city.name.charAt(0);
             const nameRest = city.name.slice(1);
-            cityTitleArea.innerHTML = 
+            const titleHTML = 
                 `<span class="city-title-initial">${nameInitial}</span>` +
                 `<span class="city-title-rest">${nameRest}, ${city.country}</span>`;
             
+            // 모든 섹션의 타이틀 영역 채우기
+            cityTitleArea01.innerHTML = titleHTML;
+            cityTitleArea02.innerHTML = titleHTML;
+            cityTitleArea03.innerHTML = titleHTML;
+            cityTitleArea04.innerHTML = titleHTML;
+            
+            // [Section 01] 데이터 채우기
             valDms.textContent = city.dms;
             valPop.textContent = city.pop;
             valLang.textContent = city.lang;
             valEcon.textContent = city.econ;
             valRel.textContent = city.rel;
             valTz.textContent = city.tz;
+
+            // [Section 02] Flight List 생성
+            const flights = flightNetworkData[city.name];
+            flightListContainer.innerHTML = ""; // 초기화
+
+            if (flights && flights.length > 0) {
+                flights.forEach(f => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'flight-item';
+                    itemDiv.innerHTML = `
+                        <div class="flight-rank-wrapper">
+                            <span class="flight-rank-bracket">(</span>
+                            <span class="flight-rank-num">${f.r}</span>
+                            <span class="flight-rank-bracket">)</span>
+                        </div>
+                        <div class="flight-dest-group">
+                            <span class="flight-dest-city">${f.c}</span>
+                            <span class="flight-dest-country">${f.co}</span>
+                        </div>
+                    `;
+                    flightListContainer.appendChild(itemDiv);
+                });
+            } else {
+                flightListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No flight data available.</div>`;
+            }
         }
 
         function handleCanvasClick(event) {
@@ -798,7 +934,6 @@ function updateCameraOffset(isZoomed) {
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            // 화면 크기 변경 시 오프셋 재계산 필요
             if(currentlyZoomedCityName) {
                 updateCameraOffset(true);
             }
