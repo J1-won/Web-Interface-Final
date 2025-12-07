@@ -172,29 +172,29 @@
     <div id="drag-area"></div>
 
     <div id="footer-grid">
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_bright.jpg" alt="Source Image 1">
+        <a href="https://www.gdeltproject.org/" target="_blank" class="grid-item">
+            <img src="cm_earth_bright.jpg" alt="Source Image 1">
         </a>
         <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
             <img src="bg.jpg" alt="Source Image 2">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_night.jpg" alt="Source Image 3">
+        <a href="https://www.worldometers.info/" target="_blank" class="grid-item">
+            <img src="cm_earth_night.jpg" alt="Source Image 3">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_texture.jpg" alt="Source Image 4">
+        <a href="https://data.worldbank.org/" target="_blank" class="grid-item">
+            <img src="cm_earth_texture.jpg" alt="Source Image 4">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_bw.jpg" alt="Source Image 5">
+        <a href="https://ourworldindata.org/grapher/life-expectancy#:~:text=Date%20range" target="_blank" class="grid-item">
+            <img src="cm_earth_bw.jpg" alt="Source Image 5">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_basic2.jpg" alt="Source Image 6">
+        <a href="https://database.earth/" target="_blank" class="grid-item">
+            <img src="cm_earth_basic2.jpg" alt="Source Image 6">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earthdd.jpg" alt="Source Image 7">
+        <a href="https://www.earthdata.nasa.gov/" target="_blank" class="grid-item">
+            <img src="cm_earthdd.jpg" alt="Source Image 7">
         </a>
-        <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
-            <img src="earth_clouds.jpg" alt="Source Image 8">
+        <a href="https://ourworldindata.org/grapher/share-of-individuals-using-the-internet#:~:text=Date%20range" target="_blank" class="grid-item">
+            <img src="cm_earth_clouds.jpg" alt="Source Image 8">
         </a>
     </div>
 
@@ -214,13 +214,13 @@
         let isClick = true; 
         
         const globesData = [
-            { name: 'Basic',  texture: 'earth_basic2.jpg' },
-            { name: 'Night',  texture: 'earth_night.jpg' },
-            { name: 'Wind',  texture: 'earth_bw.jpg' },
-            { name: 'Flat',  texture: 'earth_texture.jpg' },
-            { name: 'Clouds',  texture: 'earth_clouds.jpg' },
-            { name: 'Light',  texture: 'earth_bright.jpg' },
-            { name: 'Reverse', texture: 'earthdd.jpg' }
+            { name: 'Basic',  texture: 'cm_earth_basic2.jpg' },
+            { name: 'Night',  texture: 'cm_earth_night.jpg' },
+            { name: 'Wind',  texture: 'cm_earth_bw.jpg' },
+            { name: 'Flat',  texture: 'cm_earth_texture.jpg' },
+            { name: 'Clouds',  texture: 'cm_earth_clouds.jpg' },
+            { name: 'Light',  texture: 'cm_earth_bright.jpg' },
+            { name: 'Reverse', texture: 'cm_earthdd.jpg' }
         ];
         
         const gap = 10; 
@@ -405,17 +405,6 @@
         }
 
         init();
-
-        // 마우스 이동 시 오디오 재생
-        const audio = new Audio('1.mp3');
-        let hasPlayed = false;
-        
-        document.addEventListener('mousemove', () => {
-            if (!hasPlayed) {
-                audio.play().catch(err => console.log('Audio play failed:', err));
-                hasPlayed = true;
-            }
-        });
 
     </script>
 </body>
