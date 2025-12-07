@@ -149,7 +149,7 @@
         .section-title-wrapper {
             position: absolute;
             bottom: 40px;
-            left: 110px;      
+            left: 120px;      
             transform-origin: left bottom;
             transform: rotate(-90deg);
             white-space: nowrap;
@@ -157,9 +157,34 @@
             text-align: left;
             cursor: pointer;
         }
-        .section-num { font-family: "Ballet", cursive; font-size: 1.3rem; margin-right: 10px; color: white; }
+        
+        /* ==================================== */
+        /* ✨ 섹션 번호 (01)을 위쪽/왼쪽으로 올리는 수정 */
+        /* ==================================== */
+        .section-num, .section-num2 {
+            display: inline-block;
+            /* 기존 스타일 유지 */
+        }
+        
+        .section-num { font-family: "Ballet", cursive; font-size: 1.3rem; margin-right: 5px; color: white; }
         .section-num2 { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: white; }
-        .section-name { font-family: "Arimo", sans-serif; font-style: italic; font-size: 1rem; color: white; }
+        
+        .section-name { 
+            font-family: "Arimo", sans-serif; font-style: italic; font-size: 1rem; color: white; 
+            display: inline-block; /* vertical-align 적용을 위해 inline-block 설정 */
+            vertical-align: top; /* 섹션 제목을 위로 정렬 (회전되어 있으므로 좌측에 해당) */
+            line-height: 1.1; /* 정렬 보정을 위해 줄 높이 조정 */
+        }
+        
+        /* 섹션 번호 그룹 (괄호 포함)을 제목보다 더 위로 (회전되어 있으므로 더 왼쪽으로) 올립니다 */
+        .section-num-group {
+            display: inline-block;
+            vertical-align: top; /* 그룹 전체를 제목 상단에 맞춥니다 */
+            transform: translateY(-38px); /* 추가적으로 8px 위로(좌측으로) 이동 */
+            margin-right: 5px; /* 제목과의 간격 조정 */
+        }
+        /* ==================================== */
+        
         .section-initial { font-family: "Ballet", cursive; font-size: 1.5rem; } 
         
         .panel-section.active .section-num, 
@@ -303,7 +328,9 @@
                 </div>
             </div>
             <div class="section-title-wrapper">
-                <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
+                <span class="section-num-group">
+                    <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
+                </span>
                 <span class="section-name"><span class="section-initial">C</span>ity Information</span>
             </div>
         </div>
@@ -316,7 +343,9 @@
                 <div class="flight-list" id="flight-list-container"></div>
             </div>
             <div class="section-title-wrapper">
-                <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
+                <span class="section-num-group">
+                    <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
+                </span>
                 <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
             </div>
         </div>
@@ -327,7 +356,9 @@
                 <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
             </div>
             <div class="section-title-wrapper">
-                <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
+                <span class="section-num-group">
+                    <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
+                </span>
                 <span class="section-name"><span class="section-initial">K</span>eyword Networks</span>
             </div>
         </div>
@@ -338,7 +369,9 @@
                 <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
             </div>
             <div class="section-title-wrapper">
-                <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
+                <span class="section-num-group">
+                    <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
+                </span>
                 <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
             </div>
         </div>
@@ -815,41 +848,79 @@
         }
 
         function drawFlightLine(startCity, endCity) {
-            // [수정] 시작점과 끝점을 지구 표면보다 살짝 띄움 (1.002 -> 1.005)
-            // 이렇게 하면 선이 지구 안으로 파묻히는 현상(Z-fighting)을 방지할 수 있습니다.
-            const startPos = latLonToVector3(startCity.lat, startCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
-            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS).multiplyScalar(1.005);
+            // [수정] 선이 지구본 위에 항상 보이도록 최소 거리 설정
+            const MIN_HEIGHT_ABOVE_EARTH = 0.02; // 지구본 표면으로부터 최소 높이
+            const MIN_RADIUS = EARTH_RADIUS + MIN_HEIGHT_ABOVE_EARTH;
+            
+            // 시작점과 끝점 계산
+            const startPos = latLonToVector3(startCity.lat, startCity.lon, EARTH_RADIUS);
+            const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS);
+            
+            // 지구본 중심으로부터의 방향 벡터
+            const startDir = startPos.clone().normalize();
+            const endDir = endPos.clone().normalize();
+            
+            // 시작점과 끝점을 최소 거리로 확장
+            const startPosElevated = startDir.multiplyScalar(MIN_RADIUS);
+            const endPosElevated = endDir.multiplyScalar(MIN_RADIUS);
 
-            const distance = startPos.distanceTo(endPos);
-            // [수정] 휘어짐 1/3로 축소 (* 0.5 -> * 0.15)
-            const midPoint = startPos.clone().add(endPos).normalize().multiplyScalar(EARTH_RADIUS + distance * 0.15); 
-
-            // [수정] 곡선 제어점 추가: 시작 직후와 끝 직전에 고도를 살짝 높여줌
-            // 3점 커브 대신 5점 커브 등을 사용하여 시작 부분 매몰 방지
-            // 간단하게는 시작점 바로 다음 포인트를 공중으로 띄웁니다.
+            const distance = startPosElevated.distanceTo(endPosElevated);
+            // 중간점도 최소 거리보다 충분히 높게 설정
+            const midPointDir = startPosElevated.clone().add(endPosElevated).normalize();
+            const midPointHeight = MIN_RADIUS + distance * 0.25; // 더 높게 설정하여 파묻힘 방지
+            const midPoint = midPointDir.multiplyScalar(midPointHeight);
             
             const curve = new THREE.CatmullRomCurve3([
-                startPos,
+                startPosElevated,
                 midPoint,
-                endPos
+                endPosElevated
             ]);
 
-            const points = curve.getPoints(100); 
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            // [수정] 컬러 #4cf3ff, 두께 2 (WebGL 렌더러에 따라 1px 고정일 수 있음)
-            const material = new THREE.LineBasicMaterial({ color: 0x4cf3ff, linewidth: 3 }); 
-
-            const line = new THREE.Line(geometry, material);
-            line.position.y = GLOBE_Y_OFFSET;
+            // [수정] TubeGeometry를 사용하여 두꺼운 선 생성
+            const tubeRadius = 0.0005; // 선의 반지름 (두께 조절)
+            const tubeSegments = 200; // 곡선을 따라가는 세그먼트 수 (더 많은 세그먼트로 정확도 향상)
+            const radialSegments = 8; // 튜브의 원형 단면 세그먼트 수
+            const geometry = new THREE.TubeGeometry(curve, tubeSegments, tubeRadius, radialSegments, false);
             
-            // [수정] 선 그리기 애니메이션 준비
-            flightLineGeometry = geometry;
+            // [수정] geometry의 모든 vertex가 지구본 위에 있는지 확인하고 조정
+            const positions = geometry.attributes.position;
+            const earthCenter = new THREE.Vector3(0, 0, 0);
+            
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                const z = positions.getZ(i);
+                const vertex = new THREE.Vector3(x, y, z);
+                
+                const distanceFromCenter = vertex.length();
+                if (distanceFromCenter < MIN_RADIUS) {
+                    // 지구본 안에 있으면 밖으로 밀어냄
+                    const normalized = vertex.clone().normalize();
+                    const adjusted = normalized.multiplyScalar(MIN_RADIUS);
+                    positions.setXYZ(i, adjusted.x, adjusted.y, adjusted.z);
+                }
+            }
+            
+            // geometry 업데이트
+            geometry.attributes.position.needsUpdate = true;
+            geometry.computeBoundingSphere();
+            
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x4cf3ff,
+                transparent: true,
+                opacity: 0
+            }); 
+
+            const tube = new THREE.Mesh(geometry, material);
+            tube.position.y = GLOBE_Y_OFFSET;
+            
+            // [수정] 선 그리기 애니메이션 준비 (opacity 사용)
+            flightLineGeometry = null; // TubeGeometry는 setDrawRange를 지원하지 않으므로 null
             flightLineDrawLimit = 100;
             flightLineCurrentDraw = 0;
-            flightLineGeometry.setDrawRange(0, 0); // 처음엔 안 보임
+            activeFlightLine = tube; // Mesh 객체 저장
 
-            scene.add(line);
-            activeFlightLine = line;
+            scene.add(tube);
         }
 
         // [New Helper] Flight List UI 업데이트 (선택된 항목 스타일링)
@@ -1059,12 +1130,13 @@
                 }
             }
 
-            // [수정] 선 그리기 애니메이션 (Draw Range 증가)
-            if (activeFlightLine && flightLineGeometry) {
+            // [수정] 선 그리기 애니메이션 (opacity 증가)
+            if (activeFlightLine && activeFlightLine.material) {
                 if (flightLineCurrentDraw < flightLineDrawLimit) {
                     flightLineCurrentDraw += 2; // 그리는 속도
                     if (flightLineCurrentDraw > flightLineDrawLimit) flightLineCurrentDraw = flightLineDrawLimit;
-                    flightLineGeometry.setDrawRange(0, flightLineCurrentDraw);
+                    // opacity를 0에서 1로 점진적으로 증가
+                    activeFlightLine.material.opacity = flightLineCurrentDraw / flightLineDrawLimit;
                 }
             }
 
