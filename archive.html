@@ -18,21 +18,19 @@
         
         body {
             background-color: #000000;
-            overflow-y: auto; /* 세로 스크롤 허용 */
-            overflow-x: hidden; /* 가로 스크롤 방지 */
+            overflow-y: auto; 
+            overflow-x: hidden;
             
             background-image: 
                 linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 60px 45px;
             background-position: -1px -1px;
-            background-attachment: fixed; /* 배경 패턴은 고정 */
+            background-attachment: fixed;
             width: 100vw; 
             height: 100%;
         }
         
-        /* ★ 핵심 수정: fixed -> absolute 변경 */
-        /* 이렇게 하면 스크롤 시 지구본도 같이 위로 올라갑니다 */
         #canvas-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: 50; outline: none;
         }
@@ -51,7 +49,6 @@
             white-space: nowrap;
         }
         
-        /* 드래그 영역도 absolute로 변경하여 지구본과 함께 움직이게 함 */
         #drag-area {
             position: absolute;
             top: 25%;       
@@ -62,8 +59,7 @@
         }
         #drag-area:active { cursor: grabbing; }
 
-        /* ★ 하단 이미지 그리드 */
-        /* top: 100vh로 설정하여 정확히 지구본 섹션 바로 아래에 위치시킴 */
+        /* 하단 이미지 그리드 */
         #footer-grid {
             position: absolute;
             top: 100vh;        
@@ -84,6 +80,7 @@
             overflow: hidden;
             display: block;
             background-color: #000;
+            text-decoration: none; /* a태그 기본 밑줄 제거 */
         }
 
         .grid-item img {
@@ -95,11 +92,36 @@
             transition: opacity 0.3s ease, transform 0.4s ease;
         }
 
-        .grid-item:hover img {
-            opacity: 0.5; /* 호버 시 어둡게 */
+        /* ★ 호버 시 텍스트 스타일 */
+        .grid-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #4cf3ff;
+            font-family: "Arimo", sans-serif;font-style: italic;
+            font-size: 0.5rem;
+            text-decoration: underline; 
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+            opacity: 0; /* 평소엔 숨김 */
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            pointer-events: none;
+            text-align: center;
+            width: 100%;
         }
 
-        /* UI 텍스트들도 스크롤과 함께 올라가도록 absolute로 변경 */
+        /* 호버 효과 */
+        .grid-item:hover img {
+            opacity: 0.4; /* 이미지는 어둡게 */
+            transform: scale(1.03);
+        }
+
+        .grid-item:hover .grid-text {
+            opacity: 1; /* 텍스트는 보이게 */
+        }
+
         #archive-title-container {
             position: absolute; font-size:5.5rem; top: 5%; left: 0; width: 100%; z-index: 150;
             color: white; padding-left: 50px; box-sizing: border-box; pointer-events: none;
@@ -112,11 +134,17 @@
             pointer-events: none;
         }
 
-        /* Back 버튼은 네비게이션이므로 화면에 계속 보이게 fixed 유지 (원하시면 absolute로 변경 가능) */
         .back-btn {
-            position: fixed; top: 25px; left: 40px; color: #4cf3ff;
-            font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic;
-            font-size: 0.6rem; text-decoration: none; z-index: 200; transition: opacity 0.3s; 
+            position: fixed;
+            top: 25px;
+            left: 40px;
+            color: #4cf3ff;
+            font-family: "Arimo", sans-serif; font-weight: 400;
+            font-style: italic;
+            font-size: 0.6rem;
+            text-decoration: none; 
+            z-index: 200;
+            transition: opacity 0.3s; 
         }
         .back-btn::after {
             content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
@@ -131,7 +159,6 @@
             text-align: center; max-width: 600px; pointer-events: none;
         }
         
-        /* 1페이지의 맨 하단 (92vh) 위치에 고정 */
         .info-text-container2 {
             position: absolute; 
             top: 92vh; 
@@ -141,7 +168,6 @@
             text-align: center; max-width: 600px; pointer-events: none;
         }
 
-        /* 스크롤바 숨기기 */
         ::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -174,27 +200,35 @@
     <div id="footer-grid">
         <a href="https://www.gdeltproject.org/" target="_blank" class="grid-item">
             <img src="cm_earth_bright.jpg" alt="Source Image 1">
+            <span class="grid-text">The GDELT Project</span>
         </a>
         <a href="https://www.cia.gov/the-world-factbook/" target="_blank" class="grid-item">
             <img src="bg.jpg" alt="Source Image 2">
+            <span class="grid-text">The World Factbook</span>
         </a>
         <a href="https://www.worldometers.info/" target="_blank" class="grid-item">
             <img src="cm_earth_night.jpg" alt="Source Image 3">
+            <span class="grid-text">Worldometer</span>
         </a>
         <a href="https://data.worldbank.org/" target="_blank" class="grid-item">
             <img src="cm_earth_texture.jpg" alt="Source Image 4">
+            <span class="grid-text">World Bank Data</span>
         </a>
         <a href="https://ourworldindata.org/grapher/life-expectancy#:~:text=Date%20range" target="_blank" class="grid-item">
             <img src="cm_earth_bw.jpg" alt="Source Image 5">
+            <span class="grid-text">World Data Lab</span>
         </a>
         <a href="https://database.earth/" target="_blank" class="grid-item">
             <img src="cm_earth_basic2.jpg" alt="Source Image 6">
+            <span class="grid-text">Database.Earth</span>
         </a>
         <a href="https://www.earthdata.nasa.gov/" target="_blank" class="grid-item">
             <img src="cm_earthdd.jpg" alt="Source Image 7">
+            <span class="grid-text">EarthData</span>
         </a>
         <a href="https://ourworldindata.org/grapher/share-of-individuals-using-the-internet#:~:text=Date%20range" target="_blank" class="grid-item">
             <img src="cm_earth_clouds.jpg" alt="Source Image 8">
+            <span class="grid-text">Our World in Data</span>
         </a>
     </div>
 

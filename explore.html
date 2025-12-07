@@ -702,25 +702,37 @@
         }
 
         function createDataPoints(earthRadius) {
-            citiesData.forEach(city => {
-                const localPos = latLonToVector3(city.lat, city.lon, earthRadius * 1.002); 
-                const pointGeometry = new THREE.SphereGeometry(0.008, 16, 16); 
-                const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x4cf3ff });
-                const pointMesh = new THREE.Mesh(pointGeometry, pointMaterial);
-                
-                pointMesh.position.copy(localPos);
-                pointMesh.position.y += GLOBE_Y_OFFSET;
+    citiesData.forEach(city => {
+        // 원래 위치 계산
+        const localPos = latLonToVector3(city.lat, city.lon, earthRadius * 1.002); 
 
-                pointMesh.userData = { 
-                    isCityPoint: true, 
-                    ...city 
-                };
-                scene.add(pointMesh);
-                cityPoints.push(pointMesh);
+        // 1. [보이는 점] 시각적 요소 (크기 0.008 유지)
+        const pointGeometry = new THREE.SphereGeometry(0.008, 16, 16); 
+        const pointMaterial = new THREE.MeshBasicMaterial({ color: 0x4cf3ff });
+        const visualMesh = new THREE.Mesh(pointGeometry, pointMaterial);
+        visualMesh.position.copy(localPos);
+        visualMesh.position.y += GLOBE_Y_OFFSET;
+        scene.add(visualMesh); // 씬에는 추가하지만, raycaster 검사 배열에는 넣지 않음
 
-                addHTMLLabel(city.name, pointMesh.id);
-            });
-        }
+        // 2. [클릭 판정용 점] 투명하고 큰 구 (크기 0.04로 5배 확대!)
+        const hitGeometry = new THREE.SphereGeometry(0.04, 16, 16); 
+        const hitMaterial = new THREE.MeshBasicMaterial({ visible: false }); // 눈에 안 보임
+        const hitMesh = new THREE.Mesh(hitGeometry, hitMaterial);
+        hitMesh.position.copy(visualMesh.position); // 보이는 점과 같은 위치
+
+        // 데이터는 이 '투명한 큰 구'에 심어줍니다.
+        hitMesh.userData = { 
+            isCityPoint: true, 
+            ...city 
+        };
+        
+        scene.add(hitMesh);
+        cityPoints.push(hitMesh); // 클릭 감지 대상(cityPoints)에는 이 큰 구를 넣음
+
+        // 라벨은 투명 구의 ID와 연동 (투명 구가 cityPoints에 있으므로 updateHTMLLabels가 이걸 참조함)
+        addHTMLLabel(city.name, hitMesh.id);
+    });
+}
 
         function addHTMLLabel(name, meshId) {
             const label = document.createElement('div');
