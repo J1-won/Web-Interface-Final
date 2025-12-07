@@ -149,7 +149,7 @@
         .section-title-wrapper {
             position: absolute;
             bottom: 40px;
-            left: 120px;      
+            left: 120px;       
             transform-origin: left bottom;
             transform: rotate(-90deg);
             white-space: nowrap;
@@ -331,6 +331,7 @@
                 <span class="section-num-group">
                     <span class="section-num">(</span><span class="section-num2">01</span><span class="section-num">)</span>
                 </span>
+                
                 <span class="section-name"><span class="section-initial">C</span>ity Information</span>
             </div>
         </div>
@@ -346,6 +347,7 @@
                 <span class="section-num-group">
                     <span class="section-num">(</span><span class="section-num2">02</span><span class="section-num">)</span>
                 </span>
+                
                 <span class="section-name"><span class="section-initial">P</span>hysical Networks</span>
             </div>
         </div>
@@ -359,6 +361,7 @@
                 <span class="section-num-group">
                     <span class="section-num">(</span><span class="section-num2">03</span><span class="section-num">)</span>
                 </span>
+                
                 <span class="section-name"><span class="section-initial">K</span>eyword Networks</span>
             </div>
         </div>
@@ -372,6 +375,7 @@
                 <span class="section-num-group">
                     <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
                 </span>
+                
                 <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
             </div>
         </div>
@@ -640,6 +644,15 @@
             // 선택된 섹션 활성화
             const activeSec = document.getElementById(`sec-0${secNum}`);
             if(activeSec) activeSec.classList.add('active');
+
+            // [수정] 01번 섹션(City Information)으로 돌아올 때 카메라 원위치 로직 추가
+            if (secNum === 1) {
+                // 목적지가 선택되어 있거나(카메라가 이동된 상태), 선이 그려져 있다면 초기화하고 원래 도시로 복귀
+                if (currentlySelectedDestName || activeFlightLine) {
+                    // 기존 flyToCity 함수를 재사용하여 원래 도시(currentlyZoomedCityName)로 카메라를 부드럽게 이동시킴
+                    flyToCity(currentlyZoomedCityName);
+                }
+            }
         }
 
         // --- 5. Back Button Handling ---
@@ -982,7 +995,9 @@
 
         // 도시로 이동
         function flyToCity(cityName) {
-            if (currentlyZoomedCityName === cityName) return;
+            // [수정] 만약 현재 목적지(destination)를 보고 있다면, 원래 도시(origin)와 이름이 같아도 이동을 허용해야 함
+            // 즉, 현재 보고 있는 도시와 가려는 도시가 같더라도, '목적지 모드'라면 초기화하고 복귀해야 함.
+            if (currentlyZoomedCityName === cityName && !currentlySelectedDestName) return;
 
             // 라벨 초기화
             document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
@@ -1011,7 +1026,7 @@
             const cameraPos = earthCenter.clone().add(cityDir.multiplyScalar(ZOOMED_CAMERA_Z));
 
             isFlying = true;
-            camera.userData.targetPos = cameraPos;     
+            camera.userData.targetPos = cameraPos;      
             camera.userData.targetLookAt = earthCenter; 
 
             currentlyZoomedCityName = cityName;
