@@ -254,7 +254,7 @@
         }
 
         /* --- Flight List Styles --- */
-        .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 180px; }
+        .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 140px; }
         .flight-item { 
             display: flex; align-items: baseline; transition: all 0.2s;
         }
@@ -395,18 +395,21 @@
         </div>
 
         <div class="panel-section" id="sec-04" onclick="activateSection(4)">
-             <div class="info-content">
-                <div class="city-title-group" id="city-title-area-04"></div>
-                <div style="color:white; font-size:0.5rem; margin-top:20px; padding-left:140px;">Coming Soon...</div>
-            </div>
-            <div class="section-title-wrapper">
-                <span class="section-num-group">
-                    <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
-                </span>
-                
-                <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
-            </div>
-        </div>
+            <div class="info-content">
+               <div class="city-title-group" id="city-title-area-04"></div>
+               <div class="info-row" style="margin-bottom:0px; padding-left:140px;">
+                    <span class="category-name" style="margin-bottom:30px;">Trending Search Terms</span>
+               </div>
+               <div class="flight-list" id="trend-list-container"></div>
+           </div>
+           <div class="section-title-wrapper">
+               <span class="section-num-group">
+                   <span class="section-num">(</span><span class="section-num2">04</span><span class="section-num">)</span>
+               </span>
+               
+               <span class="section-name"><span class="section-initial">I</span>nformation Networks</span>
+           </div>
+       </div>
     </div>
 
     <div id="zoom-controls-wrapper">
@@ -444,13 +447,10 @@
         const flySpeed = 0.05; 
         const cityPoints = [];
     
-        // (02) Flight Network Line
-        let activeFlightLine = null;
-        // flightLineGeometry 등은 createCurveMesh 내부 로직으로 대체되어 전역변수 제거해도 무방하나, 
-        // 기존 구조 유지를 위해 필요한 변수들만 남깁니다.
-    
-        // (03) Keyword Network Lines
-        let activeKeywordLines = []; 
+        // Line Groups
+        let activeFlightLine = null;      // (02)용 단일 라인
+        let activeKeywordLines = [];      // (03)용 다중 라인
+        let activeTrendLines = [];        // (04)용 다중 라인 (Information Network)
         
         // --- 설정 ---
         const EARTH_RADIUS = 1.1; 
@@ -486,8 +486,10 @@
         const valEcon = document.getElementById('val-econ');
         const valRel = document.getElementById('val-rel');
         const valTz = document.getElementById('val-tz');
+        
         const flightListContainer = document.getElementById('flight-list-container');
         const keywordListContainer = document.getElementById('keyword-list-container');
+        const trendListContainer = document.getElementById('trend-list-container'); 
         const cityTitleArea04 = document.getElementById('city-title-area-04');
     
         let isDraggingZoom = false;
@@ -712,6 +714,48 @@
             }
         };
     
+        // --- (04) Trending Search Data (Global Viral Concept) ---
+        // 공통 관심사 키워드(AI, Crypto, Climate 등)를 대거 배치하여 
+        // 키워드 클릭 시 전 세계가 거미줄처럼 연결되도록 설계 (Starburst Effect)
+        const trendingSearchData = {
+        // [Americas]
+        "New York": ["Inflation", "Crypto", "Climate Crisis", "Wall Street", "AI"],
+        "Los Angeles": ["Hollywood", "Wellness", "Climate Crisis", "K-Pop", "Traffic"],
+        "San Francisco": ["AI", "Tech", "Startup", "Climate Crisis", "Crypto"], // (데이터에 없다면 Los Angeles가 대신 처리)
+        "Mexico City": ["Football", "Tacos", "Climate Crisis", "Music", "History"],
+        "São Paulo": ["Football", "Carnival", "Crypto", "Climate Crisis", "Agriculture"],
+        "Buenos Aires": ["Football", "Inflation", "Tango", "Meat", "Crypto"],
+        "Toronto": ["Housing", "Hockey", "Climate Crisis", "AI", "Immigration"],
+        "Vancouver": ["Nature", "Housing", "Climate Crisis", "Yoga", "Tech"],
+        "Honolulu": ["Tourism", "Surfing", "Volcano", "Ocean", "Climate Crisis"],
+
+        // [Europe]
+        "London": ["Royal Family", "Football", "Inflation", "Climate Crisis", "Crypto"],
+        "Paris": ["Olympics", "Fashion", "Gastronomy", "Climate Crisis", "Strike"],
+        "Berlin": ["Techno", "Green Energy", "Climate Crisis", "Beer", "Crypto"],
+        "Moscow": ["Geopolitics", "Winter", "Energy", "Telegram", "Crypto"],
+
+        // [Asia]
+        "Seoul": ["K-Pop", "Semiconductor", "Gaming", "Crypto", "AI"],
+        "Tokyo": ["Anime", "Robotics", "Gaming", "Climate Crisis", "Yen"],
+        "Beijing": ["EV Car", "AI", "Climate Crisis", "6G", "History"],
+        "Delhi": ["Cricket", "Bollywood", "Startups", "Climate Crisis", "Tech"],
+        "Bangkok": ["Street Food", "Tourism", "K-Pop", "Massage", "Climate Crisis"],
+        "Kuala Lumpur": ["Halal Food", "Fintech", "Tourism", "Palm Oil", "Climate Crisis"],
+
+        // [Middle East & Africa]
+        "Dubai": ["Luxury", "Real Estate", "Crypto", "AI", "Tourism"],
+        "Cairo": ["Pyramids", "History", "Inflation", "Football", "Climate Crisis"],
+        "Johannesburg": ["Rugby", "Mining", "Safari", "Crypto", "Climate Crisis"],
+        "Nairobi": ["Safari", "Mobile Money", "Climate Crisis", "Marathon", "Tech"],
+        "Cape Town": ["Wine", "Tourism", "Rugby", "Nature", "Climate Crisis"],
+        "Casablanca": ["Spices", "Football", "Tourism", "History", "Climate Crisis"],
+
+        // [Oceania]
+        "Sydney": ["Housing", "Cricket", "Climate Crisis", "Beach", "Mining"],
+        "Auckland": ["Rugby", "Nature", "Sailing", "Climate Crisis", "Maori"]
+    };
+    
         // --- 3. 초기화 ---
         function init() {
             const canvasContainer = document.body;
@@ -790,21 +834,26 @@
             // [중요 수정] (01), (03) 탭 클릭 시 카메라 복귀 로직
             // 만약 목적지를 보고 있는 상태(currentlySelectedDestName 존재)라면,
             // (01)이나 (03)을 누를 때 즉시 출발지로 카메라를 이동(flyToCity)시킵니다.
-            // flyToCity 함수 내부에서 cleanupAllLines가 호출되므로 선도 정리됩니다.
             if (secNum === 1 || secNum === 3) {
                 if (currentlySelectedDestName) {
                     flyToCity(currentlyZoomedCityName);
-                    return; // 카메라 이동이 발생했으므로 여기서 종료
+                    return; 
                 }
             }
     
-            // 목적지를 보고 있지 않은 일반적인 상태에서의 탭 전환 처리
+            // 섹션별 초기화 로직
             if (secNum === 1) {
                 cleanupAllLines();
             } else if (secNum === 2) {
                 cleanupKeywordLines();
+                cleanupTrendLines(); // (04) 라인 제거
             } else if (secNum === 3) {
                 cleanupFlightLines();
+                cleanupTrendLines(); // (04) 라인 제거
+            } else if (secNum === 4) {
+                cleanupFlightLines();
+                cleanupKeywordLines();
+                //cleanupTrendLines();
             }
         }
         
@@ -822,14 +871,23 @@
                 activeKeywordLines = [];
             }
             activeKeywordDestinations = [];
-            
-            // 모든 라벨 리셋
             updateHTMLLabels(); 
+        }
+    
+        // (04) Trend Lines Cleanup
+        function cleanupTrendLines() {
+            if (activeTrendLines.length > 0) {
+                activeTrendLines.forEach(line => scene.remove(line));
+                activeTrendLines = [];
+            }
+            activeKeywordDestinations = []; // Highlight 재활용
+            updateHTMLLabels();
         }
     
         function cleanupAllLines() {
             cleanupFlightLines();
             cleanupKeywordLines();
+            cleanupTrendLines();
         }
     
         // --- 5. Back Button Handling ---
@@ -1021,7 +1079,6 @@
     
             cleanupKeywordLines();
     
-            // 라벨 동기화: 메인 도시 라벨 리셋
             const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
             resetLabelAnimation(startCity.name);
     
@@ -1032,11 +1089,39 @@
                 if (endCity) {
                     drawKeywordLine(startCity, endCity);
                     activeKeywordDestinations.push(targetCityName);
-                    // 라벨 동기화: 타겟 도시 라벨 리셋
                     resetLabelAnimation(targetCityName);
                 }
             });
     
+            updateHTMLLabels();
+        }
+    
+        // [Function] Section 04: 트렌드 키워드 클릭 핸들러
+        function handleSearchTermClick(term) {
+            if (!currentlyZoomedCityName) return;
+    
+            // 기존 라인 제거
+            cleanupTrendLines();
+    
+            const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
+            resetLabelAnimation(startCity.name);
+    
+            // 모든 도시를 순회하며 같은 키워드를 가진 도시 찾기
+            for (const cityName in trendingSearchData) {
+                // 자기 자신 제외
+                if (cityName === currentlyZoomedCityName) continue;
+    
+                const terms = trendingSearchData[cityName];
+                // 해당 키워드가 Top 5 안에 있다면 연결
+                if (terms && terms.includes(term)) {
+                    const endCity = citiesData.find(c => c.name === cityName);
+                    if (endCity) {
+                        drawTrendLine(startCity, endCity);
+                        activeKeywordDestinations.push(cityName); // 재활용하여 하이라이트
+                        resetLabelAnimation(cityName);
+                    }
+                }
+            }
             updateHTMLLabels();
         }
         
@@ -1049,7 +1134,7 @@
         }
     
         // [Helper] 곡선 생성 공통 로직 (문제 해결의 핵심: 인덱스 기준으로 maxDraw 설정)
-        function createCurveMesh(startCity, endCity) {
+       function createCurveMesh(startCity, endCity) {
             const MIN_HEIGHT_ABOVE_EARTH = 0.05; 
             const MIN_RADIUS = EARTH_RADIUS + MIN_HEIGHT_ABOVE_EARTH;
             
@@ -1127,6 +1212,13 @@
         function drawKeywordLine(startCity, endCity) {
             const tube = createCurveMesh(startCity, endCity);
             activeKeywordLines.push(tube);
+            scene.add(tube);
+        }
+    
+        // (04)용 다중 라인 그리기
+        function drawTrendLine(startCity, endCity) {
+            const tube = createCurveMesh(startCity, endCity);
+            activeTrendLines.push(tube);
             scene.add(tube);
         }
     
@@ -1296,31 +1388,75 @@
                         subContainer.style.marginBottom = "30px";
                         
                         keywords[cat].forEach(subItem => {
-                        const rowDiv = document.createElement('div');
-                        rowDiv.className = 'keyword-row';
-
-                        const targetExists = citiesData.find(c => c.name === subItem.target);
-                        const targetClass = targetExists ? 'keyword-target' : 'keyword-target inactive-city';
-                        
-                        // [수정] 활성화된 타겟(도시)일 경우 Cyan 컬러 강제 적용
-                        const colorStyle = targetExists ? 'color: #4cf3ff;' : '';
-
-                        // [수정] 괄호에 ballet 폰트 적용 및 구조 변경
-                        rowDiv.innerHTML = `
-                            <span class="keyword-sub">${subItem.sub}</span>
-                            <span class="keyword-line"></span>
-                            <span class="${targetClass}" style="${colorStyle}">
-                                <span class="ballet" style="font-size:1rem">(</span>${subItem.target}<span class="ballet" style="font-size:1rem">)</span>
-                            </span>
-                        `;
-                        subContainer.appendChild(rowDiv);
-                    });
+                            const rowDiv = document.createElement('div');
+                            rowDiv.className = 'keyword-row';
+    
+                            const targetExists = citiesData.find(c => c.name === subItem.target);
+                            const targetClass = targetExists ? 'keyword-target' : 'keyword-target inactive-city';
+                            
+                            const colorStyle = targetExists ? 'color: #4cf3ff;' : '';
+    
+                            rowDiv.innerHTML = `
+                                <span class="keyword-sub">${subItem.sub}</span>
+                                <span class="keyword-line"></span>
+                                <span class="${targetClass}" style="${colorStyle}">
+                                    <span class="ballet" style="font-size:1rem">(</span>${subItem.target}<span class="ballet" style="font-size:1rem">)</span>
+                                </span>
+                            `;
+                            subContainer.appendChild(rowDiv);
+                        });
                         keywordListContainer.appendChild(subContainer);
                     }
                 });
             } else {
                  keywordListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No keyword data available.</div>`;
             }
+    
+            // [Section 04] Trending Search Terms 생성 (수정됨: 연결 대상 확인 로직 추가)
+        const trends = trendingSearchData[city.name];
+        if (trendListContainer) {
+            trendListContainer.innerHTML = "";
+
+            if (trends && trends.length > 0) {
+                trends.forEach((term, index) => {
+                    // 1. 현재 키워드(term)가 다른 도시에도 존재하는지 검사
+                    let hasConnection = false;
+                    for (const otherCity in trendingSearchData) {
+                        if (otherCity === city.name) continue; // 자기 자신 제외
+                        if (trendingSearchData[otherCity].includes(term)) {
+                            hasConnection = true;
+                            break; // 하나라도 찾으면 중단
+                        }
+                    }
+
+                    const itemDiv = document.createElement('div');
+                    
+                    // 2. 연결 여부에 따라 스타일 및 기능 분기
+                    if (hasConnection) {
+                        // 연결 대상 있음: 클릭 가능, 하얀색(기본)
+                        itemDiv.className = 'flight-item clickable'; 
+                        itemDiv.onclick = () => handleSearchTermClick(term);
+                    } else {
+                        // 연결 대상 없음: 클릭 불가, 회색(unclickable 클래스 활용)
+                        itemDiv.className = 'flight-item unclickable';
+                    }
+
+                    itemDiv.innerHTML = `
+                        <div class="flight-rank-wrapper">
+                            <span class="flight-rank-bracket">(</span>
+                            <span class="flight-rank-num">${index + 1}</span>
+                            <span class="flight-rank-bracket">)</span>
+                        </div>
+                        <div class="flight-dest-group">
+                            <span class="flight-dest-city">${term}</span>
+                        </div>
+                    `;
+                    trendListContainer.appendChild(itemDiv);
+                });
+            } else {
+                trendListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No trending data available.</div>`;
+            }
+        }
         }
     
         function handleCanvasClick(event) {
@@ -1362,10 +1498,10 @@
                 }
             }
     
-            // [수정] Line Growth Animation (drawRange 사용 - 인덱스 기준)
+            // (02) Flight Lines
             if (activeFlightLine) {
                 if (activeFlightLine.userData.drawCount < activeFlightLine.userData.maxDraw) {
-                    activeFlightLine.userData.drawCount += 200; // 속도 조절
+                    activeFlightLine.userData.drawCount += 200; 
                     if (activeFlightLine.userData.drawCount > activeFlightLine.userData.maxDraw) 
                         activeFlightLine.userData.drawCount = activeFlightLine.userData.maxDraw;
                     
@@ -1373,6 +1509,7 @@
                 }
             }
     
+            // (03) Keyword Lines
             if (activeKeywordLines.length > 0) {
                 activeKeywordLines.forEach(line => {
                     const maxCount = line.userData.maxDraw; 
@@ -1385,6 +1522,25 @@
                     }
                 });
             }
+    
+            // (04) Trend Lines (Pulse Loop Animation)
+            if (activeTrendLines.length > 0) {
+            activeTrendLines.forEach(line => {
+                const maxCount = line.userData.maxDraw; 
+                
+                // If it hasn't finished drawing yet...
+                if (line.userData.drawCount < maxCount) {
+                    line.userData.drawCount += 200; // Adjust speed as needed (standard is 200)
+                    
+                    // Clamp to max
+                    if(line.userData.drawCount > maxCount) {
+                        line.userData.drawCount = maxCount; 
+                    }
+                    
+                    line.geometry.setDrawRange(0, line.userData.drawCount);
+                }
+            });
+        }
     
             controls.update();
             updateHTMLLabels();
@@ -1433,7 +1589,6 @@
                         label.style.opacity = 1;
                         if(!label.classList.contains('zoomed-label')) {
                             label.classList.add('zoomed-label'); 
-                            // [추가] 라벨 회전 속도 통일 (CSS 충돌 방지)
                             label.style.animationDuration = '8s'; 
                         }
                     }
@@ -1476,5 +1631,5 @@
             }
         });
     </script>
-</body>
+    </body>
 </html>
