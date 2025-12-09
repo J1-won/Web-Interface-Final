@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        /* 기본 폰트 및 설정 */
         .arimo { font-family: "Arimo", sans-serif; font-weight: 400; font-style: normal; }
         .arimo-i { font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic;}
         .ballet { font-family: "Ballet", cursive; font-weight: 400; font-style: normal; }
@@ -58,8 +57,6 @@
             cursor: grab;   
         }
         #drag-area:active { cursor: grabbing; }
-
-        /* 하단 이미지 그리드 */
         #footer-grid {
             position: absolute;
             top: 100vh;        
@@ -80,7 +77,7 @@
             overflow: hidden;
             display: block;
             background-color: #000;
-            text-decoration: none; /* a태그 기본 밑줄 제거 */
+            text-decoration: none;
         }
 
         .grid-item img {
@@ -91,8 +88,6 @@
             opacity: 1; 
             transition: opacity 0.3s ease, transform 0.4s ease;
         }
-
-        /* ★ 호버 시 텍스트 스타일 */
         .grid-text {
             position: absolute;
             top: 50%;
@@ -104,7 +99,7 @@
             text-decoration: underline; 
             text-decoration-thickness: 1px;
             text-underline-offset: 3px;
-            opacity: 0; /* 평소엔 숨김 */
+            opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 10;
             pointer-events: none;
@@ -112,14 +107,13 @@
             width: 100%;
         }
 
-        /* 호버 효과 */
         .grid-item:hover img {
-            opacity: 0.4; /* 이미지는 어둡게 */
+            opacity: 0.4;
             transform: scale(1.03);
         }
 
         .grid-item:hover .grid-text {
-            opacity: 1; /* 텍스트는 보이게 */
+            opacity: 1;
         }
 
         #archive-title-container {
@@ -235,13 +229,11 @@
     <script type="module">
         import * as THREE from 'three';
 
-        // 전역 변수
         let scene, camera, renderer;
         const meshes = []; 
         const labels = [];
         let targetScrollX = 0;
 
-        // 드래그 변수
         let isDragging = false;
         let startX = 0;
         let startScrollX = 0;

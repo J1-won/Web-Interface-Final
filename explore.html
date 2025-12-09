@@ -5,12 +5,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&display=swap" rel="stylesheet">
     <style>
-        /* --- 폰트 설정 --- */
         .arimo { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: normal; font-size: 4rem; }
         .arimo-i { font-family: "Arimo", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: italic; }
         .ballet { font-family: "Ballet", cursive; font-optical-sizing: auto; font-size: 5.4rem; font-weight: 400; font-style: normal; }
-        
-        /* --- 기본 레이아웃 --- */
+
         html { font-size: 2rem; scroll-behavior: smooth; font-family: "Arimo", sans-serif; }
         body, h1, h2, h3, p, ol, ul, li { margin: 0; padding: 0; list-style: none; }
         body {
@@ -23,7 +21,6 @@
         }
         canvas { display: block; }
 
-        /* --- UI 요소 --- */
         h1 {
             font-size: 2rem; font-family: "Arimo", sans-serif; padding-left: 50px;
             position: fixed; top: 40px; left: 0; width: 100%; z-index: 150;
@@ -32,8 +29,7 @@
         }
         #info { position: absolute; top: 10px; left: 10px; color: white; z-index: 100; font-family: "Arimo", sans-serif; font-size: 14px; }
         #loading-status { color: #4cf3ff; margin-top: 8px; font-size: 14px; }
-        
-        /* --- City Label --- */
+
         .city-label {
             position: absolute; color: #4cf3ff; font-size: 14px; font-weight: bold;
             pointer-events: auto; cursor: pointer; 
@@ -53,7 +49,7 @@
 
         .label-bracket {
             font-family: "Ballet", cursive; font-weight: 400; display: none;font-size: 1.8rem;
-            color: white; /* 기본 색상 */
+            color: white;
             transition: color 0.3s;
         }
         .zoomed-label .label-bracket { 
@@ -81,8 +77,7 @@
             pointer-events: none;
         }
         .world-text { font-size: 80%; display: inline-block; margin-left: -64px; color: #4cf3ff; transform: translateY(15px); }
-        
-        /* --- Back Button --- */
+
         .back-btn {
             position: fixed; top: 25px; left: 40px; color: #4cf3ff;
             font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic; font-size: 0.6rem;
@@ -95,7 +90,6 @@
         .back-btn:hover { opacity: 0.9; }
         .back-btn:hover::after { opacity: 0; }
 
-        /* --- 좌측 텍스처 메뉴 --- */
         #texture-menu {
             position: fixed; top: 37%; left: 240px; z-index: 200;
             display: flex; flex-direction: column; gap: 50px;
@@ -114,14 +108,12 @@
         #texture-menu li.active { color: #4CF3FF; }
         #texture-menu li.active::after { background-color: #4CF3FF; }
 
-        /* --- 우측 설명 텍스트 --- */
         #instruction-text {
             position: fixed; right: 100px; top: 31%; transform: translateY(-50%);
             text-align: left; color: white; font-size: 0.4rem; line-height: 1.6;
             z-index: 100; pointer-events: none; transition: opacity 0.5s;
         }
 
-        /* --- 우측 정보 패널 --- */
         #right-panel-container {
             position: fixed; top: 0; right: 0; width: 50%; height: 100%;
             z-index: 110; display: flex;
@@ -182,7 +174,6 @@
         .panel-section.active .section-name { color: #4cf3ff; }
         .panel-section.active .section-title-wrapper { cursor: default; }
 
-        /* 콘텐츠 영역 */
         .info-content {
             padding: 100px 0px 60px 40px; text-align: left; opacity: 1;width:400px;
             overflow-y: auto; height: 100%; box-sizing: border-box;
@@ -194,7 +185,6 @@
         .city-title-initial { font-family: "Ballet", cursive; font-size: 1rem; color: #4cf3ff; line-height: 0.8;}
         .city-title-rest { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.8rem; color: #4cf3ff; }
 
-        /* (01) info-list는 gap 60px 유지 */
         .info-list { display: flex; flex-direction: column; gap: 60px; padding-left: 140px; }
         .info-row { display: flex; flex-direction: column; gap: 5px; }
         
@@ -205,7 +195,6 @@
         }
         .category-name::after { content: ' •'; margin-left: 5px; text-decoration: none; display: inline-block; color: white; transition: color 0.3s; }
 
-        /* Keyword Network Specific Styles */
         .keyword-category-btn:hover::after,
         .keyword-category-btn.active-cat::after {
             color: #4cf3ff;
@@ -221,7 +210,6 @@
             color: #4cf3ff; font-weight: bold;
         }
 
-        /* (03)번 전용 컨테이너: padding-left 130px */
         #keyword-list-container {
             display: flex; flex-direction: column; gap: 20px; padding-left: 100px;
         }
@@ -250,7 +238,6 @@
             padding-left: 30px;
         }
 
-        /* --- Flight List Styles --- */
         .flight-list { display: flex; flex-direction: column; gap: 20px; padding-left: 140px; }
         .flight-item { 
             display: flex; align-items: baseline; transition: all 0.2s;
@@ -284,7 +271,6 @@
         .flight-dest-country { font-family: "Arimo", sans-serif; font-style: italic; font-size: 0.45rem; color: white; margin-top: 5px; transition: color 0.3s;}
 
 
-        /* --- 하단 줌 컨트롤 바 --- */
         #zoom-controls-wrapper {
             position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%);
             width: 80%; max-width: 800px; height: 60px; z-index: 300;
@@ -437,19 +423,16 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     
     <script>
-        // 전역 변수
         let scene, camera, renderer, controls;
         let earthModel = null;
         let isFlying = false; 
         const flySpeed = 0.05; 
         const cityPoints = [];
-    
-        // Line Groups
-        let activeFlightLine = null;      // (02)용 단일 라인
-        let activeKeywordLines = [];      // (03)용 다중 라인
-        let activeTrendLines = [];        // (04)용 다중 라인 (Information Network)
+
+        let activeFlightLine = null;   
+        let activeKeywordLines = [];    
+        let activeTrendLines = [];      
         
-        // --- 설정 ---
         const EARTH_RADIUS = 1.1; 
         const GLOBE_Y_OFFSET = -0.2; 
         const INITIAL_CAMERA_Z = 3.0;
@@ -467,7 +450,6 @@
         let pointerDownPos = { x: 0, y: 0 };
         const CLICK_THRESHOLD = 6; 
     
-        // UI Elements
         const zoomWrapper = document.getElementById('zoom-controls-wrapper');
         const zoomThumb = document.getElementById('zoom-thumb');
         const instructionText = document.getElementById('instruction-text');
@@ -490,8 +472,7 @@
         const cityTitleArea04 = document.getElementById('city-title-area-04');
     
         let isDraggingZoom = false;
-    
-        // --- 1. 기본 도시 데이터 ---
+ 
         const citiesData = [
             { name: 'London', country: 'UK', dms: '51°30\'25"N / 0°7\'39"W', lat: 51.507, lon: -0.127, pop: '10,000,000', lang: 'English', econ: '$880 Billion USD', rel: 'Christianity', tz: 'GMT / BST' },
             { name: 'São Paulo', country: 'Brazil', dms: '23°33\'0"S / 46°37\'59"W', lat: -23.550, lon: -46.633, pop: '22,800,000', lang: 'Portuguese', econ: '$220 Billion USD', rel: 'Christianity', tz: 'UTC-3' },
@@ -520,8 +501,7 @@
             { name: 'Auckland', country: 'New Zealand', dms: '36°50\'52"S / 174°45\'47"E', lat: -36.848, lon: 174.763, pop: '1,700,000', lang: 'English, Māori', econ: '$100 Billion USD', rel: 'Christianity, Non-religious', tz: 'NZST / NZDT' },
             { name: 'Casablanca', country: 'Morocco', dms: '33°35\'18"N / 7°37\'5"W', lat: 33.573, lon: -7.589, pop: '3,400,000', lang: 'Arabic, French', econ: '$80 Billion USD', rel: 'Islam (Sunni)', tz: 'UTC+1' }
         ];
-    
-        // --- 2. Flight Network Data ---
+
         const flightNetworkData = {
             "London": [ {r:1, c:'New York', co:'USA'}, {r:2, c:'Dubai', co:'UAE'}, {r:3, c:'Paris', co:'France'}, {r:4, c:'Los Angeles', co:'USA'}, {r:5, c:'Amsterdam', co:'Netherlands'}, {r:6, c:'Frankfurt', co:'Germany'}, {r:7, c:'Toronto', co:'Canada'}, {r:8, c:'Singapore', co:'Singapore'}, {r:9, c:'Hong Kong', co:'China'}, {r:10, c:'Sydney', co:'Australia'} ],
             "São Paulo": [ {r:1, c:'Buenos Aires', co:'Argentina'}, {r:2, c:'Santiago', co:'Chile'}, {r:3, c:'New York', co:'USA'}, {r:4, c:'Miami', co:'USA'}, {r:5, c:'Paris', co:'France'}, {r:6, c:'Lisbon', co:'Portugal'}, {r:7, c:'London', co:'UK'}, {r:8, c:'Bogota', co:'Colombia'}, {r:9, c:'Mexico City', co:'Mexico'}, {r:10, c:'Dubai', co:'UAE'} ],
@@ -550,8 +530,7 @@
             "Auckland": [ {r:1, c:'Sydney', co:'Australia'}, {r:2, c:'Melbourne', co:'Australia'}, {r:3, c:'Los Angeles', co:'USA'}, {r:4, c:'Singapore', co:'Singapore'}, {r:5, c:'Dubai', co:'UAE'}, {r:6, c:'Hong Kong', co:'China'}, {r:7, c:'Tokyo', co:'Japan'}, {r:8, c:'Vancouver', co:'Canada'}, {r:9, c:'Honolulu', co:'USA'}, {r:10, c:'Santiago', co:'Chile'} ],
             "Casablanca": [ {r:1, c:'Paris', co:'France'}, {r:2, c:'Istanbul', co:'Türkiye'}, {r:3, c:'Madrid', co:'Spain'}, {r:4, c:'Milan', co:'Italy'}, {r:5, c:'Lisbon', co:'Portugal'}, {r:6, c:'Rome', co:'Italy'}, {r:7, c:'Jeddah', co:'Saudi Arabia'}, {r:8, c:'Dubai', co:'UAE'}, {r:9, c:'Montreal', co:'Canada'}, {r:10, c:'New York', co:'USA'} ]
         };
-    
-        // --- (03) Keyword Network Data ---
+
         const keywordNetworkData = {
             "London": {
                 "Culture": [ {sub:"Media", target:"New York"}, {sub:"Heritage", target:"Paris"}, {sub:"Pop", target:"Los Angeles"} ],
@@ -711,49 +690,36 @@
             }
         };
     
-        // --- (04) Trending Search Data (Global Viral Concept) ---
-        // 공통 관심사 키워드(AI, Crypto, Climate 등)를 대거 배치하여 
-        // 키워드 클릭 시 전 세계가 거미줄처럼 연결되도록 설계 (Starburst Effect)
         const trendingSearchData = {
-        // [Americas]
         "New York": ["Inflation", "Crypto", "Climate Crisis", "Wall Street", "AI"],
         "Los Angeles": ["Hollywood", "Wellness", "Climate Crisis", "K-Pop", "Traffic"],
-        "San Francisco": ["AI", "Tech", "Startup", "Climate Crisis", "Crypto"], // (데이터에 없다면 Los Angeles가 대신 처리)
+        "San Francisco": ["AI", "Tech", "Startup", "Climate Crisis", "Crypto"],
         "Mexico City": ["Football", "Tacos", "Climate Crisis", "Music", "History"],
         "São Paulo": ["Football", "Carnival", "Crypto", "Climate Crisis", "Agriculture"],
         "Buenos Aires": ["Football", "Inflation", "Tango", "Meat", "Crypto"],
         "Toronto": ["Housing", "Hockey", "Climate Crisis", "AI", "Immigration"],
         "Vancouver": ["Nature", "Housing", "Climate Crisis", "Yoga", "Tech"],
         "Honolulu": ["Tourism", "Surfing", "Volcano", "Ocean", "Climate Crisis"],
-
-        // [Europe]
         "London": ["Royal Family", "Football", "Inflation", "Climate Crisis", "Crypto"],
         "Paris": ["Olympics", "Fashion", "Gastronomy", "Climate Crisis", "Strike"],
         "Berlin": ["Techno", "Green Energy", "Climate Crisis", "Beer", "Crypto"],
         "Moscow": ["Geopolitics", "Winter", "Energy", "Telegram", "Crypto"],
-
-        // [Asia]
         "Seoul": ["K-Pop", "Semiconductor", "Gaming", "Crypto", "AI"],
         "Tokyo": ["Anime", "Robotics", "Gaming", "Climate Crisis", "Yen"],
         "Beijing": ["EV Car", "AI", "Climate Crisis", "6G", "History"],
         "Delhi": ["Cricket", "Bollywood", "Startups", "Climate Crisis", "Tech"],
         "Bangkok": ["Street Food", "Tourism", "K-Pop", "Massage", "Climate Crisis"],
         "Kuala Lumpur": ["Halal Food", "Fintech", "Tourism", "Palm Oil", "Climate Crisis"],
-
-        // [Middle East & Africa]
         "Dubai": ["Luxury", "Real Estate", "Crypto", "AI", "Tourism"],
         "Cairo": ["Pyramids", "History", "Inflation", "Football", "Climate Crisis"],
         "Johannesburg": ["Rugby", "Mining", "Safari", "Crypto", "Climate Crisis"],
         "Nairobi": ["Safari", "Mobile Money", "Climate Crisis", "Marathon", "Tech"],
         "Cape Town": ["Wine", "Tourism", "Rugby", "Nature", "Climate Crisis"],
         "Casablanca": ["Spices", "Football", "Tourism", "History", "Climate Crisis"],
-
-        // [Oceania]
         "Sydney": ["Housing", "Cricket", "Climate Crisis", "Beach", "Mining"],
         "Auckland": ["Rugby", "Nature", "Sailing", "Climate Crisis", "Maori"]
     };
     
-        // --- 3. 초기화 ---
         function init() {
             const canvasContainer = document.body;
             scene = new THREE.Scene();
@@ -800,11 +766,9 @@
             });
     
             window.changeTexture = changeTexture;
-            
-            // 섹션 활성화 함수 전역 등록
+
             window.activateSection = activateSection;
-            
-            // 키워드 클릭 함수 전역 등록
+
             window.activateKeywordCategory = activateKeywordCategory;
         }
     
@@ -816,37 +780,30 @@
             const y = ((radius) * Math.cos(phi));
             return new THREE.Vector3(x, y, z);
         }
-    
-        // --- 4. 섹션 활성화 로직 (탭 전환) ---
+
         function activateSection(secNum) {
             if (!currentlyZoomedCityName) return; 
-    
-            // 모든 섹션 비활성화
+  
             document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
-            
-            // 선택된 섹션 활성화
+
             const activeSec = document.getElementById(`sec-0${secNum}`);
             if(activeSec) activeSec.classList.add('active');
-    
-            // [중요 수정] (01), (03) 탭 클릭 시 카메라 복귀 로직
-            // 만약 목적지를 보고 있는 상태(currentlySelectedDestName 존재)라면,
-            // (01)이나 (03)을 누를 때 즉시 출발지로 카메라를 이동(flyToCity)시킵니다.
+
             if (secNum === 1 || secNum === 3) {
                 if (currentlySelectedDestName) {
                     flyToCity(currentlyZoomedCityName);
                     return; 
                 }
             }
-    
-            // 섹션별 초기화 로직
+
             if (secNum === 1) {
                 cleanupAllLines();
             } else if (secNum === 2) {
                 cleanupKeywordLines();
-                cleanupTrendLines(); // (04) 라인 제거
+                cleanupTrendLines();
             } else if (secNum === 3) {
                 cleanupFlightLines();
-                cleanupTrendLines(); // (04) 라인 제거
+                cleanupTrendLines();
             } else if (secNum === 4) {
                 cleanupFlightLines();
                 cleanupKeywordLines();
@@ -870,14 +827,13 @@
             activeKeywordDestinations = [];
             updateHTMLLabels(); 
         }
-    
-        // (04) Trend Lines Cleanup
+
         function cleanupTrendLines() {
             if (activeTrendLines.length > 0) {
                 activeTrendLines.forEach(line => scene.remove(line));
                 activeTrendLines = [];
             }
-            activeKeywordDestinations = []; // Highlight 재활용
+            activeKeywordDestinations = [];
             updateHTMLLabels();
         }
     
@@ -886,16 +842,14 @@
             cleanupKeywordLines();
             cleanupTrendLines();
         }
-    
-        // --- 5. Back Button Handling ---
+
         window.handleBackClick = function(event) {
             if (currentlyZoomedCityName) {
                 event.preventDefault(); 
                 flyToHomeAndUnzoom();   
             }
         };
-    
-        // --- 6. 줌 슬라이더 로직 ---
+
         function initZoomSliderEvents() {
             zoomThumb.addEventListener('pointerdown', (e) => {
                 isDraggingZoom = true;
@@ -950,8 +904,7 @@
             if (percent > 1) percent = 1;
             updateZoomThumbPosition(percent);
         }
-        
-        // --- 7. 지구본 및 데이터 포인트 ---
+ 
         function createEarthSphere() {
             updateLoadingStatus('Loading earth texture...');
             const earthTexture = textureLoader.load('earth_clouds.jpg', 
@@ -1012,8 +965,7 @@
                 flyToCity(name);
             });
         }
-    
-        // --- 8. 비행 및 View 변경 로직 ---
+
         function updateCameraOffset(isZoomed) {
             if (isZoomed) {
                 const xOffset = window.innerWidth * 0.3; 
@@ -1023,8 +975,7 @@
                 camera.clearViewOffset();
             }
         }
-        
-        // [Function] Section 02: 두 도시를 잇는 곡선 생성 및 카메라 이동 (단일)
+
         function connectCity(targetCityName) {
             const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
             const cleanTargetName = targetCityName.replace(',', '').trim();
@@ -1045,11 +996,9 @@
                 scene.remove(activeFlightLine);
                 activeFlightLine = null;
             }
-    
-            // 곡선 그리기
+
             drawFlightLine(startCity, endCity);
-    
-            // 카메라 이동
+
             const endPos = latLonToVector3(endCity.lat, endCity.lon, EARTH_RADIUS);
             const endPosWorld = endPos.clone().add(new THREE.Vector3(0, GLOBE_Y_OFFSET, 0));
             const earthCenter = new THREE.Vector3(0, GLOBE_Y_OFFSET, 0);
@@ -1061,8 +1010,7 @@
             camera.userData.targetPos = newCameraPos;
             camera.userData.targetLookAt = earthCenter;
         }
-    
-        // [Function] Section 03: 키워드 카테고리 클릭 핸들러
+
         function activateKeywordCategory(categoryName, btnElement) {
             if (!currentlyZoomedCityName) return;
     
@@ -1092,29 +1040,24 @@
     
             updateHTMLLabels();
         }
-    
-        // [Function] Section 04: 트렌드 키워드 클릭 핸들러
+
         function handleSearchTermClick(term) {
             if (!currentlyZoomedCityName) return;
-    
-            // 기존 라인 제거
+
             cleanupTrendLines();
     
             const startCity = citiesData.find(c => c.name === currentlyZoomedCityName);
             resetLabelAnimation(startCity.name);
-    
-            // 모든 도시를 순회하며 같은 키워드를 가진 도시 찾기
+ 
             for (const cityName in trendingSearchData) {
-                // 자기 자신 제외
                 if (cityName === currentlyZoomedCityName) continue;
     
                 const terms = trendingSearchData[cityName];
-                // 해당 키워드가 Top 5 안에 있다면 연결
                 if (terms && terms.includes(term)) {
                     const endCity = citiesData.find(c => c.name === cityName);
                     if (endCity) {
                         drawTrendLine(startCity, endCity);
-                        activeKeywordDestinations.push(cityName); // 재활용하여 하이라이트
+                        activeKeywordDestinations.push(cityName);
                         resetLabelAnimation(cityName);
                     }
                 }
@@ -1126,11 +1069,9 @@
                 const label = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(cityName));
                 if(label) {
                     label.classList.remove('zoomed-label');
-                    void label.offsetWidth; // Force Reflow
+                    void label.offsetWidth;
                 }
         }
-    
-        // [Helper] 곡선 생성 공통 로직 (문제 해결의 핵심: 인덱스 기준으로 maxDraw 설정)
        function createCurveMesh(startCity, endCity) {
             const MIN_HEIGHT_ABOVE_EARTH = 0.05; 
             const MIN_RADIUS = EARTH_RADIUS + MIN_HEIGHT_ABOVE_EARTH;
@@ -1159,9 +1100,7 @@
             const tubeSegments = 200; 
             const radialSegments = 8; 
             const geometry = new THREE.TubeGeometry(curve, tubeSegments, tubeRadius, radialSegments, false);
-            
-            // [수정] drawRange 초기화. TubeGeometry는 인덱스 버퍼를 사용하므로 index.count 기준이어야 함 (중요!)
-            // 만약 index가 없으면 position.count 사용 (안전장치)
+
             const totalCounts = geometry.index ? geometry.index.count : geometry.attributes.position.count;
             geometry.setDrawRange(0, 0); 
     
@@ -1189,37 +1128,32 @@
             }); 
     
             const tube = new THREE.Mesh(geometry, material);
-            tube.frustumCulled = false; // 선이 카메라 각도에 따라 사라지는 문제 방지
+            tube.frustumCulled = false;
             tube.position.y = GLOBE_Y_OFFSET;
-            
-            // 애니메이션 상태 저장 (drawCount 초기화)
+
             tube.userData = { drawCount: 0, maxDraw: totalCounts };
             
             return tube;
         }
-    
-        // Section 02용 단일 라인 그리기
+
         function drawFlightLine(startCity, endCity) {
             const tube = createCurveMesh(startCity, endCity);
             activeFlightLine = tube; 
             scene.add(tube);
         }
-    
-        // Section 03용 다중 라인 그리기
+
         function drawKeywordLine(startCity, endCity) {
             const tube = createCurveMesh(startCity, endCity);
             activeKeywordLines.push(tube);
             scene.add(tube);
         }
-    
-        // (04)용 다중 라인 그리기
+
         function drawTrendLine(startCity, endCity) {
             const tube = createCurveMesh(startCity, endCity);
             activeTrendLines.push(tube);
             scene.add(tube);
         }
-    
-        // [Helper] Flight List UI 업데이트
+
         function updateFlightListUI() {
             const items = document.querySelectorAll('.flight-item');
             items.forEach(item => {
@@ -1235,7 +1169,6 @@
             });
         }
     
-        // 홈으로 복귀
         function flyToHomeAndUnzoom() {
             if (currentlyZoomedCityName === null) return; 
             
@@ -1271,8 +1204,7 @@
             textureMenu.style.pointerEvents = 'auto';
             mainTitle.style.opacity = '1';
         }
-    
-        // 도시로 이동
+
         function flyToCity(cityName) {
             document.querySelectorAll('.city-label').forEach(el => el.classList.remove('zoomed-label'));
             const label = Array.from(document.querySelectorAll('.city-label')).find(el => el.textContent.includes(cityName));
@@ -1332,8 +1264,7 @@
             valEcon.textContent = city.econ;
             valRel.textContent = city.rel;
             valTz.textContent = city.tz;
-    
-            // [Section 02] Flight List 생성
+
             const flights = flightNetworkData[city.name];
             flightListContainer.innerHTML = ""; 
     
@@ -1366,8 +1297,7 @@
             } else {
                 flightListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No flight data available.</div>`;
             }
-    
-            // [Section 03] Keyword Network 생성
+
             const keywords = keywordNetworkData[city.name];
             keywordListContainer.innerHTML = "";
     
@@ -1409,32 +1339,26 @@
                  keywordListContainer.innerHTML = `<div style="color:white; font-size:0.5rem;">No keyword data available.</div>`;
             }
     
-            // [Section 04] Trending Search Terms 생성 (수정됨: 연결 대상 확인 로직 추가)
         const trends = trendingSearchData[city.name];
         if (trendListContainer) {
             trendListContainer.innerHTML = "";
 
             if (trends && trends.length > 0) {
                 trends.forEach((term, index) => {
-                    // 1. 현재 키워드(term)가 다른 도시에도 존재하는지 검사
                     let hasConnection = false;
                     for (const otherCity in trendingSearchData) {
-                        if (otherCity === city.name) continue; // 자기 자신 제외
+                        if (otherCity === city.name) continue;
                         if (trendingSearchData[otherCity].includes(term)) {
                             hasConnection = true;
-                            break; // 하나라도 찾으면 중단
                         }
                     }
 
                     const itemDiv = document.createElement('div');
                     
-                    // 2. 연결 여부에 따라 스타일 및 기능 분기
                     if (hasConnection) {
-                        // 연결 대상 있음: 클릭 가능, 하얀색(기본)
                         itemDiv.className = 'flight-item clickable'; 
                         itemDiv.onclick = () => handleSearchTermClick(term);
                     } else {
-                        // 연결 대상 없음: 클릭 불가, 회색(unclickable 클래스 활용)
                         itemDiv.className = 'flight-item unclickable';
                     }
 
@@ -1495,7 +1419,6 @@
                 }
             }
     
-            // (02) Flight Lines
             if (activeFlightLine) {
                 if (activeFlightLine.userData.drawCount < activeFlightLine.userData.maxDraw) {
                     activeFlightLine.userData.drawCount += 200; 
@@ -1505,8 +1428,7 @@
                     activeFlightLine.geometry.setDrawRange(0, activeFlightLine.userData.drawCount);
                 }
             }
-    
-            // (03) Keyword Lines
+
             if (activeKeywordLines.length > 0) {
                 activeKeywordLines.forEach(line => {
                     const maxCount = line.userData.maxDraw; 
@@ -1519,17 +1441,14 @@
                     }
                 });
             }
-    
-            // (04) Trend Lines (Pulse Loop Animation)
+
             if (activeTrendLines.length > 0) {
             activeTrendLines.forEach(line => {
                 const maxCount = line.userData.maxDraw; 
-                
-                // If it hasn't finished drawing yet...
+
                 if (line.userData.drawCount < maxCount) {
-                    line.userData.drawCount += 200; // Adjust speed as needed (standard is 200)
-                    
-                    // Clamp to max
+                    line.userData.drawCount += 200;
+
                     if(line.userData.drawCount > maxCount) {
                         line.userData.drawCount = maxCount; 
                     }

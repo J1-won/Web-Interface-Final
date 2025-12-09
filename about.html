@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Ballet:opsz@16..72&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
     <style>
-        /* 폰트 정의 및 기본 스타일 */
         .arimo { font-family: "Arimo", sans-serif; font-weight: 400; font-style: normal; }
         .arimo-i { font-family: "Arimo", sans-serif; font-weight: 400; font-style: italic;}
         .ballet { font-family: "Ballet", cursive; font-weight: 400; font-style: normal; }
@@ -58,7 +57,7 @@
             line-height: 1.25;
         }
         .korean-text {
-            font-size: 0.7rem; /* 국문 텍스트 크기 */
+            font-size: 0.7rem;
             margin-bottom: 20px;
             line-height: 1.6;
             word-break: keep-all;
@@ -66,7 +65,7 @@
         .city-country {
             text-align: right;padding-right:40px;
             font-size: 0.7rem;
-            color: #4cf3ff; /* 도시-국가 괄호 색상 */
+            color: #4cf3ff;
         }
         
         #info {
@@ -130,13 +129,11 @@
         .connection-line {
             fill: none;
             stroke: #4cf3ff;
-            stroke-width: 1; /* 얇은 두께 유지 */
+            stroke-width: 1;
             stroke-linecap: round;
             opacity: 0.7; 
-            /* 초기 Transition 없음 (깜빡임 방지) */
         }
-        
-        /* JS에서 클래스 추가 시 애니메이션 활성화 */
+
         .connection-line.animated {
             transition: stroke-dashoffset 0.8s ease-in-out;
         }
@@ -310,19 +307,17 @@
         const mapPoints = document.querySelectorAll('.map-point');
         const linesLayer = document.getElementById('lines-layer');
 
-        // [수정] 직선(line) 요소 생성 (6->1 포함)
         function initLines() {
             const numPoints = mapPoints.length;
             for (let i = 0; i < numPoints; i++) {
-                const nextIndex = (i + 1) % numPoints; // 다음 인덱스 계산 (마지막은 0으로)
+                const nextIndex = (i + 1) % numPoints;
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute("class", "connection-line");
                 line.setAttribute("id", `line-${i}-${nextIndex}`); 
                 linesLayer.appendChild(line);
             }
-            updateLineCoordinates(); // 좌표 계산
+            updateLineCoordinates();
 
-            // 깜빡임 방지 로직 (50ms 후 애니메이션 클래스 추가)
             setTimeout(() => {
                 const lines = document.querySelectorAll('.connection-line');
                 lines.forEach(l => l.classList.add('animated'));
@@ -340,36 +335,29 @@
                 const dot1 = mapPoints[i].querySelector('.dot').getBoundingClientRect();
                 const dot2 = mapPoints[nextIndex].querySelector('.dot').getBoundingClientRect();
 
-                // 점의 중심 좌표 계산
                 const x1 = dot1.left + dot1.width / 2 - svgRect.left;
                 const y1 = dot1.top + dot1.height / 2 - svgRect.top;
                 const x2 = dot2.left + dot2.width / 2 - svgRect.left;
                 const y2 = dot2.top + dot2.height / 2 - svgRect.top;
 
-                // 직선 좌표 할당
                 line.setAttribute("x1", x1);
                 line.setAttribute("y1", y1);
                 line.setAttribute("x2", x2);
                 line.setAttribute("y2", y2);
 
-                // 선 길이 계산 (애니메이션용)
                 const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
                 line.style.strokeDasharray = length;
                 
-                // [수정] 표시 로직
-                // i(선 시작점 인덱스)가 currentActiveIndex 이하이면 표시
-                // currentActiveIndex가 -1이면 모두 숨김
                 if (currentActiveIndex !== -1 && i <= currentActiveIndex) {
-                    line.style.strokeDashoffset = 0; // 보임
+                    line.style.strokeDashoffset = 0;
                 } else {
-                    line.style.strokeDashoffset = length; // 숨김
+                    line.style.strokeDashoffset = length;
                 }
             }
         }
 
         window.addEventListener('resize', updateLineCoordinates);
 
-        // 초기화
         initLines();
 
         function createContentHTML(data) {
@@ -394,16 +382,13 @@
                 isFirstClick = false; 
             }
 
-            // 현재 클릭된 인덱스 업데이트
             currentActiveIndex = index;
-            updateLineCoordinates(); // 선 상태 업데이트
+            updateLineCoordinates();
 
-            // [핵심 수정] 마지막 점(6번, index 5) 클릭 시 이벤트 처리
             if (index === mapPoints.length - 1) {
-                // 선이 그려지는 시간(0.8초) + 약간의 여유 시간 후 모든 선 숨기기
                 setTimeout(() => {
-                    currentActiveIndex = -1; // 초기화
-                    updateLineCoordinates(); // 모든 선 숨김 상태로 업데이트
+                    currentActiveIndex = -1; 
+                    updateLineCoordinates();
                 }, 900); 
             }
 
@@ -422,7 +407,6 @@
             point.addEventListener('click', handlePointClick);
         });
 
-        // 마우스 이동 시 오디오 재생
         const audio = new Audio('1.mp3');
         let hasPlayed = false;
         
